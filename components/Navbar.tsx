@@ -67,7 +67,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
         <div 
           className={`relative flex items-center justify-between transition-all duration-700 ease-expo ${
             isScrolled 
-              ? 'w-[85%] md:w-[60%] lg:w-[50%] bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-4 py-2 border border-white/20 dark:border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)]' 
+              ? 'w-[85%] md:w-[65%] lg:w-[55%] bg-white/80 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-5 py-2.5 border border-white/40 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]' 
               : 'w-full container px-6 py-2 bg-transparent'
           }`}
         >
@@ -127,26 +127,35 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           </div>
           
           {/* ACTIONS */}
-          <div className="flex items-center gap-2 pl-2">
-             <div className="flex items-center gap-1">
-                <button
-                  onClick={openSearch}
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo"
-                  aria-label="Search"
-                >
-                  <i className="fas fa-search text-xs"></i>
-                </button>
-                <button
-                  onClick={toggleTheme}
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo"
-                  aria-label="Toggle Theme"
-                >
-                   <div className="relative w-4 h-4 overflow-hidden">
-                     <i className={`fas fa-sun absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}></i>
-                     <i className={`fas fa-moon absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}></i>
-                   </div>
-                </button>
-             </div>
+          <div className="flex items-center gap-1.5 pl-2">
+            <button
+              onClick={openSearch}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-blue-600 dark:hover:text-blue-400"
+              aria-label="Search"
+              title="Search (Cmd+K)"
+            >
+              <i className="fas fa-search text-xs"></i>
+            </button>
+
+            <button
+              onClick={openTerminal}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-purple-600 dark:hover:text-purple-400"
+              aria-label="Terminal"
+              title="Terminal (Cmd+J)"
+            >
+              <i className="fas fa-terminal text-xs"></i>
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-orange-500 dark:hover:text-yellow-400"
+              aria-label="Toggle Theme"
+            >
+                <div className="relative w-4 h-4 overflow-hidden">
+                  <i className={`fas fa-sun absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}></i>
+                  <i className={`fas fa-moon absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}></i>
+                </div>
+            </button>
 
              {/* Mobile Hamburger */}
              <button
