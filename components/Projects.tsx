@@ -42,7 +42,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
   return (
     <div 
       ref={cardRef}
-      className="group relative rounded-[20px] transition-all duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] transform-gpu preserve-3d mb-10 perspective-2000 hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/40 cursor-pointer"
+      className="group relative rounded-[20px] transition-all duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] transform-gpu preserve-3d h-full perspective-2000 hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/10 dark:hover:shadow-black/40 cursor-pointer"
       style={{
         transform: isTouch ? 'none' : `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
       }}
@@ -193,7 +193,7 @@ const Projects: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <Reveal key={project.id} delay={index * 100}>
+            <Reveal key={project.id} delay={index * 100} className="h-full">
               <ProjectCard project={project} onClick={() => openModal(project)} />
             </Reveal>
           ))}
