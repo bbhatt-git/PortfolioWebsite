@@ -53,6 +53,7 @@ const Admin: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
+    window.location.hash = ''; // Redirect to home after logout
   };
 
   const fetchMessages = async () => {
@@ -283,8 +284,8 @@ const Admin: React.FC = () => {
                </div>
             </div>
 
-            {/* Scrollable List */}
-            <div className="flex-1 overflow-y-auto p-6 bg-noise relative">
+            {/* Scrollable List - Removed bg-noise to fix pointer-events issue */}
+            <div className="flex-1 overflow-y-auto p-6 relative">
                
                {/* --- INBOX VIEW --- */}
                {activeTab === 'inbox' && (
@@ -325,13 +326,13 @@ const Admin: React.FC = () => {
                {activeTab === 'projects' && (
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
                     {projects.map((proj) => (
-                      <div key={proj.id} className="group bg-white/80 dark:bg-[#2c2c2e]/80 backdrop-blur-sm rounded-xl border border-white/60 dark:border-white/5 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col h-full hover:-translate-y-1">
+                      <div key={proj.id} className="group bg-white/80 dark:bg-[#2c2c2e]/80 backdrop-blur-sm rounded-xl border border-white/60 dark:border-white/5 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col h-full hover:-translate-y-1 relative z-0">
                          <div className="h-40 bg-gray-100 dark:bg-black/50 relative overflow-hidden">
                             <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                            <div className="absolute top-2 right-2">
+                            <div className="absolute top-2 right-2 z-10">
                                <button 
                                  onClick={(e) => handleDeleteProject(proj.id, e)}
-                                 className="w-8 h-8 rounded-full bg-red-500 text-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 transform hover:scale-110"
+                                 className="w-8 h-8 rounded-full bg-red-500 text-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 transform hover:scale-110 cursor-pointer"
                                  title="Delete Project"
                                >
                                  <i className="fas fa-trash-alt text-xs"></i>

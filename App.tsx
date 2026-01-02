@@ -16,10 +16,7 @@ const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-  
-  // Simple Router State - normalize path by removing trailing slash
-  const getNormalizedPath = () => window.location.pathname.replace(/\/$/, '') || '/';
-  const [currentPath, setCurrentPath] = useState(getNormalizedPath());
+  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#/admin');
 
   useEffect(() => {
     // Theme Logic
@@ -34,31 +31,12 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Router Logic: Handle back/forward buttons
-    const handlePopState = () => setCurrentPath(getNormalizedPath());
-    window.addEventListener('popstate', handlePopState);
-
-    // Router Logic: Intercept pushState/replaceState for SPA navigation support
-    const originalPushState = window.history.pushState;
-    const originalReplaceState = window.history.replaceState;
-
-    window.history.pushState = function(...args) {
-      try {
-        originalPushState.apply(this, args);
-        setCurrentPath(getNormalizedPath());
-      } catch (e) {
-        console.error("Navigation error:", e);
-      }
+    // Handle Hash Change for Admin Route
+    const handleHashChange = () => {
+      setIsAdmin(window.location.hash === '#/admin');
     };
 
-    window.history.replaceState = function(...args) {
-      try {
-        originalReplaceState.apply(this, args);
-        setCurrentPath(getNormalizedPath());
-      } catch (e) {
-        console.error("Navigation error:", e);
-      }
-    };
+    window.addEventListener('hashchange', handleHashChange);
 
     // Keyboard Shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -77,10 +55,7 @@ const App: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('popstate', handlePopState);
-      // Restore original history methods
-      window.history.pushState = originalPushState;
-      window.history.replaceState = originalReplaceState;
+      window.removeEventListener('hashchange', handleHashChange);
     }
   }, []);
 
@@ -96,8 +71,8 @@ const App: React.FC = () => {
     }
   };
 
-  // Render Admin Panel if path is /admin
-  if (currentPath === '/admin') {
+  // Render Admin Panel if hash is #/admin
+  if (isAdmin) {
     return <Admin />;
   }
 

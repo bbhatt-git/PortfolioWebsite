@@ -18,7 +18,8 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     projects: () => 'Navigating to projects section...',
     contact: () => 'Email: hello@bbhatt.com.np | Phone: +977 9761184935',
     admin: () => {
-       window.history.pushState(null, "", "/admin");
+       // Use hash navigation for Admin panel
+       window.location.hash = "#/admin";
        onClose();
        return 'Accessing Admin Panel...';
     },
