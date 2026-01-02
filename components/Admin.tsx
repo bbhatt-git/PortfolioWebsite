@@ -21,7 +21,6 @@ const Admin: React.FC = () => {
     stack: '',
     liveUrl: '',
     codeUrl: '',
-    image: '', // URL for now
   });
 
   useEffect(() => {
@@ -66,12 +65,19 @@ const Admin: React.FC = () => {
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Auto-generate thumbnail from Live URL using thum.io
+      // Resolution: 1200px width (Laptop standard for thumbnail)
+      const generatedImage = projectForm.liveUrl 
+        ? `https://image.thum.io/get/width/1200/crop/800/noanimate/${projectForm.liveUrl}`
+        : 'https://via.placeholder.com/1200x800?text=No+Preview';
+
       await addDoc(collection(db, "projects"), {
         ...projectForm,
+        image: generatedImage,
         createdAt: serverTimestamp()
       });
       alert('Project added successfully!');
-      setProjectForm({ title: '', desc: '', stack: '', liveUrl: '', codeUrl: '', image: '' });
+      setProjectForm({ title: '', desc: '', stack: '', liveUrl: '', codeUrl: '' });
     } catch (err) {
       alert('Error adding project');
     }
@@ -218,12 +224,14 @@ const Admin: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Live URL</label>
+                  <label className="block text-sm text-gray-400 mb-2">Live URL (Required for Thumbnail)</label>
                   <input 
                     type="url" 
                     value={projectForm.liveUrl}
                     onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})}
+                    placeholder="https://..."
                     className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
+                    required
                   />
                 </div>
                 <div>
@@ -237,16 +245,9 @@ const Admin: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Image URL</label>
-                <input 
-                  type="url" 
-                  value={projectForm.image}
-                  onChange={e => setProjectForm({...projectForm, image: e.target.value})}
-                  placeholder="https://..."
-                  className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none"
-                  required
-                />
+              <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-500/20 text-sm text-blue-300">
+                <i className="fas fa-info-circle mr-2"></i>
+                Thumbnail image will be automatically generated from the Live URL.
               </div>
 
               <button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-colors">
