@@ -74,25 +74,26 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-4 transition-all duration-300" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 md:p-4 transition-all duration-300" onClick={onClose}>
       <div 
-        className="w-full max-w-3xl h-[550px] relative rounded-xl overflow-hidden flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] shadow-2xl"
+        className="w-[95%] md:w-full md:max-w-3xl h-[60vh] md:h-[550px] relative rounded-xl overflow-hidden flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] shadow-2xl border border-white/10"
         onClick={e => e.stopPropagation()}
         style={{
-            background: 'rgba(28, 28, 30, 0.75)',
-            backdropFilter: 'blur(24px) saturate(180%)',
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 24px 48px rgba(0,0,0,0.5)'
+            background: 'rgba(20, 20, 25, 0.85)',
+            backdropFilter: 'blur(30px) saturate(180%)',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 24px 60px rgba(0,0,0,0.7)'
         }}
       >
         {/* Liquid Glass Reflection/Sheen */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none z-0 mix-blend-overlay"></div>
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
         {/* macOS Title Bar */}
-        <div className="relative z-10 bg-white/5 backdrop-blur-xl px-4 py-3.5 flex items-center justify-between border-b border-white/5 select-none draggable">
+        <div className="relative z-10 bg-white/5 backdrop-blur-xl px-4 py-3.5 flex items-center justify-between border-b border-white/5 select-none">
           <div className="flex gap-2 group">
             <button 
                 onClick={onClose}
-                className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 border border-[#E0443E] shadow-sm flex items-center justify-center transition-all"
+                className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 border border-[#E0443E] shadow-sm flex items-center justify-center transition-all group"
             >
                 <i className="fas fa-times text-[6px] text-black/60 opacity-0 group-hover:opacity-100"></i>
             </button>
@@ -110,32 +111,32 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
         {/* Terminal Body */}
         <div 
-            className="relative z-10 flex-1 p-6 overflow-y-auto text-slate-200 space-y-2 custom-scrollbar selection:bg-white/20" 
+            className="relative z-10 flex-1 p-4 md:p-6 overflow-y-auto text-slate-200 space-y-2 custom-scrollbar selection:bg-white/20" 
             ref={scrollRef}
             onClick={() => inputRef.current?.focus()}
             style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           {history.map((line, i) => (
-            <div key={i} className="break-words leading-relaxed">
+            <div key={i} className="break-words leading-relaxed text-xs md:text-sm">
                {line.startsWith('guest@') ? (
-                   <div className="flex gap-2">
+                   <div className="flex gap-2 flex-wrap">
                        <span className="text-green-400 font-bold shrink-0">➜</span>
                        <span className="text-cyan-400 font-bold shrink-0">~</span>
                        <span>{line.split('$ ')[1]}</span>
                    </div>
                ) : (
-                   <span className="text-slate-300 opacity-90 pl-5 block">{line}</span>
+                   <span className="text-slate-300 opacity-90 pl-5 block whitespace-pre-wrap">{line}</span>
                )}
             </div>
           ))}
           
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2 pt-2 text-xs md:text-sm">
             <span className="text-green-400 font-bold">➜</span>
             <span className="text-cyan-400 font-bold">~</span>
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 bg-transparent border-none outline-none text-white font-normal ml-1"
+              className="flex-1 bg-transparent border-none outline-none text-white font-normal ml-1 min-w-0"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleCommand}
