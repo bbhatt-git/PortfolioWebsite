@@ -75,39 +75,29 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           <a 
             href="#home" 
             onClick={(e) => handleLinkClick(e, '#home')}
-            className="group flex items-center gap-2.5 z-50 select-none"
+            className="group flex items-center relative z-50 select-none"
           >
-             {/* Icon Container */}
-             <div className={`relative flex items-center justify-center rounded-xl overflow-hidden transition-all duration-500 ease-out border shadow-sm group-hover:shadow-md ${
-                 isScrolled 
-                 ? 'w-8 h-8 bg-black dark:bg-white border-transparent' 
-                 : 'w-10 h-10 bg-white dark:bg-white/10 border-gray-200 dark:border-white/10'
+             {/* Scrolled Logo - BR */}
+             <div className={`transition-all duration-500 ease-expo overflow-hidden ${
+                 isScrolled ? 'max-w-[50px] opacity-100 mr-0' : 'max-w-0 opacity-0 mr-0'
              }`}>
-                {/* Gradient BG for Default State Hover */}
-                <div className={`absolute inset-0 bg-gradient-to-tr from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isScrolled ? 'opacity-0' : ''}`}></div>
-                
-                {/* Symbol */}
-                <span className={`font-mono font-bold relative z-10 transition-colors duration-300 ${
-                    isScrolled 
-                    ? 'text-white dark:text-black text-sm' 
-                    : 'text-gray-900 dark:text-white group-hover:text-white text-base'
-                }`}>
-                  {isScrolled ? 'BR' : '<B/>'}
-                </span>
+                <div className="w-10 h-10 rounded-xl bg-black dark:bg-white shadow-lg flex items-center justify-center whitespace-nowrap">
+                    <span className="font-mono font-bold text-white dark:text-black">BR</span>
+                </div>
              </div>
 
-             {/* Text Label */}
-             <div className="flex flex-col leading-none">
-                <span className={`font-bold tracking-tight transition-all duration-500 ${
-                    isScrolled ? 'text-sm text-gray-900 dark:text-white' : 'text-lg text-gray-900 dark:text-white'
-                }`}>
-                  Bhupesh<span className="text-blue-600">.</span>
-                </span>
-                <span className={`text-[9px] font-medium uppercase tracking-widest text-gray-500 transition-all duration-500 ${
-                    isScrolled ? 'w-0 overflow-hidden opacity-0 h-0' : 'w-auto opacity-100'
-                }`}>
-                  Developer
-                </span>
+             {/* Default Logo - >_ Bhupesh Bhatt */}
+             <div className={`transition-all duration-500 ease-expo overflow-hidden flex items-center ${
+                 isScrolled ? 'max-w-0 opacity-0' : 'max-w-[300px] opacity-100'
+             }`}>
+                 <div className="flex items-center gap-3 pl-1">
+                    <span className="font-mono font-bold text-xl text-blue-600 dark:text-blue-400 animate-pulse-slow whitespace-nowrap">{'>_'}</span>
+                    <div className="px-5 py-2 rounded-full bg-blue-50/80 dark:bg-white/5 border border-blue-100 dark:border-white/10 backdrop-blur-md shadow-sm whitespace-nowrap group-hover:shadow-md transition-all group-hover:scale-105">
+                        <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                        Bhupesh Bhatt
+                        </span>
+                    </div>
+                 </div>
              </div>
           </a>
 
