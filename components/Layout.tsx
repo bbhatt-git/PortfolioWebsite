@@ -19,13 +19,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* BACKGROUND LAYER - Smoother Ambient Gradient */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#F2F2F7] dark:bg-[#050505] transition-colors duration-1000 ease-expo">
         
-        {/* Soft Moving Orbs - Adjusted opacity for light mode */}
-        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-blue-300/10 dark:bg-blue-600/10 rounded-full blur-[100px] animate-blob mix-blend-multiply dark:mix-blend-screen transition-all duration-1000"></div>
-        <div className="absolute top-[10%] right-[-20%] w-[60vw] h-[60vw] bg-purple-300/10 dark:bg-purple-600/10 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-screen transition-all duration-1000"></div>
-        <div className="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] bg-indigo-300/10 dark:bg-indigo-600/10 rounded-full blur-[100px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-screen transition-all duration-1000"></div>
+        {/* Soft Moving Orbs - Adjusted for slower, more fluid motion */}
+        <div className="absolute top-[-25%] left-[-15%] w-[80vw] h-[80vw] bg-blue-400/10 dark:bg-blue-600/15 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-screen"></div>
+        <div className="absolute top-[5%] right-[-25%] w-[70vw] h-[70vw] bg-purple-400/10 dark:bg-purple-600/15 rounded-full blur-[120px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-screen"></div>
+        <div className="absolute bottom-[-25%] left-[10%] w-[75vw] h-[75vw] bg-indigo-400/10 dark:bg-indigo-600/15 rounded-full blur-[120px] animate-blob animation-delay-8000 mix-blend-multiply dark:mix-blend-screen"></div>
+        <div className="absolute top-[40%] right-[10%] w-[50vw] h-[50vw] bg-cyan-400/5 dark:bg-cyan-600/10 rounded-full blur-[100px] animate-blob animation-delay-12000 mix-blend-multiply dark:mix-blend-screen"></div>
         
         {/* Noise Overlay */}
-        <div className="absolute inset-0 bg-noise opacity-[0.3] mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-noise opacity-[0.35] mix-blend-overlay"></div>
       </div>
 
       <div className="relative z-10">

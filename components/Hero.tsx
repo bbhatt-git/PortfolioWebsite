@@ -42,10 +42,9 @@ const Hero: React.FC = () => {
     let animationFrameId: number;
 
     const animate = () => {
-      // Linear Interpolation (Lerp) formula: start + (end - start) * factor
-      // Factor 0.05 gives it a "heavy", smooth feeling
-      currentRotation.current.x += (targetRotation.current.x - currentRotation.current.x) * 0.05;
-      currentRotation.current.y += (targetRotation.current.y - currentRotation.current.y) * 0.05;
+      // Linear Interpolation (Lerp) factor 0.04 for ultra-smooth fluidity
+      currentRotation.current.x += (targetRotation.current.x - currentRotation.current.x) * 0.04;
+      currentRotation.current.y += (targetRotation.current.y - currentRotation.current.y) * 0.04;
 
       setRotationStyle({
         x: currentRotation.current.x,
@@ -70,10 +69,10 @@ const Hero: React.FC = () => {
         : fullText.substring(0, text.length + 1)
       );
 
-      setTypingSpeed(isDeleting ? 30 : 150);
+      setTypingSpeed(isDeleting ? 40 : 120);
 
       if (!isDeleting && text === fullText) {
-        setTimeout(() => setIsDeleting(true), 1500); 
+        setTimeout(() => setIsDeleting(true), 2000); 
       } else if (isDeleting && text === '') {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
@@ -94,8 +93,8 @@ const Hero: React.FC = () => {
 
     // Update target for the animation loop
     targetRotation.current = {
-      x: -y * 15, // Max 15 deg tilt
-      y: x * 15
+      x: -y * 12, // Reduced tilt for more elegant fluid feel
+      y: x * 12
     };
 
     // Update raw mouse pos for spotlight
@@ -118,9 +117,9 @@ const Hero: React.FC = () => {
       {/* Dynamic Background Spotlight */}
       {!isMobile && (
         <div 
-          className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-500"
+          className="absolute inset-0 z-0 pointer-events-none transition-opacity duration-700"
           style={{
-            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(29, 78, 216, 0.15), transparent 80%)`
+            background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, rgba(29, 78, 216, 0.12), transparent 70%)`
           }}
         />
       )}
@@ -133,89 +132,86 @@ const Hero: React.FC = () => {
         }}
       >
         
-        {/* Floating "App Icons" - Responsive Positioning with varied depths */}
+        {/* Floating elements with varied Z-depths for extra 3D parallax feel */}
         <div className="absolute inset-0 pointer-events-none preserve-3d">
-           {/* React Icon - Top Left */}
-          <div className="absolute top-[0%] left-[2%] md:top-[5%] md:left-[10%] w-12 h-12 md:w-20 md:h-20 bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-md rounded-[14px] md:rounded-[18px] shadow-2xl flex items-center justify-center animate-float-slow opacity-60 md:opacity-100" style={{ transform: isMobile ? 'none' : 'translateZ(60px)' }}>
-              <i className="fab fa-react text-2xl md:text-4xl text-[#61DAFB] animate-spin-slow"></i>
+          <div className="absolute top-[5%] left-[5%] md:top-[10%] md:left-[12%] w-16 h-16 md:w-24 md:h-24 bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-xl rounded-[22px] shadow-2xl flex items-center justify-center animate-float-slow opacity-50 md:opacity-80 transition-opacity" style={{ transform: isMobile ? 'none' : 'translateZ(120px)' }}>
+              <i className="fab fa-react text-2xl md:text-5xl text-[#61DAFB] animate-spin-slow"></i>
           </div>
           
-          {/* Code Icon - Bottom Right */}
-          <div className="absolute bottom-[20%] right-[2%] md:bottom-[15%] md:right-[10%] w-14 h-14 md:w-24 md:h-24 bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-md rounded-[16px] md:rounded-[22px] shadow-2xl flex items-center justify-center animate-float-medium opacity-60 md:opacity-100" style={{ transform: isMobile ? 'none' : 'translateZ(90px)' }}>
-              <div className="bg-gradient-to-br from-purple-500 to-indigo-600 w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center text-white">
-                <i className="fas fa-code text-sm md:text-xl"></i>
+          <div className="absolute bottom-[25%] right-[2%] md:bottom-[20%] md:right-[15%] w-16 h-16 md:w-28 md:h-28 bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-xl rounded-[24px] shadow-2xl flex items-center justify-center animate-float-medium opacity-50 md:opacity-90" style={{ transform: isMobile ? 'none' : 'translateZ(180px)' }}>
+              <div className="bg-gradient-to-br from-indigo-500 to-blue-600 w-10 h-10 md:w-16 md:h-16 rounded-xl flex items-center justify-center text-white">
+                <i className="fas fa-code text-lg md:text-2xl"></i>
               </div>
           </div>
 
-          {/* Design Icon - Top Right */}
-          <div className="absolute top-[5%] right-[5%] md:top-[15%] md:right-[15%] w-10 h-10 md:w-14 md:h-14 bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-md rounded-[12px] md:rounded-[16px] shadow-lg flex items-center justify-center animate-float-fast blur-[1px] opacity-40 md:opacity-100" style={{ transform: isMobile ? 'none' : 'translateZ(40px)' }}>
-              <i className="fas fa-pen-nib text-lg md:text-2xl text-pink-500"></i>
+          <div className="absolute top-[15%] right-[10%] md:top-[18%] md:right-[20%] w-12 h-12 md:w-16 md:h-16 bg-white/70 dark:bg-[#1c1c1e]/70 backdrop-blur-xl rounded-[18px] shadow-lg flex items-center justify-center animate-float-fast opacity-40 md:opacity-100" style={{ transform: isMobile ? 'none' : 'translateZ(80px)' }}>
+              <i className="fas fa-bolt text-lg md:text-2xl text-yellow-500"></i>
           </div>
         </div>
 
         {/* Status Badge */}
-        <div style={{ transform: isMobile ? 'none' : 'translateZ(30px)' }} className="mb-6 md:mb-8">
+        <div style={{ transform: isMobile ? 'none' : 'translateZ(40px)' }} className="mb-8">
           <Reveal>
-            <a href="#contact" className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/50 dark:bg-white/10 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-sm hover:scale-105 transition-transform cursor-pointer">
+            <a href="#contact" className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/60 dark:bg-white/15 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all cursor-pointer group">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <span className="text-[10px] md:text-[11px] font-semibold tracking-wide uppercase text-gray-600 dark:text-gray-300">AVAILABLE FOR WORK</span>
+              <span className="text-[11px] font-bold tracking-[0.1em] uppercase text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">AVAILABLE FOR COLLABORATION</span>
             </a>
           </Reveal>
         </div>
         
         {/* Main Heading */}
-        <div style={{ transform: isMobile ? 'none' : 'translateZ(60px)' }} className="mb-6 relative z-10 w-full max-w-4xl px-2">
+        <div style={{ transform: isMobile ? 'none' : 'translateZ(100px)' }} className="mb-6 relative z-10 w-full max-w-4xl px-4">
           <Reveal delay={100}>
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter leading-[1.1] text-black dark:text-white mb-2 drop-shadow-2xl">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold tracking-tight leading-[0.95] text-black dark:text-white mb-4 drop-shadow-2xl">
               Hello, I'm <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 animate-gradient bg-[length:200%_auto]">
-                Bhupesh Raj Bhatt
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 animate-gradient bg-[length:200%_auto]">
+                Bhupesh Bhatt
               </span>
             </h1>
           </Reveal>
         </div>
 
         {/* Unique Typing Effect */}
-        <div style={{ transform: isMobile ? 'none' : 'translateZ(50px)' }} className="mb-8 md:mb-10 h-8 flex items-center justify-center w-full px-4">
+        <div style={{ transform: isMobile ? 'none' : 'translateZ(70px)' }} className="mb-10 h-10 flex items-center justify-center w-full px-4">
            <Reveal delay={150}>
-             <div className="inline-flex items-center gap-2 md:gap-3 px-4 md:px-5 py-2 rounded-full bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-black/5 dark:border-white/10 max-w-full overflow-hidden shadow-lg">
-                <span className="text-blue-600 dark:text-blue-400 font-mono text-sm font-bold flex-shrink-0">&gt;</span>
-                <span className="font-mono text-xs md:text-base font-medium text-gray-800 dark:text-gray-200 tracking-wide truncate">
+             <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/20 dark:border-white/5 max-w-full overflow-hidden shadow-2xl">
+                <span className="text-blue-600 dark:text-blue-400 font-mono text-base font-black">&gt;</span>
+                <span className="font-mono text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-100 tracking-tight truncate">
                   {text}
-                  <span className="animate-pulse ml-0.5 inline-block w-1.5 h-3 md:w-2 md:h-4 bg-blue-600 dark:bg-blue-400 align-middle"></span>
+                  <span className="animate-pulse ml-0.5 inline-block w-2 h-5 bg-blue-600 dark:bg-blue-400 align-middle"></span>
                 </span>
              </div>
            </Reveal>
         </div>
 
         {/* Subheading / Description */}
-        <div style={{ transform: isMobile ? 'none' : 'translateZ(40px)' }} className="max-w-2xl mx-auto mb-10 md:mb-12 px-4">
+        <div style={{ transform: isMobile ? 'none' : 'translateZ(50px)' }} className="max-w-2xl mx-auto mb-14 px-4">
           <Reveal delay={200}>
-            <p className="text-lg md:text-2xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
-               Merging technical depth with artistic vision to craft pixel-perfect digital experiences.
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed font-light tracking-tight">
+               Crafting high-performance digital architectures with a focus on fluid aesthetics and seamless functionality.
             </p>
           </Reveal>
         </div>
 
         {/* Call to Actions */}
-        <div style={{ transform: isMobile ? 'none' : 'translateZ(70px)' }}>
+        <div style={{ transform: isMobile ? 'none' : 'translateZ(140px)' }}>
           <Reveal delay={300}>
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full px-8 sm:px-0">
+            <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full px-10 sm:px-0">
               <a 
                 href="#work" 
-                className="group relative w-full sm:w-auto px-8 py-3.5 rounded-full bg-blue-600 text-white font-semibold text-sm overflow-hidden shadow-xl shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 hover:-translate-y-1"
+                className="group relative w-full sm:w-auto px-10 py-4 rounded-2xl bg-blue-600 text-white font-bold text-sm overflow-hidden shadow-2xl shadow-blue-500/40 hover:shadow-blue-500/60 transition-all duration-500 hover:-translate-y-2 active:scale-95"
               >
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                <span className="relative">View Projects</span>
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                <span className="relative flex items-center justify-center gap-2">View My Projects <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></span>
               </a>
               <a 
                 href="#contact" 
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/50 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/10 text-black dark:text-white font-semibold text-sm hover:bg-white dark:hover:bg-white/20 transition-all duration-300 hover:-translate-y-1"
+                className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 text-black dark:text-white font-bold text-sm hover:bg-white dark:hover:bg-white/15 transition-all duration-500 hover:-translate-y-2 active:scale-95"
               >
-                Get in Touch
+                Let's Talk
               </a>
             </div>
           </Reveal>

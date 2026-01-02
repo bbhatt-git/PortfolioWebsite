@@ -45,7 +45,6 @@ export const SERVICES: Service[] = [
   }
 ];
 
-// Default projects list is now empty to allow full control via the Admin dashboard
 export const PROJECTS: Project[] = [];
 
 export const TESTIMONIALS: Testimonial[] = [

@@ -24,13 +24,13 @@ const Footer: React.FC = () => {
               Empowering brands through pixel-perfect design and scalable development solutions. Let's create something extraordinary together.
             </p>
             <div className="flex gap-4">
-              <a href="https://github.com/bbhatt-git" target="_blank" className="w-10 h-10 rounded-full glass flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110">
+              <a href="https://github.com/bbhatt-git" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110">
                 <i className="fab fa-github"></i>
               </a>
-              <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="w-10 h-10 rounded-full glass flex items-center justify-center text-gray-500 hover:text-[#0077b5] transition-all hover:scale-110">
+              <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-[#0077b5] transition-all hover:scale-110">
                 <i className="fab fa-linkedin"></i>
               </a>
-              <a href="https://www.instagram.com/_bbhatt" target="_blank" className="w-10 h-10 rounded-full glass flex items-center justify-center text-gray-500 hover:text-pink-500 transition-all hover:scale-110">
+              <a href="https://www.instagram.com/_bbhatt" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-pink-500 transition-all hover:scale-110">
                 <i className="fab fa-instagram"></i>
               </a>
             </div>
@@ -91,11 +91,6 @@ const Footer: React.FC = () => {
              <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight">
                 Designed & Crafted by <span className="font-bold text-gray-900 dark:text-white ml-1">Bhupesh Raj Bhatt</span>
              </div>
-          </div>
-
-          <div className="flex gap-6 text-xs text-gray-400 order-3">
-             <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Privacy</span>
-             <span className="hover:text-gray-900 dark:hover:text-white cursor-pointer transition-colors">Terms</span>
           </div>
         </div>
       </div>

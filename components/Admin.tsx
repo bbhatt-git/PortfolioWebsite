@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { Project } from '../types';
 
 const Admin: React.FC = () => {
@@ -19,6 +19,7 @@ const Admin: React.FC = () => {
   // UI State
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   
   // New Project Form State
   const [projectForm, setProjectForm] = useState({
@@ -27,6 +28,7 @@ const Admin: React.FC = () => {
     liveUrl: '',
     codeUrl: '',
     imageUrl: '',
+    order: 0,
   });
 
   // Tech Stack State
@@ -76,7 +78,7 @@ const Admin: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
+      const q = query(collection(db, "projects"), orderBy("order", "asc"));
       const querySnapshot = await getDocs(q);
       const projs: Project[] = [];
       querySnapshot.forEach((doc) => {
@@ -100,6 +102,21 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleEditProject = (proj: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingProject(proj);
+    setProjectForm({
+      title: proj.title,
+      desc: proj.desc,
+      liveUrl: proj.liveUrl || '',
+      codeUrl: proj.codeUrl || '',
+      imageUrl: proj.image,
+      order: (proj as any).order || 0,
+    });
+    setTechStackList(proj.stack.split(' • '));
+    setIsProjectModalOpen(true);
+  };
+
   const handleAddTech = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
         e.preventDefault();
@@ -114,7 +131,7 @@ const Admin: React.FC = () => {
     setTechStackList(techStackList.filter((_, i) => i !== index));
   };
 
-  const handleAddProject = async (e: React.FormEvent) => {
+  const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (techStackList.length === 0) {
@@ -123,29 +140,41 @@ const Admin: React.FC = () => {
     }
 
     try {
-      // Use provided image URL or fallback
       const projectImage = projectForm.imageUrl || 'https://via.placeholder.com/1200x800?text=No+Image';
-
-      // Join the stack list with the separator used in the app
       const stackString = techStackList.join(' • ');
 
-      await addDoc(collection(db, "projects"), {
+      const projectData = {
         title: projectForm.title,
         desc: projectForm.desc,
         liveUrl: projectForm.liveUrl,
         codeUrl: projectForm.codeUrl,
         image: projectImage,
         stack: stackString,
-        createdAt: serverTimestamp()
-      });
+        order: Number(projectForm.order),
+      };
+
+      if (editingProject) {
+        await updateDoc(doc(db, "projects", editingProject.id), projectData);
+      } else {
+        await addDoc(collection(db, "projects"), {
+          ...projectData,
+          createdAt: serverTimestamp()
+        });
+      }
+      
       fetchProjects(); 
-      setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
-      setTechStackList([]);
-      setTechInput('');
-      setIsProjectModalOpen(false);
+      closeProjectModal();
     } catch (err) {
-      alert('Error adding project');
+      alert('Error saving project');
     }
+  };
+
+  const closeProjectModal = () => {
+    setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '', order: 0 });
+    setTechStackList([]);
+    setTechInput('');
+    setEditingProject(null);
+    setIsProjectModalOpen(false);
   };
 
   // --- Background Component for Glass Effect ---
@@ -298,12 +327,6 @@ const Admin: React.FC = () => {
                     </h2>
                     <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Overview of your {activeTab}</p>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                     <div className="h-10 w-10 glass rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300">
-                        <i className="fas fa-bell"></i>
-                     </div>
-                </div>
             </header>
 
             <div className="flex-1 overflow-y-auto px-6 md:px-12 pb-12 custom-scrollbar">
@@ -369,15 +392,24 @@ const Admin: React.FC = () => {
                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
                                      <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                      
-                                     <button 
-                                          onClick={(e) => handleDeleteProject(proj.id, e)}
-                                          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
-                                     >
-                                          <i className="fas fa-trash-alt text-sm"></i>
-                                     </button>
+                                     <div className="absolute top-4 right-4 z-20 flex gap-2">
+                                         <button 
+                                              onClick={(e) => handleEditProject(proj, e)}
+                                              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-blue-500 transition-colors border border-white/30"
+                                         >
+                                              <i className="fas fa-edit text-sm"></i>
+                                         </button>
+                                         <button 
+                                              onClick={(e) => handleDeleteProject(proj.id, e)}
+                                              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
+                                         >
+                                              <i className="fas fa-trash-alt text-sm"></i>
+                                         </button>
+                                     </div>
 
                                      <div className="absolute bottom-4 left-4 z-20">
                                          <h3 className="font-bold text-xl text-white mb-1 drop-shadow-md">{proj.title}</h3>
+                                         <span className="text-xs bg-black/40 text-white px-2 py-0.5 rounded-full font-bold">Order: {(proj as any).order || 0}</span>
                                      </div>
                                  </div>
                                  
@@ -442,21 +474,27 @@ const Admin: React.FC = () => {
             </div>
         )}
 
-        {/* --- ADD PROJECT MODAL --- */}
+        {/* --- ADD/EDIT PROJECT MODAL --- */}
         {isProjectModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
                 <div className="glass-strong w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
                    <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
-                       <h3 className="font-bold text-xl">New Project</h3>
-                       <button onClick={() => setIsProjectModalOpen(false)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+                       <h3 className="font-bold text-xl">{editingProject ? 'Edit Project' : 'New Project'}</h3>
+                       <button onClick={closeProjectModal} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
                           <i className="fas fa-times text-sm"></i>
                        </button>
                    </div>
                    <div className="p-8 overflow-y-auto">
-                      <form onSubmit={handleAddProject} className="space-y-5">
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
-                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
+                      <form onSubmit={handleSaveProject} className="space-y-5">
+                        <div className="grid grid-cols-4 gap-4">
+                            <div className="col-span-3 space-y-1">
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
+                                <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
+                            </div>
+                            <div className="col-span-1 space-y-1">
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Order</label>
+                                <input type="number" value={projectForm.order} onChange={e => setProjectForm({...projectForm, order: parseInt(e.target.value)})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
+                            </div>
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Description</label>
@@ -506,7 +544,7 @@ const Admin: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Image URL Input - Replaced screenshot generation */}
+                        {/* Image URL Input */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Image URL</label>
                             <input 
@@ -530,8 +568,8 @@ const Admin: React.FC = () => {
                             </div>
                         </div>
                         <div className="pt-4 flex justify-end gap-3">
-                            <button type="button" onClick={() => setIsProjectModalOpen(false)} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
-                            <button type="submit" className="px-8 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">Publish Project</button>
+                            <button type="button" onClick={closeProjectModal} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                            <button type="submit" className="px-8 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">{editingProject ? 'Save Changes' : 'Publish Project'}</button>
                         </div>
                       </form>
                    </div>

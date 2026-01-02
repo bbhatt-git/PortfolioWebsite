@@ -22,7 +22,7 @@ export default {
         'out-circ': 'cubic-bezier(0.075, 0.82, 0.165, 1)',
       },
       animation: {
-        'blob': 'blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'blob': 'blob 35s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
         'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -35,8 +35,10 @@ export default {
       },
       keyframes: {
         blob: {
-          '0%': { transform: 'translate(0, 0) scale(1)' },
-          '100%': { transform: 'translate(40px, 60px) scale(1.1)' },
+          '0%': { transform: 'translate(0, 0) scale(1) rotate(0deg)' },
+          '33%': { transform: 'translate(50px, -30px) scale(1.1) rotate(5deg)' },
+          '66%': { transform: 'translate(-40px, 40px) scale(0.9) rotate(-5deg)' },
+          '100%': { transform: 'translate(30px, 60px) scale(1.05) rotate(2deg)' },
         },
         fadeUp: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },

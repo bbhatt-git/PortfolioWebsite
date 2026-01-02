@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   title: string;
@@ -8,6 +9,10 @@ export interface Project {
   image: string;
   category?: string;
   highlights?: string[];
+  /**
+   * Defines the display sequence of the project.
+   */
+  order: number;
   caseStudy?: {
     challenge: string;
     solution: string;
