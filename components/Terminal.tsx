@@ -12,11 +12,16 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const commands: { [key: string]: () => string | void } = {
-    help: () => 'Available commands: about, skills, projects, contact, clear, date, whoami, exit',
+    help: () => 'Available commands: about, skills, projects, contact, admin, clear, date, whoami, exit',
     about: () => 'I am Bhupesh Raj Bhatt, a Creative Developer & Designer from Nepal.',
     skills: () => 'React, Next.js, TypeScript, Tailwind, Node.js, Firebase, UI/UX Design.',
     projects: () => 'Navigating to projects section...',
     contact: () => 'Email: hello@bbhatt.com.np | Phone: +977 9761184935',
+    admin: () => {
+       window.history.pushState(null, "", "/admin");
+       onClose();
+       return 'Accessing Admin Panel...';
+    },
     clear: () => { setHistory([]); return ''; },
     date: () => new Date().toString(),
     whoami: () => 'visitor@bbhatt-portfolio',

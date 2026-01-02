@@ -165,10 +165,14 @@ const Admin: React.FC = () => {
              {messages.map((msg) => (
                <div key={msg.id} className="bg-[#1c1c1e] p-6 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg">{msg.name}</h3>
-                    <span className="text-xs text-gray-500">{msg.timestamp?.toDate().toLocaleDateString()}</span>
+                    <h3 className="font-bold text-lg">{msg.name || 'Unknown'}</h3>
+                    <span className="text-xs text-gray-500">
+                      {msg.timestamp?.toDate 
+                        ? msg.timestamp.toDate().toLocaleDateString() 
+                        : 'Date unavailable'}
+                    </span>
                   </div>
-                  <div className="text-blue-400 text-sm mb-4">{msg.email}</div>
+                  <div className="text-blue-400 text-sm mb-4">{msg.email || 'No email'}</div>
                   <p className="text-gray-300 bg-black/30 p-4 rounded-lg text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
                </div>
              ))}

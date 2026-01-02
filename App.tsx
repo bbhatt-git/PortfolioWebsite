@@ -17,11 +17,12 @@ const App: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   
-  // Simple Router State
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  // Simple Router State - normalize path by removing trailing slash
+  const getNormalizedPath = () => window.location.pathname.replace(/\/$/, '') || '/';
+  const [currentPath, setCurrentPath] = useState(getNormalizedPath());
 
   useEffect(() => {
-    // Check local storage or system preference
+    // Theme Logic
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -33,18 +34,40 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Handle back/forward buttons
-    const handlePopState = () => setCurrentPath(window.location.pathname);
+    // Router Logic: Handle back/forward buttons
+    const handlePopState = () => setCurrentPath(getNormalizedPath());
     window.addEventListener('popstate', handlePopState);
 
-    // Global keyboard shortcuts
+    // Router Logic: Intercept pushState/replaceState for SPA navigation support
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+
+    window.history.pushState = function(...args) {
+      try {
+        originalPushState.apply(this, args);
+        setCurrentPath(getNormalizedPath());
+      } catch (e) {
+        console.error("Navigation error:", e);
+      }
+    };
+
+    window.history.replaceState = function(...args) {
+      try {
+        originalReplaceState.apply(this, args);
+        setCurrentPath(getNormalizedPath());
+      } catch (e) {
+        console.error("Navigation error:", e);
+      }
+    };
+
+    // Keyboard Shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       // Cmd+K or Ctrl+K for Search
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(prev => !prev);
       }
-      // Cmd+J or Ctrl+J for Terminal (Standard VS Code toggle)
+      // Cmd+J or Ctrl+J for Terminal
       if ((e.metaKey || e.ctrlKey) && (e.key === 'j')) {
         e.preventDefault();
         setIsTerminalOpen(prev => !prev);
@@ -55,6 +78,9 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('popstate', handlePopState);
+      // Restore original history methods
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
     }
   }, []);
 
