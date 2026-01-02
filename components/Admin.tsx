@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
@@ -20,6 +20,7 @@ const Admin: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   
   // New Project Form State
   const [projectForm, setProjectForm] = useState({
@@ -28,7 +29,6 @@ const Admin: React.FC = () => {
     liveUrl: '',
     codeUrl: '',
     imageUrl: '',
-    order: 0,
   });
 
   // Tech Stack State
@@ -59,7 +59,7 @@ const Admin: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
-    window.location.hash = ''; // Redirect to home after logout
+    window.location.hash = ''; 
   };
 
   const fetchMessages = async () => {
@@ -90,6 +90,38 @@ const Admin: React.FC = () => {
     }
   };
 
+  // Drag and Drop Logic
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    // Fluid visual reordering in state
+    const newProjects = [...projects];
+    const item = newProjects.splice(draggedIndex, 1)[0];
+    newProjects.splice(index, 0, item);
+    
+    setDraggedIndex(index);
+    setProjects(newProjects);
+  };
+
+  const handleDragEnd = async () => {
+    setDraggedIndex(null);
+    // Persist final order to Firestore
+    try {
+      const updates = projects.map((proj, index) => {
+        return updateDoc(doc(db, "projects", proj.id), { order: index });
+      });
+      await Promise.all(updates);
+    } catch (err) {
+      console.error("Failed to persist project order", err);
+      fetchProjects(); // Revert on failure
+    }
+  };
+
   const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation(); 
     if (window.confirm("Are you sure you want to delete this project?")) {
@@ -111,7 +143,6 @@ const Admin: React.FC = () => {
       liveUrl: proj.liveUrl || '',
       codeUrl: proj.codeUrl || '',
       imageUrl: proj.image,
-      order: (proj as any).order || 0,
     });
     setTechStackList(proj.stack.split(' • '));
     setIsProjectModalOpen(true);
@@ -150,7 +181,8 @@ const Admin: React.FC = () => {
         codeUrl: projectForm.codeUrl,
         image: projectImage,
         stack: stackString,
-        order: Number(projectForm.order),
+        // If new project, add it to the end
+        ...(editingProject ? {} : { order: projects.length })
       };
 
       if (editingProject) {
@@ -170,14 +202,13 @@ const Admin: React.FC = () => {
   };
 
   const closeProjectModal = () => {
-    setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '', order: 0 });
+    setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
     setTechStackList([]);
     setTechInput('');
     setEditingProject(null);
     setIsProjectModalOpen(false);
   };
 
-  // --- Background Component for Glass Effect ---
   const AmbientBackground = () => (
     <div className="fixed inset-0 z-0 pointer-events-none bg-[#F2F2F7] dark:bg-[#050505]">
         <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-[120px] animate-blob"></div>
@@ -193,14 +224,13 @@ const Admin: React.FC = () => {
     </div>
   );
 
-  // --- LOGIN SCREEN ---
   if (!user) {
     return (
       <div className="min-h-screen w-full relative flex items-center justify-center p-4 overflow-hidden">
         <AmbientBackground />
         
         <div className="w-full max-w-md relative z-10">
-            <div className="glass-strong rounded-3xl p-8 md:p-12 animate-[scaleIn_0.3s_ease-out] shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+            <div className="glass-strong rounded-3xl p-8 md:p-12 animate-scale-in shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
                 <div className="text-center mb-10">
                    <div className="w-20 h-20 glass rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg">
                       <span className="font-mono font-bold text-3xl text-gray-800 dark:text-white">BR</span>
@@ -249,7 +279,6 @@ const Admin: React.FC = () => {
     );
   }
 
-  // --- DASHBOARD LAYOUT ---
   return (
     <div className="flex h-screen w-full relative font-sans text-gray-900 dark:text-gray-100 overflow-hidden">
         <AmbientBackground />
@@ -331,9 +360,8 @@ const Admin: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto px-6 md:px-12 pb-12 custom-scrollbar">
                 
-                {/* --- INBOX VIEW --- */}
                 {activeTab === 'inbox' && (
-                    <div className="max-w-6xl mx-auto animate-[fadeUp_0.4s_ease-out]">
+                    <div className="max-w-6xl mx-auto animate-fade-up">
                         <div className="glass rounded-3xl overflow-hidden border border-white/40 dark:border-white/5">
                            {messages.length === 0 ? (
                              <div className="p-20 text-center text-gray-400">
@@ -373,26 +401,36 @@ const Admin: React.FC = () => {
                     </div>
                 )}
 
-                {/* --- PROJECTS VIEW --- */}
                 {activeTab === 'projects' && (
-                    <div className="max-w-[1600px] mx-auto animate-[fadeUp_0.4s_ease-out]">
-                        <div className="flex justify-end mb-8">
+                    <div className="max-w-[1600px] mx-auto animate-fade-up">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                           <div className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
+                             <i className="fas fa-info-circle text-lg"></i>
+                             <p className="text-sm font-bold tracking-tight">Drag and drop projects to change their display order on the website.</p>
+                           </div>
                            <button 
                              onClick={() => setIsProjectModalOpen(true)}
-                             className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-lg flex items-center gap-2"
+                             className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-lg flex items-center gap-2 whitespace-nowrap"
                            >
                              <i className="fas fa-plus"></i> New Project
                            </button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                           {projects.map((proj) => (
-                              <div key={proj.id} className="glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col relative border border-white/40 dark:border-white/5">
-                                 <div className="h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden">
+                           {projects.map((proj, index) => (
+                              <div 
+                                key={proj.id} 
+                                draggable
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={(e) => handleDragOver(e, index)}
+                                onDragEnd={handleDragEnd}
+                                className={`glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 group flex flex-col relative border border-white/40 dark:border-white/5 cursor-grab active:cursor-grabbing will-change-transform ${draggedIndex === index ? 'opacity-40 scale-95 border-blue-500/50' : 'opacity-100 scale-100'}`}
+                              >
+                                 <div className="h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden pointer-events-none">
                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
                                      <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                      
-                                     <div className="absolute top-4 right-4 z-20 flex gap-2">
+                                     <div className="absolute top-4 right-4 z-20 flex gap-2 pointer-events-auto">
                                          <button 
                                               onClick={(e) => handleEditProject(proj, e)}
                                               className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-blue-500 transition-colors border border-white/30"
@@ -408,23 +446,26 @@ const Admin: React.FC = () => {
                                      </div>
 
                                      <div className="absolute bottom-4 left-4 z-20">
-                                         <h3 className="font-bold text-xl text-white mb-1 drop-shadow-md">{proj.title}</h3>
-                                         <span className="text-xs bg-black/40 text-white px-2 py-0.5 rounded-full font-bold">Order: {(proj as any).order || 0}</span>
+                                         <h3 className="font-bold text-xl text-white mb-1 drop-shadow-md tracking-tight">{proj.title}</h3>
+                                         <div className="flex items-center gap-2">
+                                           <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">RANK {index + 1}</span>
+                                           <i className="fas fa-grip-lines text-white/50 text-xs"></i>
+                                         </div>
                                      </div>
                                  </div>
                                  
-                                 <div className="p-6 flex-1 flex flex-col">
+                                 <div className="p-6 flex-1 flex flex-col pointer-events-none">
                                     <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{proj.desc}</p>
                                     
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 pointer-events-auto">
                                        {proj.liveUrl && (
-                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-xs py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-bold hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-[11px] py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black uppercase tracking-wider hover:bg-blue-500/20 transition-colors border border-blue-500/20">
                                            Live Demo
                                          </a>
                                        )}
                                        {proj.codeUrl && (
-                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-xs py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-bold hover:bg-gray-500/20 transition-colors border border-gray-500/20">
-                                           Code
+                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-[11px] py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-black uppercase tracking-wider hover:bg-gray-500/20 transition-colors border border-gray-500/20">
+                                           Source
                                          </a>
                                        )}
                                     </div>
@@ -439,7 +480,7 @@ const Admin: React.FC = () => {
 
         {/* --- MESSAGE DETAIL MODAL --- */}
         {selectedMessage && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in">
                 <div className="glass-strong w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
                    <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
                        <h3 className="font-bold text-xl">Message Detail</h3>
@@ -453,9 +494,9 @@ const Admin: React.FC = () => {
                                {selectedMessage.name ? selectedMessage.name.charAt(0).toUpperCase() : '?'}
                            </div>
                            <div>
-                               <h4 className="font-bold text-2xl">{selectedMessage.name}</h4>
+                               <h4 className="font-bold text-2xl tracking-tight">{selectedMessage.name}</h4>
                                <p className="text-blue-600 dark:text-blue-400 font-medium">{selectedMessage.email}</p>
-                               <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide font-bold">{selectedMessage.timestamp?.toDate ? selectedMessage.timestamp.toDate().toLocaleString() : ''}</p>
+                               <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide font-black">{selectedMessage.timestamp?.toDate ? selectedMessage.timestamp.toDate().toLocaleString() : ''}</p>
                            </div>
                        </div>
                        <div className="bg-white/50 dark:bg-black/20 p-6 rounded-2xl border border-white/20 dark:border-white/5 text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-medium">
@@ -476,7 +517,7 @@ const Admin: React.FC = () => {
 
         {/* --- ADD/EDIT PROJECT MODAL --- */}
         {isProjectModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in">
                 <div className="glass-strong w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
                    <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
                        <h3 className="font-bold text-xl">{editingProject ? 'Edit Project' : 'New Project'}</h3>
@@ -486,22 +527,15 @@ const Admin: React.FC = () => {
                    </div>
                    <div className="p-8 overflow-y-auto">
                       <form onSubmit={handleSaveProject} className="space-y-5">
-                        <div className="grid grid-cols-4 gap-4">
-                            <div className="col-span-3 space-y-1">
-                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
-                                <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
-                            </div>
-                            <div className="col-span-1 space-y-1">
-                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Order</label>
-                                <input type="number" value={projectForm.order} onChange={e => setProjectForm({...projectForm, order: parseInt(e.target.value)})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
-                            </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
+                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Description</label>
                             <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-28 resize-none" required />
                         </div>
                         
-                        {/* Tech Stack Input */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Tech Stack ({techStackList.length}/15)</label>
                             <div className="flex gap-2">
@@ -524,10 +558,9 @@ const Admin: React.FC = () => {
                                 </button>
                             </div>
                             
-                            {/* Chips */}
                             <div className="flex flex-wrap gap-2 mt-3 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 min-h-[60px]">
                                 {techStackList.map((tech, idx) => (
-                                    <div key={idx} className="bg-white dark:bg-white/10 text-gray-800 dark:text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border border-gray-200 dark:border-white/10 shadow-sm animate-[scaleIn_0.2s_ease-out]">
+                                    <div key={idx} className="bg-white dark:bg-white/10 text-gray-800 dark:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-2 border border-gray-200 dark:border-white/10 shadow-sm animate-scale-in">
                                         {tech}
                                         <button 
                                             type="button" 
@@ -544,7 +577,6 @@ const Admin: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Image URL Input */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Image URL</label>
                             <input 

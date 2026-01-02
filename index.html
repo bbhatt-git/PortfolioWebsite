@@ -29,36 +29,42 @@
             },
             transitionTimingFunction: {
               'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+              'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
               'elastic': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
             },
             animation: {
-              'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
-              'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'scale-in': 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'float': 'float 8s ease-in-out infinite',
-              'spin-slow': 'spin 12s linear infinite',
-              'marquee': 'marquee 25s linear infinite',
+              'blob': 'blob 35s infinite alternate cubic-bezier(0.45, 0, 0.55, 1)',
+              'fade-up': 'fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'float': 'float 10s ease-in-out infinite',
+              'spin-slow': 'spin 15s linear infinite',
+              'marquee': 'marquee 30s linear infinite',
+              'shimmer': 'shimmer 2.5s linear infinite',
             },
             keyframes: {
               blob: {
-                '0%': { transform: 'translate(0, 0) scale(1)', opacity: '0.4' },
-                '100%': { transform: 'translate(40px, -40px) scale(1.1)', opacity: '0.6' },
+                '0%': { transform: 'translate3d(0, 0, 0) scale(1) rotate(0deg)', opacity: '0.4' },
+                '100%': { transform: 'translate3d(60px, -60px, 0) scale(1.15) rotate(10deg)', opacity: '0.6' },
               },
               fadeUp: {
-                '0%': { opacity: '0', transform: 'translateY(40px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
+                '0%': { opacity: '0', transform: 'translate3d(0, 30px, 0)' },
+                '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
               },
               scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.9) translateY(10px)' },
-                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                '0%': { opacity: '0', transform: 'scale(0.96) translate3d(0, 10px, 0)' },
+                '100%': { opacity: '1', transform: 'scale(1) translate3d(0, 0, 0)' },
               },
               float: {
-                '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-20px)' },
+                '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
+                '50%': { transform: 'translate3d(0, -25px, 0)' },
               },
               marquee: {
-                '0%': { transform: 'translateX(0%)' },
-                '100%': { transform: 'translateX(-100%)' },
+                '0%': { transform: 'translate3d(0, 0, 0)' },
+                '100%': { transform: 'translate3d(-100%, 0, 0)' },
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-1200px 0' },
+                '100%': { backgroundPosition: '1200px 0' }
               }
             }
           }
@@ -72,10 +78,15 @@
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: #F2F2F7; /* Cleaner System Gray */
+        background-color: #F2F2F7;
         color: #1D1D1F;
         margin: 0;
         font-family: 'Outfit', sans-serif;
+      }
+
+      /* Seamless Theme Transition */
+      html {
+        transition: background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease;
       }
 
       ::selection {
@@ -102,10 +113,11 @@
       /* Enhanced Glass Effect */
       .glass {
         background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        backdrop-filter: blur(24px) saturate(190%);
+        -webkit-backdrop-filter: blur(24px) saturate(190%);
         border: 1px solid rgba(255, 255, 255, 0.4);
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        will-change: transform, opacity;
       }
       .dark .glass {
         background: rgba(18, 18, 18, 0.6);
@@ -115,9 +127,10 @@
 
       .glass-strong {
         background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(40px) saturate(200%);
-        -webkit-backdrop-filter: blur(40px) saturate(200%);
+        backdrop-filter: blur(48px) saturate(210%);
+        -webkit-backdrop-filter: blur(48px) saturate(210%);
         border: 1px solid rgba(255, 255, 255, 0.5);
+        will-change: transform, opacity;
       }
       .dark .glass-strong {
         background: rgba(25, 25, 25, 0.8);
@@ -137,8 +150,18 @@
         opacity: 0.4;
       }
       
-      .preserve-3d { transform-style: preserve-3d; }
+      .preserve-3d { transform-style: preserve-3d; backface-visibility: hidden; }
       .perspective-2000 { perspective: 2000px; }
+      .perspective-1000 { perspective: 1000px; }
+
+      .will-change-transform { will-change: transform; }
+
+      /* Optimized animations for drag items */
+      .dragging {
+        opacity: 0.5;
+        scale: 0.95;
+        transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
     </style>
 <script type="importmap">
 {
