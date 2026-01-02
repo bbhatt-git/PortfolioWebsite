@@ -24,10 +24,13 @@ const Admin: React.FC = () => {
   const [projectForm, setProjectForm] = useState({
     title: '',
     desc: '',
-    stack: '',
     liveUrl: '',
     codeUrl: '',
   });
+
+  // Tech Stack State
+  const [techInput, setTechInput] = useState('');
+  const [techStackList, setTechStackList] = useState<string[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -96,25 +99,61 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleAddTech = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
+        e.preventDefault();
+        if (techInput.trim() && techStackList.length < 15) {
+            setTechStackList([...techStackList, techInput.trim()]);
+            setTechInput('');
+        }
+    }
+  };
+
+  const handleRemoveTech = (index: number) => {
+    setTechStackList(techStackList.filter((_, i) => i !== index));
+  };
+
   const handleAddProject = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (techStackList.length === 0) {
+        alert("Please add at least one technology to the stack.");
+        return;
+    }
+
     try {
       const generatedImage = projectForm.liveUrl 
         ? `https://image.thum.io/get/width/1200/crop/800/noanimate/${projectForm.liveUrl}`
         : 'https://via.placeholder.com/1200x800?text=No+Preview';
 
+      // Join the stack list with the separator used in the app
+      const stackString = techStackList.join(' • ');
+
       await addDoc(collection(db, "projects"), {
         ...projectForm,
+        stack: stackString,
         image: generatedImage,
         createdAt: serverTimestamp()
       });
       fetchProjects(); 
-      setProjectForm({ title: '', desc: '', stack: '', liveUrl: '', codeUrl: '' });
+      setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '' });
+      setTechStackList([]);
+      setTechInput('');
       setIsProjectModalOpen(false);
     } catch (err) {
       alert('Error adding project');
     }
   };
+
+  // --- Background Component for Glass Effect ---
+  const AmbientBackground = () => (
+    <div className="fixed inset-0 z-0 pointer-events-none bg-[#F2F2F7] dark:bg-[#050505]">
+        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-[120px] animate-blob"></div>
+        <div className="absolute top-[10%] right-[-20%] w-[60vw] h-[60vw] bg-purple-400/20 dark:bg-purple-600/20 rounded-full blur-[120px] animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
+        <div className="absolute inset-0 bg-noise opacity-[0.4] mix-blend-overlay"></div>
+    </div>
+  );
 
   if (loading) return (
     <div className="min-h-screen bg-black flex items-center justify-center">
@@ -125,48 +164,50 @@ const Admin: React.FC = () => {
   // --- LOGIN SCREEN ---
   if (!user) {
     return (
-      <div className="min-h-screen w-full bg-[#f8f9fa] dark:bg-[#09090b] flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-            <div className="bg-white dark:bg-[#18181b] rounded-2xl shadow-xl border border-gray-100 dark:border-white/5 p-8 md:p-10 animate-[scaleIn_0.3s_ease-out]">
-                <div className="text-center mb-8">
-                   <div className="w-16 h-16 bg-black dark:bg-white rounded-xl mx-auto flex items-center justify-center mb-4">
-                      <span className="font-mono font-bold text-2xl text-white dark:text-black">BR</span>
+      <div className="min-h-screen w-full relative flex items-center justify-center p-4 overflow-hidden">
+        <AmbientBackground />
+        
+        <div className="w-full max-w-md relative z-10">
+            <div className="glass-strong rounded-3xl p-8 md:p-12 animate-[scaleIn_0.3s_ease-out] shadow-[0_20px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4)]">
+                <div className="text-center mb-10">
+                   <div className="w-20 h-20 glass rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-lg">
+                      <span className="font-mono font-bold text-3xl text-gray-800 dark:text-white">BR</span>
                    </div>
-                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
-                   <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">Enter your credentials to access the dashboard.</p>
+                   <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Portal</h1>
+                   <p className="text-gray-500 dark:text-gray-400 text-sm">Authenticate to manage content</p>
                 </div>
                 
-                <form onSubmit={handleLogin} className="space-y-4">
-                   <div>
-                       <label className="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Email</label>
+                <form onSubmit={handleLogin} className="space-y-6">
+                   <div className="space-y-2">
+                       <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Email</label>
                        <input 
                          type="email" 
                          value={email}
                          onChange={(e) => setEmail(e.target.value)}
-                         className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 dark:text-white"
+                         className="w-full bg-white/40 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-gray-900 dark:text-white placeholder-gray-400/70 backdrop-blur-sm"
                          placeholder="admin@example.com"
                          required
                        />
                    </div>
-                   <div>
-                       <label className="block text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mb-1.5 ml-1">Password</label>
+                   <div className="space-y-2">
+                       <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Password</label>
                        <input 
                          type="password" 
                          value={password}
                          onChange={(e) => setPassword(e.target.value)}
-                         className="w-full bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 dark:text-white"
+                         className="w-full bg-white/40 dark:bg-black/20 border border-white/40 dark:border-white/10 rounded-xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all text-gray-900 dark:text-white placeholder-gray-400/70 backdrop-blur-sm"
                          placeholder="••••••••"
                          required
                        />
                    </div>
                    
-                   <button type="submit" className="w-full bg-black dark:bg-white text-white dark:text-black font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity mt-2">
-                       Sign In
+                   <button type="submit" className="w-full bg-blue-600/90 hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] backdrop-blur-md">
+                       Enter Dashboard
                    </button>
                 </form>
                 
                 {error && (
-                    <div className="mt-4 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm text-center">
+                    <div className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm text-center font-medium backdrop-blur-sm">
                         {error}
                     </div>
                 )}
@@ -178,103 +219,124 @@ const Admin: React.FC = () => {
 
   // --- DASHBOARD LAYOUT ---
   return (
-    <div className="flex h-screen w-full bg-[#f8f9fa] dark:bg-[#09090b] font-sans text-gray-900 dark:text-gray-100 overflow-hidden">
+    <div className="flex h-screen w-full relative font-sans text-gray-900 dark:text-gray-100 overflow-hidden">
+        <AmbientBackground />
         
-        {/* SIDEBAR */}
-        <aside className="w-20 lg:w-64 bg-white dark:bg-[#18181b] border-r border-gray-200 dark:border-white/5 flex flex-col flex-shrink-0 z-20">
-            <div className="h-16 flex items-center justify-center lg:justify-start lg:px-6 border-b border-gray-100 dark:border-white/5">
-                <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="font-mono font-bold text-xs text-white dark:text-black">BR</span>
+        {/* GLASS SIDEBAR */}
+        <aside className="w-20 lg:w-72 glass-strong border-r border-white/20 dark:border-white/5 flex flex-col flex-shrink-0 z-20 transition-all duration-300">
+            <div className="h-24 flex items-center justify-center lg:justify-start lg:px-8">
+                <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="font-mono font-bold text-sm text-white">BR</span>
                 </div>
-                <span className="ml-3 font-bold text-lg hidden lg:block">Admin</span>
+                <div className="ml-4 hidden lg:block">
+                    <h1 className="font-bold text-lg leading-tight">Bhupesh</h1>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Admin</p>
+                </div>
             </div>
 
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                 <button 
                   onClick={() => setActiveTab('inbox')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
                     activeTab === 'inbox' 
-                      ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' 
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-white/5'
                   }`}
                 >
                   <i className="fas fa-inbox w-5 text-center text-lg lg:text-base"></i>
                   <span className="hidden lg:block">Inbox</span>
-                  {messages.length > 0 && <span className="ml-auto bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 py-0.5 px-2 rounded-full text-xs font-bold hidden lg:block">{messages.length}</span>}
+                  {messages.length > 0 && (
+                    <span className={`ml-auto py-0.5 px-2.5 rounded-full text-xs font-bold hidden lg:block ${
+                        activeTab === 'inbox' ? 'bg-white/20 text-white' : 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                    }`}>
+                        {messages.length}
+                    </span>
+                  )}
                 </button>
 
                 <button 
                   onClick={() => setActiveTab('projects')}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
                     activeTab === 'projects' 
-                      ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400' 
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-white/5'
                   }`}
                 >
                   <i className="fas fa-layer-group w-5 text-center text-lg lg:text-base"></i>
                   <span className="hidden lg:block">Projects</span>
-                  {projects.length > 0 && <span className="ml-auto bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 py-0.5 px-2 rounded-full text-xs font-bold hidden lg:block">{projects.length}</span>}
+                  {projects.length > 0 && (
+                     <span className={`ml-auto py-0.5 px-2.5 rounded-full text-xs font-bold hidden lg:block ${
+                        activeTab === 'projects' ? 'bg-white/20 text-white' : 'bg-black/5 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                    }`}>
+                        {projects.length}
+                    </span>
+                  )}
                 </button>
             </nav>
 
-            <div className="p-4 border-t border-gray-100 dark:border-white/5">
+            <div className="p-6">
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20"
                 >
-                   <i className="fas fa-sign-out-alt w-5 text-center text-lg lg:text-base"></i>
+                   <i className="fas fa-sign-out-alt w-5 text-center"></i>
                    <span className="hidden lg:block">Log Out</span>
                 </button>
             </div>
         </aside>
 
         {/* MAIN CONTENT */}
-        <main className="flex-1 flex flex-col min-w-0 relative">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
             {/* Header */}
-            <header className="h-16 bg-white/80 dark:bg-[#18181b]/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-6 sticky top-0 z-10">
-                <h2 className="text-xl font-bold capitalize">{activeTab}</h2>
+            <header className="h-24 flex items-center justify-between px-8 md:px-12">
+                <div>
+                    <h2 className="text-3xl font-bold capitalize bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
+                        {activeTab}
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Overview of your {activeTab}</p>
+                </div>
+                
                 <div className="flex items-center gap-4">
-                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-xs">
-                           BB
-                        </div>
-                        <span className="text-sm font-medium hidden md:block">Bhupesh</span>
+                     <div className="h-10 w-10 glass rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300">
+                        <i className="fas fa-bell"></i>
                      </div>
                 </div>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-8">
+            <div className="flex-1 overflow-y-auto px-6 md:px-12 pb-12 custom-scrollbar">
                 
                 {/* --- INBOX VIEW --- */}
                 {activeTab === 'inbox' && (
-                    <div className="max-w-5xl mx-auto">
-                        <div className="bg-white dark:bg-[#18181b] rounded-2xl border border-gray-200 dark:border-white/5 shadow-sm overflow-hidden">
+                    <div className="max-w-6xl mx-auto animate-[fadeUp_0.4s_ease-out]">
+                        <div className="glass rounded-3xl overflow-hidden border border-white/40 dark:border-white/5">
                            {messages.length === 0 ? (
-                             <div className="p-12 text-center text-gray-400">
-                               <i className="fas fa-envelope-open text-4xl mb-3 opacity-30"></i>
-                               <p>No messages yet.</p>
+                             <div className="p-20 text-center text-gray-400">
+                               <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                  <i className="fas fa-inbox text-3xl opacity-50"></i>
+                               </div>
+                               <p className="text-lg font-medium">Your inbox is empty</p>
                              </div>
                            ) : (
-                             <div className="divide-y divide-gray-100 dark:divide-white/5">
+                             <div className="divide-y divide-gray-200/50 dark:divide-white/5">
                                {messages.map((msg) => (
                                  <div 
                                    key={msg.id}
                                    onClick={() => setSelectedMessage(msg)}
-                                   className="p-4 md:p-5 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer transition-colors flex flex-col md:flex-row gap-3 md:items-center group"
+                                   className="p-6 hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer transition-colors flex flex-col md:flex-row gap-4 md:items-center group"
                                  >
-                                    <div className="flex items-center gap-4 md:w-1/4">
-                                       <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold shrink-0">
+                                    <div className="flex items-center gap-4 md:w-1/3">
+                                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
                                           {msg.name ? msg.name.charAt(0).toUpperCase() : '?'}
                                        </div>
                                        <div className="min-w-0">
-                                          <p className="font-semibold text-sm truncate text-gray-900 dark:text-white">{msg.name}</p>
-                                          <p className="text-xs text-gray-500 truncate">{msg.email}</p>
+                                          <p className="font-bold text-gray-900 dark:text-white truncate">{msg.name}</p>
+                                          <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-medium">{msg.email}</p>
                                        </div>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                       <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{msg.message}</p>
+                                       <p className="text-sm text-gray-600 dark:text-gray-300 truncate font-medium opacity-80 group-hover:opacity-100">{msg.message}</p>
                                     </div>
-                                    <div className="text-xs text-gray-400 whitespace-nowrap md:text-right md:w-24">
+                                    <div className="text-xs font-semibold text-gray-400 md:text-right md:w-32 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full w-fit">
                                        {msg.timestamp?.toDate ? msg.timestamp.toDate().toLocaleDateString() : 'Now'}
                                     </div>
                                  </div>
@@ -287,43 +349,46 @@ const Admin: React.FC = () => {
 
                 {/* --- PROJECTS VIEW --- */}
                 {activeTab === 'projects' && (
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex justify-between items-center mb-6">
-                           <p className="text-gray-500 text-sm">Manage your portfolio projects.</p>
+                    <div className="max-w-[1600px] mx-auto animate-[fadeUp_0.4s_ease-out]">
+                        <div className="flex justify-end mb-8">
                            <button 
                              onClick={() => setIsProjectModalOpen(true)}
-                             className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+                             className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-lg flex items-center gap-2"
                            >
-                             <i className="fas fa-plus"></i> Add Project
+                             <i className="fas fa-plus"></i> New Project
                            </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                            {projects.map((proj) => (
-                              <div key={proj.id} className="bg-white dark:bg-[#18181b] rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden hover:shadow-lg transition-shadow group flex flex-col">
-                                 <div className="h-48 bg-gray-100 dark:bg-black/50 relative overflow-hidden">
-                                     <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                                     <div className="absolute top-2 right-2">
-                                        <button 
+                              <div key={proj.id} className="glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col relative border border-white/40 dark:border-white/5">
+                                 <div className="h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden">
+                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
+                                     <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                     
+                                     <button 
                                           onClick={(e) => handleDeleteProject(proj.id, e)}
-                                          className="w-8 h-8 rounded-full bg-red-500 text-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110"
-                                        >
-                                          <i className="fas fa-trash-alt text-xs"></i>
-                                        </button>
+                                          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
+                                     >
+                                          <i className="fas fa-trash-alt text-sm"></i>
+                                     </button>
+
+                                     <div className="absolute bottom-4 left-4 z-20">
+                                         <h3 className="font-bold text-xl text-white mb-1 drop-shadow-md">{proj.title}</h3>
                                      </div>
                                  </div>
-                                 <div className="p-5 flex-1 flex flex-col">
-                                    <h3 className="font-bold text-lg mb-1">{proj.title}</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4 flex-1">{proj.desc}</p>
+                                 
+                                 <div className="p-6 flex-1 flex flex-col">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{proj.desc}</p>
                                     
-                                    <div className="flex gap-2 border-t border-gray-100 dark:border-white/5 pt-4">
+                                    <div className="flex gap-2">
                                        {proj.liveUrl && (
-                                         <a href={proj.liveUrl} target="_blank" className="text-xs px-2.5 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-md font-medium hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors">
+                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-xs py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-bold hover:bg-blue-500/20 transition-colors border border-blue-500/20">
                                            Live Demo
                                          </a>
                                        )}
                                        {proj.codeUrl && (
-                                         <a href={proj.codeUrl} target="_blank" className="text-xs px-2.5 py-1.5 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 rounded-md font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
+                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-xs py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-bold hover:bg-gray-500/20 transition-colors border border-gray-500/20">
                                            Code
                                          </a>
                                        )}
@@ -339,33 +404,33 @@ const Admin: React.FC = () => {
 
         {/* --- MESSAGE DETAIL MODAL --- */}
         {selectedMessage && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#18181b] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                   <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
-                       <h3 className="font-bold text-lg">Message Detail</h3>
-                       <button onClick={() => setSelectedMessage(null)} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+                <div className="glass-strong w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
+                   <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
+                       <h3 className="font-bold text-xl">Message Detail</h3>
+                       <button onClick={() => setSelectedMessage(null)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
                           <i className="fas fa-times text-sm"></i>
                        </button>
                    </div>
-                   <div className="p-6 overflow-y-auto">
-                       <div className="flex items-center gap-4 mb-6">
-                           <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg">
+                   <div className="p-8 overflow-y-auto">
+                       <div className="flex items-center gap-5 mb-8">
+                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
                                {selectedMessage.name ? selectedMessage.name.charAt(0).toUpperCase() : '?'}
                            </div>
                            <div>
-                               <h4 className="font-bold text-lg">{selectedMessage.name}</h4>
-                               <p className="text-blue-500 text-sm">{selectedMessage.email}</p>
-                               <p className="text-xs text-gray-400 mt-1">{selectedMessage.timestamp?.toDate ? selectedMessage.timestamp.toDate().toLocaleString() : ''}</p>
+                               <h4 className="font-bold text-2xl">{selectedMessage.name}</h4>
+                               <p className="text-blue-600 dark:text-blue-400 font-medium">{selectedMessage.email}</p>
+                               <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide font-bold">{selectedMessage.timestamp?.toDate ? selectedMessage.timestamp.toDate().toLocaleString() : ''}</p>
                            </div>
                        </div>
-                       <div className="bg-gray-50 dark:bg-white/5 p-5 rounded-xl text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                       <div className="bg-white/50 dark:bg-black/20 p-6 rounded-2xl border border-white/20 dark:border-white/5 text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-medium">
                            {selectedMessage.message}
                        </div>
                    </div>
-                   <div className="p-4 border-t border-gray-100 dark:border-white/5 flex justify-end">
+                   <div className="p-6 border-t border-gray-200/50 dark:border-white/10 flex justify-end bg-white/30 dark:bg-black/30">
                         <a 
                           href={`mailto:${selectedMessage.email}`}
-                          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                          className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center gap-2"
                         >
                            <i className="fas fa-reply"></i> Reply
                         </a>
@@ -376,41 +441,81 @@ const Admin: React.FC = () => {
 
         {/* --- ADD PROJECT MODAL --- */}
         {isProjectModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#18181b] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                   <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
-                       <h3 className="font-bold text-lg">Add New Project</h3>
-                       <button onClick={() => setIsProjectModalOpen(false)} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/20 transition-colors">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-[fadeIn_0.2s_ease-out]">
+                <div className="glass-strong w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
+                   <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
+                       <h3 className="font-bold text-xl">New Project</h3>
+                       <button onClick={() => setIsProjectModalOpen(false)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
                           <i className="fas fa-times text-sm"></i>
                        </button>
                    </div>
-                   <div className="p-6 overflow-y-auto">
-                      <form onSubmit={handleAddProject} className="space-y-4">
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Title</label>
-                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors" required />
+                   <div className="p-8 overflow-y-auto">
+                      <form onSubmit={handleAddProject} className="space-y-5">
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
+                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Description</label>
-                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors h-24 resize-none" required />
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Description</label>
+                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-28 resize-none" required />
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Tech Stack</label>
-                            <input type="text" value={projectForm.stack} onChange={e => setProjectForm({...projectForm, stack: e.target.value})} placeholder="React • Node • Firebase" className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors" required />
+                        
+                        {/* Tech Stack Input */}
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Tech Stack ({techStackList.length}/15)</label>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={techInput} 
+                                    onChange={e => setTechInput(e.target.value)} 
+                                    onKeyDown={handleAddTech}
+                                    placeholder="e.g. React" 
+                                    className="flex-1 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" 
+                                    disabled={techStackList.length >= 15}
+                                />
+                                <button 
+                                    type="button" 
+                                    onClick={handleAddTech}
+                                    disabled={!techInput.trim() || techStackList.length >= 15}
+                                    className="w-12 bg-black dark:bg-white text-white dark:text-black rounded-xl flex items-center justify-center hover:opacity-80 disabled:opacity-50 transition-opacity font-bold text-lg"
+                                >
+                                    <i className="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                            {/* Chips */}
+                            <div className="flex flex-wrap gap-2 mt-3 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 min-h-[60px]">
+                                {techStackList.map((tech, idx) => (
+                                    <div key={idx} className="bg-white dark:bg-white/10 text-gray-800 dark:text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border border-gray-200 dark:border-white/10 shadow-sm animate-[scaleIn_0.2s_ease-out]">
+                                        {tech}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => handleRemoveTech(idx)}
+                                            className="hover:text-red-500 transition-colors w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10"
+                                        >
+                                            <i className="fas fa-times text-[10px]"></i>
+                                        </button>
+                                    </div>
+                                ))}
+                                {techStackList.length === 0 && (
+                                    <span className="text-xs text-gray-400 font-medium italic">No technologies added yet.</span>
+                                )}
+                            </div>
                         </div>
+
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Live URL</label>
-                                <input type="url" value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors" required />
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Live URL</label>
+                                <input type="url" value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Code URL</label>
-                                <input type="url" value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 transition-colors" />
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Code URL</label>
+                                <input type="url" value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" />
                             </div>
                         </div>
-                        <div className="pt-2 flex justify-end gap-3">
-                            <button type="button" onClick={() => setIsProjectModalOpen(false)} className="px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">Cancel</button>
-                            <button type="submit" className="px-6 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">Publish</button>
+                        <div className="pt-4 flex justify-end gap-3">
+                            <button type="button" onClick={() => setIsProjectModalOpen(false)} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                            <button type="submit" className="px-8 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">Publish Project</button>
                         </div>
                       </form>
                    </div>
