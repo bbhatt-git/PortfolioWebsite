@@ -168,19 +168,35 @@ const Contact: React.FC = () => {
         
         {/* Social Links Row */}
         <Reveal delay={300}>
-          <div className="flex justify-center gap-8 mt-16">
+          <div className="flex justify-center gap-6 md:gap-10 mt-16 flex-wrap">
             <a href="https://github.com/bbhatt-git" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                  <i className="fab fa-github"></i>
                </div>
                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">GitHub</span>
             </a>
-            <a href="https://linkedin.com/in/bhattbhupesh" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
+            
+            <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                  <i className="fab fa-linkedin"></i>
                </div>
                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">LinkedIn</span>
             </a>
+
+            <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#1877F2] transition-colors">
+               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                 <i className="fab fa-facebook"></i>
+               </div>
+               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Facebook</span>
+            </a>
+
+            <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#E4405F] transition-colors">
+               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                 <i className="fab fa-instagram"></i>
+               </div>
+               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Instagram</span>
+            </a>
+
             <a href="mailto:hello@bbhatt.com.np" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-blue-500 transition-colors">
                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                  <i className="fas fa-envelope"></i>
