@@ -81,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
              <div className={`transition-all duration-500 ease-expo overflow-hidden ${
                  isScrolled ? 'max-w-[50px] opacity-100 mr-0' : 'max-w-0 opacity-0 mr-0'
              }`}>
-                <div className="w-10 h-10 rounded-xl bg-black dark:bg-white shadow-lg flex items-center justify-center whitespace-nowrap transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
+                <div className="w-10 h-10 rounded-xl bg-black dark:bg-white shadow-lg flex items-center justify-center whitespace-nowrap transition-colors duration-300">
                     <span className="font-mono font-bold text-white dark:text-black group-hover:text-blue-500 dark:group-hover:text-blue-600 transition-colors">BR</span>
                 </div>
              </div>
@@ -90,7 +90,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
              <div className={`transition-all duration-500 ease-expo overflow-hidden flex items-center ${
                  isScrolled ? 'max-w-0 opacity-0' : 'max-w-[300px] opacity-100'
              }`}>
-                 <div className="flex items-center gap-3 pl-1 transition-transform duration-300 group-hover:scale-105 origin-left">
+                 <div className="flex items-center gap-3 pl-1 origin-left">
                     <span className="font-mono font-bold text-xl text-blue-600 dark:text-blue-400 animate-pulse-slow whitespace-nowrap group-hover:text-purple-500 transition-colors">{'>_'}</span>
                     <div className="px-5 py-2 rounded-full bg-blue-50/80 dark:bg-white/5 border border-blue-100 dark:border-white/10 backdrop-blur-md shadow-sm whitespace-nowrap group-hover:shadow-lg group-hover:border-blue-200 dark:group-hover:border-blue-500/30 transition-all">
                         <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 group-hover:from-purple-600 group-hover:to-pink-600 transition-all duration-300">
