@@ -26,6 +26,7 @@ const Admin: React.FC = () => {
     desc: '',
     liveUrl: '',
     codeUrl: '',
+    imageUrl: '',
   });
 
   // Tech Stack State
@@ -122,21 +123,23 @@ const Admin: React.FC = () => {
     }
 
     try {
-      const generatedImage = projectForm.liveUrl 
-        ? `https://image.thum.io/get/width/1200/crop/800/noanimate/${projectForm.liveUrl}`
-        : 'https://via.placeholder.com/1200x800?text=No+Preview';
+      // Use provided image URL or fallback
+      const projectImage = projectForm.imageUrl || 'https://via.placeholder.com/1200x800?text=No+Image';
 
       // Join the stack list with the separator used in the app
       const stackString = techStackList.join(' • ');
 
       await addDoc(collection(db, "projects"), {
-        ...projectForm,
+        title: projectForm.title,
+        desc: projectForm.desc,
+        liveUrl: projectForm.liveUrl,
+        codeUrl: projectForm.codeUrl,
+        image: projectImage,
         stack: stackString,
-        image: generatedImage,
         createdAt: serverTimestamp()
       });
       fetchProjects(); 
-      setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '' });
+      setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
       setTechStackList([]);
       setTechInput('');
       setIsProjectModalOpen(false);
@@ -501,6 +504,19 @@ const Admin: React.FC = () => {
                                     <span className="text-xs text-gray-400 font-medium italic">No technologies added yet.</span>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Image URL Input - Replaced screenshot generation */}
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Image URL</label>
+                            <input 
+                              type="url" 
+                              value={projectForm.imageUrl} 
+                              onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} 
+                              className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" 
+                              placeholder="https://example.com/image.png"
+                              required 
+                            />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
