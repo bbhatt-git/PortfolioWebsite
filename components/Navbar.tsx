@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
     e.preventDefault();
     const target = document.querySelector(href);
     if (target) {
-      const offset = 100;
+      const offset = 80; // Adjusted offset for mobile
       const elementPosition = target.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
 
@@ -61,13 +61,13 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-700 ease-expo ${
-          isScrolled ? 'pt-6' : 'pt-8'
+          isScrolled ? 'pt-2 md:pt-6' : 'pt-4 md:pt-8'
         }`}
       >
         <div 
           className={`relative flex items-center justify-between transition-all duration-700 ease-expo ${
             isScrolled 
-              ? 'w-[85%] md:w-[65%] lg:w-[55%] bg-white/80 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-5 py-2.5 border border-white/40 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]' 
+              ? 'w-[95%] md:w-[65%] lg:w-[55%] bg-white/80 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-2xl md:rounded-full px-4 md:px-5 py-2.5 border border-white/40 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]' 
               : 'w-full container px-6 py-2 bg-transparent'
           }`}
         >
@@ -118,81 +118,79 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
                     
                     {/* Active Dot indicator */}
                     {activeSection === link.href.substring(1) && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></span>
+                       <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-black dark:bg-white"></span>
                     )}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
-          
-          {/* ACTIONS */}
-          <div className="flex items-center gap-1.5 pl-2">
-            <button
-              onClick={openSearch}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-blue-600 dark:hover:text-blue-400"
+
+          {/* UTILITIES (Theme, Search, Terminal) */}
+          <div className="flex items-center gap-2 pl-2 md:pl-6 border-l border-gray-200 dark:border-white/10 ml-2 md:ml-6">
+            <button 
+              onClick={toggleTheme} 
+              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
+              aria-label="Toggle Theme"
+            >
+              <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'} text-xs`}></i>
+            </button>
+            <button 
+              onClick={openSearch} 
+              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Search"
-              title="Search (Cmd+K)"
             >
               <i className="fas fa-search text-xs"></i>
             </button>
-
-            <button
-              onClick={openTerminal}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-purple-600 dark:hover:text-purple-400"
+            <button 
+              onClick={openTerminal} 
+              className="hidden md:flex w-8 h-8 items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Terminal"
-              title="Terminal (Cmd+J)"
             >
               <i className="fas fa-terminal text-xs"></i>
             </button>
 
-            <button
-              onClick={toggleTheme}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/10 transition-all duration-300 ease-expo hover:text-orange-500 dark:hover:text-yellow-400"
-              aria-label="Toggle Theme"
+            {/* HAMBURGER BUTTON (Mobile) */}
+            <button 
+              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 z-50 ml-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-                <div className="relative w-4 h-4 overflow-hidden">
-                  <i className={`fas fa-sun absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}></i>
-                  <i className={`fas fa-moon absolute inset-0 transition-all duration-500 ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}></i>
-                </div>
+              <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
             </button>
-
-             {/* Mobile Hamburger */}
-             <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 ml-1"
-                aria-label="Toggle Menu"
-              >
-                <span className={`w-5 h-0.5 bg-black dark:bg-white transition-all duration-300 ease-expo rounded-full ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                <span className={`w-5 h-0.5 bg-black dark:bg-white transition-all duration-300 ease-expo rounded-full ${isMobileMenuOpen ? 'opacity-0 scale-50' : ''}`}></span>
-                <span className={`w-5 h-0.5 bg-black dark:bg-white transition-all duration-300 ease-expo rounded-full ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-              </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 z-40 bg-white/90 dark:bg-[#050505]/95 backdrop-blur-3xl transition-all duration-700 ease-expo flex flex-col items-center justify-center ${
-          isMobileMenuOpen ? 'opacity-100 visible clip-circle-full' : 'opacity-0 invisible pointer-events-none clip-circle-0'
+      {/* MOBILE MENU OVERLAY */}
+      <div 
+        className={`fixed inset-0 z-40 bg-white/90 dark:bg-black/90 backdrop-blur-2xl transition-all duration-500 ease-expo lg:hidden flex flex-col justify-center items-center ${
+          isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
         }`}
       >
-        <div className="flex flex-col gap-8 text-center">
+        <ul className="flex flex-col items-center gap-6">
           {navLinks.map((link, idx) => (
-            <a
-              key={link.name}
-              href={link.href}
-              onClick={(e) => handleLinkClick(e, link.href)}
-              className={`text-5xl font-bold tracking-tight text-black dark:text-white hover:text-blue-600 transition-all duration-500 transform ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-              style={{ transitionDelay: `${idx * 50}ms` }}
-            >
-              {link.name}
-            </a>
+            <li key={link.name} className={`transform transition-all duration-500 delay-${idx * 100} ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+              <a 
+                href={link.href}
+                onClick={(e) => handleLinkClick(e, link.href)}
+                className={`text-3xl font-bold tracking-tight ${
+                  activeSection === link.href.substring(1) 
+                    ? 'text-black dark:text-white' 
+                    : 'text-gray-400 dark:text-gray-600'
+                }`}
+              >
+                {link.name}
+              </a>
+            </li>
           ))}
-        </div>
-        
-        <div className="absolute bottom-10 text-xs text-gray-400">
-           Bhupesh Raj Bhatt © {new Date().getFullYear()}
+        </ul>
+
+        <div className={`mt-12 flex gap-8 transform transition-all duration-500 delay-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+           <a href="https://github.com" target="_blank" className="text-2xl text-gray-500 hover:text-black dark:hover:text-white"><i className="fab fa-github"></i></a>
+           <a href="https://linkedin.com" target="_blank" className="text-2xl text-gray-500 hover:text-[#0077b5]"><i className="fab fa-linkedin"></i></a>
+           <a href="mailto:hello@bbhatt.com.np" className="text-2xl text-gray-500 hover:text-blue-500"><i className="fas fa-envelope"></i></a>
         </div>
       </div>
     </>
