@@ -68,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           className={`relative flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isScrolled 
               ? 'w-[92%] md:w-[70%] lg:w-[60%] bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-4 md:px-6 py-2 border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]' 
-              : 'w-full container px-6 py-2 bg-transparent'
+              : 'w-full container px-4 md:px-6 py-2 bg-transparent'
           }`}
         >
           {/* LOGO AREA */}
@@ -92,9 +92,15 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
              }`}>
                  <div className="flex items-center gap-3 pl-1 origin-left">
                     <span className="font-mono font-bold text-xl text-blue-600 dark:text-blue-400 animate-pulse-slow whitespace-nowrap group-hover:text-purple-500 transition-colors">{'>_'}</span>
-                    <div className="px-5 py-2 rounded-full bg-blue-50/80 dark:bg-white/5 border border-blue-100 dark:border-white/10 backdrop-blur-md shadow-sm whitespace-nowrap group-hover:shadow-lg group-hover:border-blue-200 dark:group-hover:border-blue-500/30 transition-all">
+                    <div className="hidden sm:block px-5 py-2 rounded-full bg-blue-50/80 dark:bg-white/5 border border-blue-100 dark:border-white/10 backdrop-blur-md shadow-sm whitespace-nowrap group-hover:shadow-lg group-hover:border-blue-200 dark:group-hover:border-blue-500/30 transition-all">
                         <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 group-hover:from-purple-600 group-hover:to-pink-600 transition-all duration-300">
                         Bhupesh Bhatt
+                        </span>
+                    </div>
+                    {/* Mobile Only Logo Text (Simpler) */}
+                    <div className="sm:hidden">
+                        <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                        Bhupesh
                         </span>
                     </div>
                  </div>
@@ -128,7 +134,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           </div>
 
           {/* UTILITIES (Theme, Search, Terminal) */}
-          <div className={`flex items-center gap-2 transition-all duration-500 ${isScrolled ? 'pl-2 border-l border-gray-200 dark:border-white/10 ml-2' : 'pl-6 border-l border-gray-200 dark:border-white/10 ml-6'}`}>
+          <div className={`flex items-center gap-2 transition-all duration-500 ${isScrolled ? 'pl-2 border-l border-gray-200 dark:border-white/10 ml-2' : 'pl-2 md:pl-6 border-l border-gray-200 dark:border-white/10 ml-2 md:ml-6'}`}>
             <button 
               onClick={toggleTheme} 
               className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
