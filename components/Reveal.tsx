@@ -4,9 +4,10 @@ interface RevealProps {
   children: React.ReactNode;
   delay?: number; // delay in ms
   className?: string;
+  variant?: 'fade' | 'slide' | '3d';
 }
 
-const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '' }) => {
+const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '', variant = '3d' }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -15,12 +16,12 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '' }) 
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // Only animate once
+          observer.disconnect(); 
         }
       },
       { 
-        threshold: 0.15, // Slightly higher threshold prevents premature triggering
-        rootMargin: "0px 0px -50px 0px" // Only trigger when slightly into view
+        threshold: 0.1, 
+        rootMargin: "0px 0px -50px 0px" 
       }
     );
 
@@ -35,14 +36,18 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '' }) 
     transitionDelay: `${delay}ms`,
   };
 
+  // 3D fold-up animation classes
+  const hiddenState = variant === '3d' 
+    ? 'opacity-0 translate-y-12 scale-95 rotate-x-12' 
+    : 'opacity-0 translate-y-8';
+    
+  const visibleState = 'opacity-100 translate-y-0 scale-100 rotate-x-0';
+
   return (
     <div
       ref={ref}
-      // Using 'ease-expo' (defined in tailwind config) for that "Apple" snappy-yet-smooth feel
-      className={`transition-all duration-1000 ease-expo transform ${
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-16' // Increased travel distance for more drama
+      className={`transform-gpu transition-all duration-1000 ease-out-expo perspective-1000 ${
+        isVisible ? visibleState : hiddenState
       } ${className}`}
       style={style}
     >

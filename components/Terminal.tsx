@@ -33,6 +33,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
+      // Focus with a slight delay to ensure render is complete
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
@@ -43,7 +44,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     }
   }, [history]);
 
-  const handleCommand = (e: React.KeyboardEvent) => {
+  const handleCommand = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const cmd = input.trim().toLowerCase();
       const args = cmd.split(' ');
@@ -72,34 +73,44 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleContainerClick = () => {
+    inputRef.current?.focus();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md transition-all duration-300" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 px-4" onClick={onClose}>
       <div 
-        className="w-[95%] md:w-full md:max-w-3xl h-[60vh] md:h-[600px] relative flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.1s_ease-out] border border-blue-500/30 overflow-hidden bg-black/90 shadow-[0_0_50px_rgba(0,123,255,0.2)]"
+        className="w-full max-w-3xl h-[70vh] md:h-[600px] relative flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] border border-blue-500/30 overflow-hidden bg-[#0a0a0a]/95 shadow-[0_0_50px_rgba(0,123,255,0.15)] rounded-lg"
         onClick={e => e.stopPropagation()}
       >
         {/* CRT Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] bg-repeat"></div>
-        <div className="absolute inset-0 pointer-events-none z-10 bg-blue-500/5 animate-pulse"></div>
-
+        <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_3px,3px_100%] bg-repeat opacity-50"></div>
+        
         {/* HUD Header */}
-        <div className="relative z-30 bg-blue-900/20 backdrop-blur-xl px-4 py-2 flex items-center justify-between border-b border-blue-500/30">
-          <div className="flex items-center gap-4">
-             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_#007AFF]"></div>
-             <span className="text-xs font-bold text-blue-400 tracking-[0.2em]">TERMINAL_V2</span>
+        <div className="relative z-30 bg-[#121212] px-4 py-3 flex items-center justify-between border-b border-blue-500/20 select-none">
+          <div className="flex items-center gap-3">
+             <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+             </div>
+             <div className="h-4 w-[1px] bg-gray-700 mx-1"></div>
+             <div className="flex items-center gap-2">
+                 <i className="fas fa-terminal text-blue-400 text-xs"></i>
+                 <span className="text-xs font-bold text-gray-300 tracking-wider">TERMINAL</span>
+             </div>
           </div>
           
-          <div className="flex gap-4 text-[10px] text-blue-300/60 font-medium">
+          <div className="hidden md:flex gap-4 text-[10px] text-blue-400/60 font-medium">
+             <span>CPU: NORMAL</span>
              <span>MEM: 64TB</span>
-             <span>CPU: OPTIMIZED</span>
-             <span>NET: SECURE</span>
           </div>
 
           <button 
                 onClick={onClose}
-                className="w-6 h-6 flex items-center justify-center text-blue-400 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors"
             >
                 <i className="fas fa-times"></i>
           </button>
@@ -107,61 +118,71 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
         {/* Terminal Body */}
         <div 
-            className="relative z-30 flex-1 p-6 overflow-y-auto text-blue-100 space-y-3 custom-scrollbar" 
+            className="relative z-30 flex-1 p-4 md:p-6 overflow-y-auto text-blue-100 custom-scrollbar" 
             ref={scrollRef}
-            onClick={() => inputRef.current?.focus()}
+            onClick={handleContainerClick}
             style={{ 
                 fontFamily: '"JetBrains Mono", monospace',
-                textShadow: '0 0 5px rgba(100, 200, 255, 0.5)'
+                textShadow: '0 0 5px rgba(0, 123, 255, 0.3)'
             }}
         >
           {history.map((line, i) => (
-            <div key={i} className="break-words leading-relaxed text-sm">
+            <div key={i} className="mb-2 break-words leading-relaxed text-xs md:text-sm">
                {line.startsWith('root@') ? (
-                   <div className="flex gap-2 flex-wrap">
-                       <span className="text-pink-500 font-bold shrink-0">root@portfolio</span>
-                       <span className="text-gray-400 font-bold shrink-0">:</span>
-                       <span className="text-blue-400 font-bold shrink-0">~</span>
-                       <span className="text-blue-400 font-bold shrink-0">$</span>
+                   <div className="flex flex-wrap gap-x-2">
+                       <span className="text-pink-500 font-bold">root@portfolio</span>
+                       <span className="text-gray-400 font-bold">:</span>
+                       <span className="text-blue-400 font-bold">~</span>
+                       <span className="text-blue-400 font-bold">$</span>
                        <span className="text-white">{line.split('$ ')[1]}</span>
                    </div>
                ) : (
-                   <span className={`block whitespace-pre-wrap pl-4 border-l-2 ${line.startsWith('ERROR') ? 'border-red-500 text-red-300' : 'border-blue-500/50 text-blue-200'}`}>{line}</span>
+                   <span className={`block whitespace-pre-wrap ${line.startsWith('ERROR') ? 'text-red-400' : 'text-blue-100/90'}`}>{line}</span>
                )}
             </div>
           ))}
           
-          <div className="flex items-center gap-2 pt-4">
-            <span className="text-pink-500 font-bold">root@portfolio</span>
-            <span className="text-gray-400 font-bold">:</span>
-            <span className="text-blue-400 font-bold">~</span>
-            <span className="text-blue-400 font-bold">$</span>
-            <input
-              ref={inputRef}
-              type="text"
-              className="flex-1 bg-transparent border-none outline-none text-white font-bold ml-1 min-w-0"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleCommand}
-              autoFocus
-              autoComplete="off"
-              spellCheck="false"
-              autoCapitalize="none"
-              style={{ textShadow: 'none' }}
-            />
-          </div>
-          {/* Retro Block Cursor */}
-          <div className="pl-[165px] -mt-6 pointer-events-none hidden md:block">
-             <span className="invisible">{input}</span>
-             <span className="inline-block w-2.5 h-5 bg-blue-500 align-middle animate-pulse ml-0.5 shadow-[0_0_8px_#007AFF]"></span>
+          {/* Input Line */}
+          <div className="flex flex-wrap items-center gap-x-2 mt-2 text-xs md:text-sm relative">
+             {/* Prompt */}
+             <div className="flex gap-x-2 shrink-0">
+                <span className="text-pink-500 font-bold">root@portfolio</span>
+                <span className="text-gray-400 font-bold">:</span>
+                <span className="text-blue-400 font-bold">~</span>
+                <span className="text-blue-400 font-bold">$</span>
+             </div>
+            
+            <div className="relative flex-1 min-w-[50px] flex items-center">
+                {/* Visual Representation of Input */}
+                <span className="text-white whitespace-pre-wrap break-all">{input}</span>
+                
+                {/* Blinking Block Cursor */}
+                <span className="inline-block w-2 md:w-2.5 h-4 md:h-5 bg-blue-500/80 animate-pulse ml-[1px] align-middle shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
+
+                {/* Hidden Real Input - Captures typing but is invisible */}
+                <input
+                    ref={inputRef}
+                    type="text"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-default"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleCommand}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    autoFocus
+                />
+            </div>
           </div>
         </div>
         
         {/* Footer HUD */}
-        <div className="relative z-30 h-6 border-t border-blue-500/30 bg-blue-900/10 flex items-center justify-between px-4 text-[10px] text-blue-400/50 uppercase tracking-wider">
-            <span>Lat: 27.7172° N</span>
-            <span>Sys_Op: ACTIVE</span>
-            <span>Lng: 85.3240° E</span>
+        <div className="relative z-30 h-8 border-t border-blue-500/20 bg-[#121212] flex items-center justify-between px-4 text-[10px] text-gray-500 uppercase tracking-wider">
+            <div className="flex items-center gap-2">
+               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+               <span>ONLINE</span>
+            </div>
+            <span>v2.4.0</span>
         </div>
       </div>
     </div>
