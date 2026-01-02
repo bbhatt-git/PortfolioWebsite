@@ -6,7 +6,7 @@ interface TerminalProps {
 }
 
 const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
-  const [history, setHistory] = useState<string[]>(['Welcome to BBhatt v1.0.0', 'Type "help" for available commands.']);
+  const [history, setHistory] = useState<string[]>(['Welcome to Portfolio v2.0.0', 'Type "help" for available commands.']);
   const [input, setInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -74,53 +74,68 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10 backdrop-blur-[2px] p-4 transition-all duration-300" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-4 transition-all duration-300" onClick={onClose}>
       <div 
-        className="w-full max-w-2xl h-[500px] backdrop-blur-2xl bg-[#1c1c1e]/90 dark:bg-[#000000]/85 rounded-xl shadow-2xl overflow-hidden flex flex-col font-mono text-sm border border-white/10 ring-1 ring-black/50 transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out]"
+        className="w-full max-w-3xl h-[550px] relative rounded-xl overflow-hidden flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] shadow-2xl"
         onClick={e => e.stopPropagation()}
+        style={{
+            background: 'rgba(28, 28, 30, 0.75)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 24px 48px rgba(0,0,0,0.5)'
+        }}
       >
-        {/* Terminal Header */}
-        <div className="bg-gradient-to-b from-white/10 to-transparent dark:from-white/5 px-4 py-3 flex items-center justify-between border-b border-white/10">
-          <div className="flex gap-2">
-            <button className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#ff3b30] border border-transparent shadow-sm transition-colors group flex items-center justify-center" onClick={onClose}>
-                <i className="fas fa-times text-[8px] text-black opacity-0 group-hover:opacity-50"></i>
+        {/* Liquid Glass Reflection/Sheen */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none z-0 mix-blend-overlay"></div>
+
+        {/* macOS Title Bar */}
+        <div className="relative z-10 bg-white/5 backdrop-blur-xl px-4 py-3.5 flex items-center justify-between border-b border-white/5 select-none draggable">
+          <div className="flex gap-2 group">
+            <button 
+                onClick={onClose}
+                className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 border border-[#E0443E] shadow-sm flex items-center justify-center transition-all"
+            >
+                <i className="fas fa-times text-[6px] text-black/60 opacity-0 group-hover:opacity-100"></i>
             </button>
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-transparent shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#28C840] border border-transparent shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
+            <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
           </div>
-          <div className="flex items-center gap-2 opacity-60">
-             <i className="fas fa-folder text-xs"></i>
-             <span className="text-xs font-medium text-gray-300">guest — -zsh</span>
+          
+          <div className="flex items-center gap-2 opacity-60 absolute left-1/2 -translate-x-1/2">
+             <i className="fas fa-terminal text-xs text-gray-400"></i>
+             <span className="text-xs font-medium text-gray-300 tracking-wide">guest — -zsh</span>
           </div>
+          
           <div className="w-10"></div>
         </div>
 
         {/* Terminal Body */}
         <div 
-            className="flex-1 p-4 overflow-y-auto text-slate-300 space-y-1 custom-scrollbar selection:bg-white/20" 
+            className="relative z-10 flex-1 p-6 overflow-y-auto text-slate-200 space-y-2 custom-scrollbar selection:bg-white/20" 
             ref={scrollRef}
             onClick={() => inputRef.current?.focus()}
             style={{ fontFamily: '"JetBrains Mono", monospace' }}
         >
           {history.map((line, i) => (
-            <div key={i} className="break-words">
+            <div key={i} className="break-words leading-relaxed">
                {line.startsWith('guest@') ? (
-                   <span><span className="text-green-400 font-bold">guest@bbhatt</span>:<span className="text-blue-400 font-bold">~</span>$ {line.split('$ ')[1]}</span>
+                   <div className="flex gap-2">
+                       <span className="text-green-400 font-bold shrink-0">➜</span>
+                       <span className="text-cyan-400 font-bold shrink-0">~</span>
+                       <span>{line.split('$ ')[1]}</span>
+                   </div>
                ) : (
-                   <span className="text-slate-300 opacity-90">{line}</span>
+                   <span className="text-slate-300 opacity-90 pl-5 block">{line}</span>
                )}
             </div>
           ))}
           
-          <div className="flex items-center">
-            <span className="text-green-400 font-bold">guest@bbhatt</span>
-            <span className="text-white font-bold">:</span>
-            <span className="text-blue-400 font-bold">~</span>
-            <span className="text-white font-bold mr-2">$</span>
+          <div className="flex items-center gap-2 pt-2">
+            <span className="text-green-400 font-bold">➜</span>
+            <span className="text-cyan-400 font-bold">~</span>
             <input
               ref={inputRef}
               type="text"
-              className="flex-1 bg-transparent border-none outline-none text-white font-normal"
+              className="flex-1 bg-transparent border-none outline-none text-white font-normal ml-1"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleCommand}
@@ -128,8 +143,11 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
               autoComplete="off"
               spellCheck="false"
             />
-            {/* Blinking Cursor */}
-            <span className="w-2 h-5 bg-gray-400 opacity-50 animate-pulse -ml-1"></span>
+          </div>
+          {/* Custom Block Cursor */}
+          <div className="pl-5 -mt-6 pointer-events-none">
+             <span className="invisible">{input}</span>
+             <span className="inline-block w-2.5 h-5 bg-gray-400/80 align-middle animate-pulse ml-0.5"></span>
           </div>
         </div>
       </div>

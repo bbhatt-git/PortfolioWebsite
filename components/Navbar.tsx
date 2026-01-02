@@ -14,8 +14,8 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
 
   useEffect(() => {
     const handleScroll = () => {
-      // Smoother threshold
-      setIsScrolled(window.scrollY > 50);
+      // Adjusted threshold for smoother feel
+      setIsScrolled(window.scrollY > 30);
 
       const sections = document.querySelectorAll('section');
       let current = '';
@@ -60,14 +60,14 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-700 ease-expo ${
-          isScrolled ? 'pt-2 md:pt-6' : 'pt-4 md:pt-8'
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isScrolled ? 'pt-3' : 'pt-6 md:pt-8'
         }`}
       >
         <div 
-          className={`relative flex items-center justify-between transition-all duration-700 ease-expo ${
+          className={`relative flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
             isScrolled 
-              ? 'w-[95%] md:w-[65%] lg:w-[55%] bg-white/80 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-2xl md:rounded-full px-4 md:px-5 py-2.5 border border-white/40 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]' 
+              ? 'w-[92%] md:w-[70%] lg:w-[60%] bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-4 md:px-6 py-2 border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]' 
               : 'w-full container px-6 py-2 bg-transparent'
           }`}
         >
@@ -75,22 +75,38 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           <a 
             href="#home" 
             onClick={(e) => handleLinkClick(e, '#home')}
-            className="group relative flex items-center gap-3 z-50"
+            className="group flex items-center gap-2.5 z-50 select-none"
           >
-             {/* Logo Symbol - Minimalist Abstract 'B' */}
-             <div className="relative w-9 h-9 flex items-center justify-center bg-black dark:bg-white rounded-xl transform transition-all duration-500 ease-expo group-hover:scale-105 group-hover:rotate-3 shadow-lg overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+             {/* Icon Container */}
+             <div className={`relative flex items-center justify-center rounded-xl overflow-hidden transition-all duration-500 ease-out border shadow-sm group-hover:shadow-md ${
+                 isScrolled 
+                 ? 'w-8 h-8 bg-black dark:bg-white border-transparent' 
+                 : 'w-10 h-10 bg-white dark:bg-white/10 border-gray-200 dark:border-white/10'
+             }`}>
+                {/* Gradient BG for Default State Hover */}
+                <div className={`absolute inset-0 bg-gradient-to-tr from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isScrolled ? 'opacity-0' : ''}`}></div>
                 
-                {/* Monogram */}
-                <span className="font-outfit font-bold text-lg text-white dark:text-black relative z-10 group-hover:text-white transition-colors duration-300">
-                  B<span className="text-blue-400 dark:text-blue-600 group-hover:text-white">.</span>
+                {/* Symbol */}
+                <span className={`font-mono font-bold relative z-10 transition-colors duration-300 ${
+                    isScrolled 
+                    ? 'text-white dark:text-black text-sm' 
+                    : 'text-gray-900 dark:text-white group-hover:text-white text-base'
+                }`}>
+                  {isScrolled ? 'BR' : '<B/>'}
                 </span>
              </div>
 
-             {/* Text Reveal on Scroll/Hover */}
-             <div className={`hidden md:flex flex-col leading-none overflow-hidden transition-all duration-500 ease-expo ${isScrolled ? 'w-0 opacity-0 group-hover:w-auto group-hover:opacity-100' : 'w-auto opacity-100'}`}>
-                <span className="font-bold text-base tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
-                  Bhupesh
+             {/* Text Label */}
+             <div className="flex flex-col leading-none">
+                <span className={`font-bold tracking-tight transition-all duration-500 ${
+                    isScrolled ? 'text-sm text-gray-900 dark:text-white' : 'text-lg text-gray-900 dark:text-white'
+                }`}>
+                  Bhupesh<span className="text-blue-600">.</span>
+                </span>
+                <span className={`text-[9px] font-medium uppercase tracking-widest text-gray-500 transition-all duration-500 ${
+                    isScrolled ? 'w-0 overflow-hidden opacity-0 h-0' : 'w-auto opacity-100'
+                }`}>
+                  Developer
                 </span>
              </div>
           </a>
@@ -115,11 +131,6 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
                     }`}></span>
                     
                     <span className="relative z-10">{link.name}</span>
-                    
-                    {/* Active Dot indicator */}
-                    {activeSection === link.href.substring(1) && (
-                       <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-black dark:bg-white"></span>
-                    )}
                   </a>
                 </li>
               ))}
@@ -127,7 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           </div>
 
           {/* UTILITIES (Theme, Search, Terminal) */}
-          <div className="flex items-center gap-2 pl-2 md:pl-6 border-l border-gray-200 dark:border-white/10 ml-2 md:ml-6">
+          <div className={`flex items-center gap-2 transition-all duration-500 ${isScrolled ? 'pl-2 border-l border-gray-200 dark:border-white/10 ml-2' : 'pl-6 border-l border-gray-200 dark:border-white/10 ml-6'}`}>
             <button 
               onClick={toggleTheme} 
               className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
@@ -152,7 +163,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
 
             {/* HAMBURGER BUTTON (Mobile) */}
             <button 
-              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 z-50 ml-2"
+              className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 z-50 ml-1"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
@@ -165,7 +176,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
 
       {/* MOBILE MENU OVERLAY */}
       <div 
-        className={`fixed inset-0 z-40 bg-white/90 dark:bg-black/90 backdrop-blur-2xl transition-all duration-500 ease-expo lg:hidden flex flex-col justify-center items-center ${
+        className={`fixed inset-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-2xl transition-all duration-500 ease-expo lg:hidden flex flex-col justify-center items-center ${
           isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
         }`}
       >
@@ -188,7 +199,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
         </ul>
 
         <div className={`mt-12 flex gap-8 transform transition-all duration-500 delay-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-           <a href="https://github.com" target="_blank" className="text-2xl text-gray-500 hover:text-black dark:hover:text-white"><i className="fab fa-github"></i></a>
+           <a href="https://github.com/bbhatt-git" target="_blank" className="text-2xl text-gray-500 hover:text-black dark:hover:text-white"><i className="fab fa-github"></i></a>
            <a href="https://linkedin.com" target="_blank" className="text-2xl text-gray-500 hover:text-[#0077b5]"><i className="fab fa-linkedin"></i></a>
            <a href="mailto:hello@bbhatt.com.np" className="text-2xl text-gray-500 hover:text-blue-500"><i className="fas fa-envelope"></i></a>
         </div>
