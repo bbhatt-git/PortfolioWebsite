@@ -21,7 +21,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     if (isTouch || !cardRef.current) return;
     
     const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 25; // Increased sensitivity (was 40)
+    const x = (e.clientX - left - width / 2) / 25; 
     const y = (e.clientY - top - height / 2) / 25; 
     
     const glareX = ((e.clientX - left) / width) * 100;
@@ -38,6 +38,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     setRotate({ x: 0, y: 0 });
     setGlare((prev) => ({ ...prev, opacity: 0 }));
   };
+
+  // Format URL for display (remove https:// and trailing slashes)
+  const displayUrl = project.liveUrl 
+    ? project.liveUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') 
+    : 'project.local';
 
   return (
     <div 
@@ -64,20 +69,42 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       <div className="bg-white/80 dark:bg-[#161618]/80 backdrop-blur-2xl rounded-[24px] overflow-hidden shadow-2xl dark:shadow-black/50 border border-white/40 dark:border-white/5 relative z-10 flex flex-col h-full transition-transform duration-500 preserve-3d"
            style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)' }}
       >
-        {/* macOS Title Bar */}
-        <div className="h-[44px] bg-gray-50/50 dark:bg-[#202022]/50 border-b border-gray-100 dark:border-white/5 flex items-center px-5 gap-4 shrink-0 preserve-3d relative"
+        {/* macOS / Safari Title Bar - Redesigned to prevent overlap */}
+        <div className="h-[48px] bg-gray-100/40 dark:bg-[#1E1E20]/40 border-b border-gray-200 dark:border-white/5 flex items-center justify-between px-4 shrink-0 preserve-3d relative"
              style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)' }}
         >
-          <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]/30 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/30 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]/30 shadow-sm"></div>
+          {/* Left Column: Traffic Lights & Nav (Fixed Width) */}
+          <div className="flex items-center gap-4 w-[100px] shrink-0">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]/20 shadow-sm"></div>
+              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/20 shadow-sm"></div>
+              <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]/20 shadow-sm"></div>
+            </div>
+            <div className="hidden md:flex items-center gap-3 text-gray-400 dark:text-gray-500 opacity-40 ml-1">
+              <i className="fas fa-chevron-left text-[10px]"></i>
+              <i className="fas fa-chevron-right text-[10px]"></i>
+            </div>
           </div>
-          
-          <div className="absolute left-0 right-0 flex justify-center pointer-events-none">
-             <div className="flex items-center gap-1.5 opacity-60">
-               <i className="fas fa-lock text-[10px] text-gray-400"></i>
-               <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-wide">Secure Connection</span>
+
+          {/* Center Column: Address Bar (Flexible) */}
+          <div className="flex-1 flex justify-center px-2 min-w-0">
+             <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/60 dark:bg-black/40 border border-black/5 dark:border-white/10 w-full max-w-[320px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] dark:shadow-none backdrop-blur-md overflow-hidden">
+               <div className="flex items-center gap-2 overflow-hidden min-w-0">
+                 <i className="fas fa-lock text-[9px] text-gray-400 opacity-70 flex-shrink-0"></i>
+                 <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 tracking-tight whitespace-nowrap select-none overflow-hidden">
+                   {displayUrl}
+                 </span>
+               </div>
+               <i className="fas fa-redo-alt text-[9px] text-gray-400 opacity-50 ml-2 flex-shrink-0"></i>
+             </div>
+          </div>
+
+          {/* Right Column: Mirror Spacer (To keep center perfectly centered) */}
+          <div className="w-[100px] shrink-0 flex justify-end">
+             {/* Empty or can add Safari Share/Tabs icon for extra realism */}
+             <div className="hidden md:flex items-center gap-3 text-gray-400 dark:text-gray-500 opacity-40 mr-1">
+                <i className="fas fa-share text-[10px]"></i>
+                <i className="fas fa-plus text-[10px]"></i>
              </div>
           </div>
         </div>

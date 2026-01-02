@@ -45,71 +45,8 @@ export const SERVICES: Service[] = [
   }
 ];
 
-// Helper to generate thum.io url
-const getScreenshotUrl = (url: string) => `https://image.thum.io/get/width/1200/crop/800/noanimate/${url}`;
-
-export const PROJECTS: Project[] = [
-  {
-    id: 'p1',
-    title: 'Clothing Store',
-    stack: 'React • Next.js • Tailwind CSS • Firebase',
-    desc: 'A performant, server-rendered e-commerce platform built on a modern tech stack. Features include a dynamic product catalog, shopping cart functionality, secure checkout, and a responsive design that works seamlessly across all devices.',
-    liveUrl: 'https://clothing-store-xq4v.onrender.com/',
-    codeUrl: 'https://github.com/bbhatt-git/clothing-store',
-    image: getScreenshotUrl('https://clothing-store-xq4v.onrender.com/'),
-    highlights: [
-      'Real-time inventory management',
-      'Secure Stripe payment integration',
-      'Mobile-first responsive design',
-      'Fast server-side rendering with Next.js'
-    ],
-    caseStudy: {
-      challenge: 'Building a scalable e-commerce platform that handles high traffic while maintaining sub-second load times.',
-      solution: 'Utilized Next.js for SSR, implemented Redis caching for products, and optimized images with Cloudinary.',
-      results: 'Achieved a 98/100 Lighthouse performance score and increased conversion rates by 40%.'
-    }
-  },
-  {
-    id: 'p2',
-    title: 'Academic Club Dashboard',
-    stack: 'React • Next.js • Tailwind CSS • Firebase',
-    desc: 'A comprehensive web dashboard for managing academic clubs. It enables event scheduling, member tracking, resource distribution, and real-time announcements. The intuitive interface ensures smooth administration for club leaders.',
-    liveUrl: 'https://sarc-club.vercel.app/',
-    codeUrl: 'https://github.com/bbhatt-git/studio/',
-    image: getScreenshotUrl('https://sarc-club.vercel.app/'),
-    highlights: [
-      'Role-based access control (RBAC)',
-      'Real-time event notifications',
-      'Member attendance tracking',
-      'Automated resource allocation'
-    ],
-    caseStudy: {
-      challenge: 'The club struggled with fragmented communication and manual event tracking using spreadsheets.',
-      solution: 'Developed a centralized dashboard with Firebase for real-time data sync and Next.js for a snappy UI.',
-      results: 'Reduced administrative time by 60% and improved member engagement across all club activities.'
-    }
-  },
-  {
-    id: 'p3',
-    title: 'QR Attendance System',
-    stack: 'React • Next.js • GenkitAI • Firebase',
-    desc: 'An automated student attendance system leveraging QR code technology. Students scan unique codes for instant verification. Features include admin panels, bulk data import, CSV export, and AI-powered insights.',
-    liveUrl: 'https://qwickattend.vercel.app',
-    codeUrl: 'https://github.com/bbhatt-git/qwickattend/',
-    image: getScreenshotUrl('https://qwickattend.vercel.app'),
-    highlights: [
-      'Instant QR code generation & scanning',
-      'Geo-fencing for location validation',
-      'AI-powered attendance analytics',
-      'Bulk CSV data export'
-    ],
-    caseStudy: {
-      challenge: 'Manual attendance taking was time-consuming and prone to proxy attendance issues.',
-      solution: 'Implemented a secure QR-based system with geo-location checks to ensure physical presence.',
-      results: 'Streamlined the attendance process to under 5 seconds per student and eliminated proxy attendance.'
-    }
-  }
-];
+// Default projects list is now empty to allow full control via the Admin dashboard
+export const PROJECTS: Project[] = [];
 
 export const TESTIMONIALS: Testimonial[] = [
   {
