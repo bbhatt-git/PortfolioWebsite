@@ -17,7 +17,7 @@ const CustomCursor: React.FC = () => {
     const moveCursor = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       
-      // Move dot instantly
+      // Move dot instantly using transform-gpu logic
       if (cursorRef.current) {
         cursorRef.current.style.transform = `translate3d(${clientX}px, ${clientY}px, 0)`;
       }
@@ -57,7 +57,7 @@ const CustomCursor: React.FC = () => {
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
 
-    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mousemove', moveCursor, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -79,7 +79,7 @@ const CustomCursor: React.FC = () => {
       {/* Main Cursor Dot */}
       <div 
         ref={cursorRef}
-        className={`fixed top-0 left-0 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference bg-white transition-all duration-100 ease-out ${
+        className={`fixed top-0 left-0 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference bg-white transition-all duration-100 ease-out will-change-transform ${
           isClicking ? 'w-2 h-2' : 'w-2.5 h-2.5'
         }`}
       />
@@ -87,8 +87,8 @@ const CustomCursor: React.FC = () => {
       {/* Trailing Ring */}
       <div 
         ref={followerRef}
-        className={`fixed top-0 left-0 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference border border-white transition-all duration-300 ease-out ${
-          isPointer ? 'w-12 h-12 opacity-80 border-2' : 'w-6 h-6 opacity-50'
+        className={`fixed top-0 left-0 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference border border-white transition-all duration-[400ms] ease-expo will-change-transform ${
+          isPointer ? 'w-12 h-12 opacity-80 border-2' : 'w-6 h-6 opacity-40'
         } ${isClicking ? 'scale-75' : 'scale-100'}`}
       />
     </>
