@@ -143,9 +143,10 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             >
               <i className="fas fa-search text-xs"></i>
             </button>
+            {/* TERMINAL BUTTON (Visible on Mobile) */}
             <button 
               onClick={openTerminal} 
-              className="hidden md:flex w-8 h-8 items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
+              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Terminal"
             >
               <i className="fas fa-terminal text-xs"></i>

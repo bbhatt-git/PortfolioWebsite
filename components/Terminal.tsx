@@ -74,14 +74,13 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-2 md:p-4 transition-all duration-300" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all duration-300" onClick={onClose}>
       <div 
-        className="w-[95%] md:w-full md:max-w-3xl h-[60vh] md:h-[550px] relative rounded-xl overflow-hidden flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] shadow-2xl border border-white/10"
+        className="w-[95%] md:w-full md:max-w-3xl h-[50vh] md:h-[550px] relative rounded-xl overflow-hidden flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] shadow-2xl border border-white/20"
         onClick={e => e.stopPropagation()}
         style={{
-            background: 'rgba(20, 20, 25, 0.85)',
-            backdropFilter: 'blur(30px) saturate(180%)',
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 24px 60px rgba(0,0,0,0.7)'
+            background: 'rgba(20, 20, 25, 0.95)',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.1), 0 24px 60px rgba(0,0,0,0.8)'
         }}
       >
         {/* Liquid Glass Reflection/Sheen */}
@@ -89,16 +88,16 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
         {/* macOS Title Bar */}
-        <div className="relative z-10 bg-white/5 backdrop-blur-xl px-4 py-3.5 flex items-center justify-between border-b border-white/5 select-none">
+        <div className="relative z-10 bg-white/5 backdrop-blur-xl px-4 py-3 flex items-center justify-between border-b border-white/10 select-none">
           <div className="flex gap-2 group">
             <button 
                 onClick={onClose}
-                className="w-3 h-3 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 border border-[#E0443E] shadow-sm flex items-center justify-center transition-all group"
+                className="w-4 h-4 rounded-full bg-[#FF5F57] hover:bg-[#FF5F57]/80 border border-[#E0443E] shadow-sm flex items-center justify-center transition-all group"
             >
-                <i className="fas fa-times text-[6px] text-black/60 opacity-0 group-hover:opacity-100"></i>
+                <i className="fas fa-times text-[8px] text-black/60 opacity-0 group-hover:opacity-100"></i>
             </button>
-            <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
+            <div className="w-4 h-4 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
+            <div className="w-4 h-4 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
           </div>
           
           <div className="flex items-center gap-2 opacity-60 absolute left-1/2 -translate-x-1/2">
@@ -143,6 +142,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
               autoFocus
               autoComplete="off"
               spellCheck="false"
+              autoCapitalize="none"
             />
           </div>
           {/* Custom Block Cursor */}
