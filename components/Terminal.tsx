@@ -33,7 +33,6 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Focus with a slight delay to ensure render is complete
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
@@ -54,7 +53,6 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       if (cmd === '') {
         response = '';
       } else if (commands[args[0]]) {
-         // Special handling for navigation
          if (args[0] === 'projects') {
             document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' });
             setTimeout(onClose, 800);
@@ -80,109 +78,94 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-300 px-4" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md px-4 transition-opacity duration-300"
+      onClick={onClose}
+    >
       <div 
-        className="w-full max-w-3xl h-[70vh] md:h-[600px] relative flex flex-col font-mono text-sm transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] border border-blue-500/30 overflow-hidden bg-[#0a0a0a]/95 shadow-[0_0_50px_rgba(0,123,255,0.15)] rounded-lg"
+        className="w-full max-w-3xl h-[600px] md:h-[500px] relative flex flex-col transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] overflow-hidden rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10"
         onClick={e => e.stopPropagation()}
+        style={{
+            background: 'rgba(20, 20, 25, 0.75)',
+            backdropFilter: 'blur(40px) saturate(180%)',
+            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 20px 40px rgba(0,0,0,0.4)'
+        }}
       >
-        {/* CRT Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.03),rgba(0,255,0,0.01),rgba(0,0,255,0.03))] bg-[length:100%_3px,3px_100%] bg-repeat opacity-50"></div>
+        {/* Liquid Glass Reflection Overlay */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-white/10 via-transparent to-transparent z-10 opacity-50"></div>
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent z-10"></div>
         
-        {/* HUD Header */}
-        <div className="relative z-30 bg-[#121212] px-4 py-3 flex items-center justify-between border-b border-blue-500/20 select-none">
-          <div className="flex items-center gap-3">
-             <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
-             </div>
-             <div className="h-4 w-[1px] bg-gray-700 mx-1"></div>
-             <div className="flex items-center gap-2">
-                 <i className="fas fa-terminal text-blue-400 text-xs"></i>
-                 <span className="text-xs font-bold text-gray-300 tracking-wider">TERMINAL</span>
-             </div>
-          </div>
-          
-          <div className="hidden md:flex gap-4 text-[10px] text-blue-400/60 font-medium">
-             <span>CPU: NORMAL</span>
-             <span>MEM: 64TB</span>
-          </div>
+        {/* Title Bar */}
+        <div className="relative z-20 h-11 flex items-center px-4 bg-white/5 border-b border-white/5 select-none shrink-0 justify-between backdrop-blur-xl">
+           <div className="flex gap-2 group">
+              <button 
+                onClick={onClose} 
+                className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] hover:bg-[#FF5F57]/80 flex items-center justify-center text-[8px] text-black/50 transition-colors"
+              >
+                 <i className="fas fa-times opacity-0 group-hover:opacity-100"></i>
+              </button>
+              <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
+           </div>
 
-          <button 
-                onClick={onClose}
-                className="text-gray-500 hover:text-white transition-colors"
-            >
-                <i className="fas fa-times"></i>
-          </button>
+           <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-60 text-gray-300">
+               <i className="fas fa-terminal text-[10px]"></i>
+               <span className="text-xs font-medium tracking-wide font-sans">bhupesh — -zsh</span>
+           </div>
         </div>
 
         {/* Terminal Body */}
         <div 
-            className="relative z-30 flex-1 p-4 md:p-6 overflow-y-auto text-blue-100 custom-scrollbar" 
+            className="relative z-10 flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar"
             ref={scrollRef}
             onClick={handleContainerClick}
-            style={{ 
-                fontFamily: '"JetBrains Mono", monospace',
-                textShadow: '0 0 5px rgba(0, 123, 255, 0.3)'
-            }}
         >
-          {history.map((line, i) => (
-            <div key={i} className="mb-2 break-words leading-relaxed text-xs md:text-sm">
-               {line.startsWith('root@') ? (
-                   <div className="flex flex-wrap gap-x-2">
-                       <span className="text-pink-500 font-bold">root@portfolio</span>
-                       <span className="text-gray-400 font-bold">:</span>
-                       <span className="text-blue-400 font-bold">~</span>
-                       <span className="text-blue-400 font-bold">$</span>
-                       <span className="text-white">{line.split('$ ')[1]}</span>
-                   </div>
-               ) : (
-                   <span className={`block whitespace-pre-wrap ${line.startsWith('ERROR') ? 'text-red-400' : 'text-blue-100/90'}`}>{line}</span>
-               )}
-            </div>
-          ))}
-          
-          {/* Input Line */}
-          <div className="flex flex-wrap items-center gap-x-2 mt-2 text-xs md:text-sm relative">
-             {/* Prompt */}
-             <div className="flex gap-x-2 shrink-0">
-                <span className="text-pink-500 font-bold">root@portfolio</span>
-                <span className="text-gray-400 font-bold">:</span>
-                <span className="text-blue-400 font-bold">~</span>
-                <span className="text-blue-400 font-bold">$</span>
-             </div>
-            
-            <div className="relative flex-1 min-w-[50px] flex items-center">
-                {/* Visual Representation of Input */}
-                <span className="text-white whitespace-pre-wrap break-all">{input}</span>
+            <div 
+                className="font-mono text-[13px] md:text-sm leading-relaxed text-[#D0D0D0]"
+                style={{ fontFamily: '"JetBrains Mono", monospace' }}
+            >
+                {history.map((line, i) => (
+                    <div key={i} className="mb-1.5 break-words whitespace-pre-wrap">
+                       {line.startsWith('root@') ? (
+                           <div className="inline">
+                               <span className="text-[#ff5f57] font-bold">root@portfolio</span>
+                               <span className="text-gray-500 mx-1">:</span>
+                               <span className="text-[#00C7FC] font-bold">~</span>
+                               <span className="text-gray-500 mx-1">$</span>
+                               <span className="text-gray-100">{line.split('$ ')[1]}</span>
+                           </div>
+                       ) : (
+                           <span className={line.startsWith('ERROR') ? 'text-[#ff5f57]' : 'text-[#D0D0D0]'}>{line}</span>
+                       )}
+                    </div>
+                ))}
                 
-                {/* Blinking Block Cursor */}
-                <span className="inline-block w-2 md:w-2.5 h-4 md:h-5 bg-blue-500/80 animate-pulse ml-[1px] align-middle shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
-
-                {/* Hidden Real Input - Captures typing but is invisible */}
-                <input
-                    ref={inputRef}
-                    type="text"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-default"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleCommand}
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    spellCheck="false"
-                    autoFocus
-                />
+                {/* Active Input Line - Flex Layout for Inline Cursor */}
+                <div className="flex flex-row items-baseline flex-wrap">
+                    <span className="text-[#ff5f57] font-bold shrink-0">root@portfolio</span>
+                    <span className="text-gray-500 mx-1 shrink-0">:</span>
+                    <span className="text-[#00C7FC] font-bold shrink-0">~</span>
+                    <span className="text-gray-500 mx-1 shrink-0">$</span>
+                    
+                    <div className="relative flex-1 min-w-[10px] inline-block">
+                         <span className="text-gray-100 whitespace-pre-wrap break-all">{input}</span>
+                         <span className="inline-block w-2 h-4 bg-[#A8A8A8] ml-[1px] animate-[pulse_1s_steps(2,start)_infinite] align-middle translate-y-[2px]"></span>
+                         <input 
+                            ref={inputRef}
+                            type="text"
+                            className="absolute inset-0 opacity-0 cursor-default h-full w-full"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={handleCommand}
+                            autoComplete="off"
+                            autoCorrect="off"
+                            autoCapitalize="none"
+                            spellCheck="false"
+                            autoFocus
+                         />
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        
-        {/* Footer HUD */}
-        <div className="relative z-30 h-8 border-t border-blue-500/20 bg-[#121212] flex items-center justify-between px-4 text-[10px] text-gray-500 uppercase tracking-wider">
-            <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-               <span>ONLINE</span>
-            </div>
-            <span>v2.4.0</span>
         </div>
       </div>
     </div>
