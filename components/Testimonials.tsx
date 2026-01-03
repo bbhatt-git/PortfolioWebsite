@@ -34,8 +34,8 @@ const Testimonials: React.FC = () => {
         // Only run auto-scroll logic on mobile devices (< 768px) where we use overflow-x-auto
         // AND when not paused by user interaction
         if (!isPaused && window.innerWidth < 768) { 
-             // Using 1px speed to ensure movement on all pixel densities
-             scrollContainer.scrollLeft += 1; 
+             // Increased speed to 2px per frame for "normal" speed feel (approx 120px/sec at 60fps)
+             scrollContainer.scrollLeft += 2; 
 
              // Infinite scroll reset logic
              // If we have scrolled past half the content (the first set of testimonials), reset to 0
