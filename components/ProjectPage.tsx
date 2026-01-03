@@ -286,11 +286,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                                 <i className="fas fa-external-link-alt text-xs"></i> Open Deployment
                             </a>
                         )}
-                        {project.codeUrl && (
-                            <a href={project.codeUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-5 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 shadow-lg">
-                                <i className="fab fa-github text-sm"></i> Source Code
-                            </a>
-                        )}
+                        {/* Source Code Button REMOVED here */}
                         <button onClick={openContactModal} className="px-10 py-5 rounded-2xl bg-black dark:bg-[#1C1C1E] text-white font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:opacity-80 hover:-translate-y-1 shadow-lg">
                             Project Inquiry
                         </button>
@@ -351,37 +347,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
               </div>
             </section>
 
-            {/* NARRATIVE SECTION */}
-            <section className="py-24 md:py-32">
-              <div className="container mx-auto px-6">
-                <Reveal variant="slide">
-                  <div className="flex flex-col items-start mb-16">
-                    <h2 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.5em] mb-4">The Narrative</h2>
-                    <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Case Study Breakdown</h3>
-                  </div>
-                </Reveal>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {[
-                    { title: 'The Challenge', desc: 'Implementing a scalable architecture that handles high-concurrent traffic while maintaining ultra-low latency user interface and consistent design language.', icon: 'fa-triangle-exclamation', color: 'text-orange-500' },
-                    { title: 'The Solution', desc: 'Integrated a modern tech stack centered on React and Node.js with distributed database systems and real-time synchronization hooks for maximum responsiveness.', icon: 'fa-lightbulb', color: 'text-blue-600' },
-                    { title: 'The Results', desc: 'Successfully deployed a production-ready environment achieving 99.9% uptime and a significant reduction in system overhead compared to legacy frameworks.', icon: 'fa-chart-line', color: 'text-green-500' }
-                  ].map((item, i) => (
-                    <Reveal key={i} delay={i * 200} variant="3d">
-                      <div className="h-full bg-white dark:bg-[#161618] p-10 md:p-12 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all">
-                        <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-xl mb-8 border border-gray-100 dark:border-white/5">
-                           <i className={`fas ${item.icon} ${item.color}`}></i>
-                        </div>
-                        <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4">{item.title}</h3>
-                        <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </Reveal>
-                  ))}
-                </div>
-              </div>
-            </section>
+            {/* NARRATIVE SECTION REMOVED */}
 
             {/* CALL TO ACTION */}
             <section className="py-32 md:py-48 text-center relative overflow-hidden">
