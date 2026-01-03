@@ -33,8 +33,13 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      // Small delay to ensure render
+      setTimeout(() => inputRef.current?.focus(), 100);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
     }
+    return () => { document.body.style.overflow = 'auto'; }
   }, [isOpen]);
 
   useEffect(() => {
@@ -79,14 +84,14 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md px-4 transition-opacity duration-300"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md px-3 md:px-4 py-6 md:py-0 transition-opacity duration-300"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-3xl h-[600px] md:h-[500px] relative flex flex-col transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] overflow-hidden rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10"
+        className="w-full max-w-3xl h-[85vh] md:h-[500px] relative flex flex-col transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] overflow-hidden rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10"
         onClick={e => e.stopPropagation()}
         style={{
-            background: 'rgba(20, 20, 25, 0.75)',
+            background: 'rgba(20, 20, 25, 0.85)',
             backdropFilter: 'blur(40px) saturate(180%)',
             boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 20px 40px rgba(0,0,0,0.4)'
         }}
@@ -96,8 +101,8 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent z-10"></div>
         
         {/* Title Bar */}
-        <div className="relative z-20 h-11 flex items-center px-4 bg-white/5 border-b border-white/5 select-none shrink-0 justify-between backdrop-blur-xl">
-           <div className="flex gap-2 group">
+        <div className="relative z-20 h-12 flex items-center px-4 bg-white/5 border-b border-white/5 select-none shrink-0 justify-between backdrop-blur-xl">
+           <div className="flex gap-2 group p-2 -ml-2">
               <button 
                 onClick={onClose} 
                 className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] hover:bg-[#FF5F57]/80 flex items-center justify-center text-[8px] text-black/50 transition-colors"
@@ -121,11 +126,11 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             onClick={handleContainerClick}
         >
             <div 
-                className="font-mono text-[13px] md:text-sm leading-relaxed text-[#D0D0D0]"
+                className="font-mono text-[14px] md:text-sm leading-relaxed text-[#D0D0D0]"
                 style={{ fontFamily: '"JetBrains Mono", monospace' }}
             >
                 {history.map((line, i) => (
-                    <div key={i} className="mb-1.5 break-words whitespace-pre-wrap">
+                    <div key={i} className="mb-2 break-words whitespace-pre-wrap">
                        {line.startsWith('root@') ? (
                            <div className="inline">
                                <span className="text-[#ff5f57] font-bold">root@portfolio</span>
@@ -147,13 +152,13 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                     <span className="text-[#00C7FC] font-bold shrink-0">~</span>
                     <span className="text-gray-500 mx-1 shrink-0">$</span>
                     
-                    <div className="relative flex-1 min-w-[10px] inline-block">
+                    <div className="relative flex-1 min-w-[20px] inline-block ml-2">
                          <span className="text-gray-100 whitespace-pre-wrap break-all">{input}</span>
                          <span className="inline-block w-2 h-4 bg-[#A8A8A8] ml-[1px] animate-[pulse_1s_steps(2,start)_infinite] align-middle translate-y-[2px]"></span>
                          <input 
                             ref={inputRef}
                             type="text"
-                            className="absolute inset-0 opacity-0 cursor-default h-full w-full"
+                            className="absolute inset-0 opacity-0 cursor-default h-full w-full text-[16px]" 
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleCommand}

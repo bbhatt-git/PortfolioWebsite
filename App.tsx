@@ -11,12 +11,13 @@ import Layout from './components/Layout';
 import CommandPalette from './components/CommandPalette';
 import Terminal from './components/Terminal';
 import Admin from './components/Admin';
+import CV from './components/CV';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(window.location.hash === '#/admin');
+  const [currentRoute, setCurrentRoute] = useState(window.location.hash);
 
   useEffect(() => {
     // Theme Logic
@@ -31,9 +32,9 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Handle Hash Change for Admin Route
+    // Handle Hash Change for Routing
     const handleHashChange = () => {
-      setIsAdmin(window.location.hash === '#/admin');
+      setCurrentRoute(window.location.hash);
     };
 
     window.addEventListener('hashchange', handleHashChange);
@@ -71,9 +72,13 @@ const App: React.FC = () => {
     }
   };
 
-  // Render Admin Panel if hash is #/admin
-  if (isAdmin) {
+  // Route Handling
+  if (currentRoute === '#/admin') {
     return <Admin />;
+  }
+
+  if (currentRoute === '#/cv') {
+    return <CV />;
   }
 
   return (

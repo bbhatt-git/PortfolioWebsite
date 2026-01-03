@@ -57,11 +57,11 @@ const Testimonials: React.FC = () => {
         {/* 
             Container with Scroll Logic:
             - Desktop (md+): overflow-hidden (for Marquee)
-            - Mobile: overflow-x-auto (for Swipe)
+            - Mobile: overflow-x-auto, snap-x mandatory (for Swipe & Center Snap)
         */}
         <div 
           ref={scrollRef}
-          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 scroll-smooth touch-pan-x z-20"
+          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} /* Hide scrollbar Firefox/IE */
         >
            {/* Fade edges - Left mask hidden on mobile to fix visual cut-off of the first card */}
@@ -86,7 +86,7 @@ const Testimonials: React.FC = () => {
                  <div 
                     key={`${testi.id}-${index}`} 
                     onClick={() => openModal(testi)}
-                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer"
+                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center"
                  >
                     <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
                         {/* Glass Shine */}

@@ -108,10 +108,10 @@ const About: React.FC = () => {
                           Open for new opportunities
                       </div>
                       <button 
-                         onClick={() => window.open('assets/cv.pdf', '_blank')}
+                         onClick={() => window.location.hash = '#/cv'}
                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-80 transition-opacity"
                       >
-                         <i className="fas fa-download"></i> Download CV
+                         <i className="fas fa-file-alt"></i> View CV
                       </button>
                    </div>
                </div>
