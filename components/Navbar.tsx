@@ -14,8 +14,8 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
 
   useEffect(() => {
     const handleScroll = () => {
-      // Adjusted threshold for smoother feel
-      setIsScrolled(window.scrollY > 30);
+      // Threshold increased to 50 for a more deliberate transition
+      setIsScrolled(window.scrollY > 50);
 
       const sections = document.querySelectorAll('section');
       let current = '';
@@ -60,14 +60,14 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isScrolled ? 'pt-3' : 'pt-6 md:pt-8'
+        className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          isScrolled ? 'pt-2 md:pt-4' : 'pt-6 md:pt-10'
         }`}
       >
         <div 
-          className={`relative flex items-center justify-between transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`relative flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
             isScrolled 
-              ? 'w-[92%] md:w-[70%] lg:w-[60%] bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-4 md:px-6 py-2 border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]' 
+              ? 'w-[92%] md:w-[70%] lg:w-[60%] bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-full px-4 md:px-6 py-2.5 border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.05)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]' 
               : 'w-full container px-4 md:px-6 py-2 bg-transparent'
           }`}
         >
@@ -78,7 +78,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             className="group flex items-center relative z-50 select-none"
           >
              {/* Scrolled Logo - BR */}
-             <div className={`transition-all duration-500 ease-expo overflow-hidden ${
+             <div className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden ${
                  isScrolled ? 'max-w-[50px] opacity-100 mr-0' : 'max-w-0 opacity-0 mr-0'
              }`}>
                 <div className="w-10 h-10 rounded-xl bg-black dark:bg-white shadow-lg flex items-center justify-center whitespace-nowrap transition-colors duration-300">
@@ -87,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
              </div>
 
              {/* Default Logo - >_ Bhupesh Bhatt */}
-             <div className={`transition-all duration-500 ease-expo overflow-hidden flex items-center ${
+             <div className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden flex items-center ${
                  isScrolled ? 'max-w-0 opacity-0' : 'max-w-[300px] opacity-100'
              }`}>
                  <div className="flex items-center gap-3 pl-1 origin-left">
@@ -115,14 +115,14 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
                   <a
                     href={link.href}
                     onClick={(e) => handleLinkClick(e, link.href)}
-                    className={`relative px-4 py-1.5 text-sm font-medium transition-all duration-500 ease-expo rounded-full group ${
+                    className={`relative px-4 py-1.5 text-sm font-medium transition-all duration-500 ease-out rounded-full group ${
                       activeSection === link.href.substring(1)
                         ? 'text-black dark:text-white'
                         : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
                     }`}
                   >
                     {/* Hover Pill Effect */}
-                    <span className={`absolute inset-0 rounded-full bg-black/5 dark:bg-white/10 scale-90 opacity-0 transition-all duration-300 ease-expo group-hover:scale-100 group-hover:opacity-100 ${
+                    <span className={`absolute inset-0 rounded-full bg-black/5 dark:bg-white/10 scale-90 opacity-0 transition-all duration-300 ease-out group-hover:scale-100 group-hover:opacity-100 ${
                        activeSection === link.href.substring(1) ? 'scale-100 opacity-100 bg-black/5 dark:bg-white/10' : ''
                     }`}></span>
                     

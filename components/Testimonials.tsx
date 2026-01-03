@@ -6,7 +6,7 @@ import { Testimonial } from '../types';
 const Testimonials: React.FC = () => {
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
 
-  // Create a duplicated list for seamless looping
+  // Create a duplicated list for seamless looping (primarily for desktop marquee)
   const duplicatedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
 
   const openModal = (testimonial: Testimonial) => {
@@ -39,18 +39,37 @@ const Testimonials: React.FC = () => {
           </div>
         </Reveal>
 
-        {/* Marquee Slider Container */}
-        <div className="relative w-full overflow-hidden mask-image-linear-gradient">
-           {/* Fade edges */}
-           <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
-           <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
+        {/* 
+            Container with Scroll Logic:
+            - Desktop (md+): overflow-hidden (for Marquee)
+            - Mobile: overflow-x-auto, snap-x (for Swipe)
+        */}
+        <div 
+          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 snap-x snap-mandatory scroll-smooth touch-pan-x z-20"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} /* Hide scrollbar Firefox/IE */
+        >
+           {/* Fade edges - pointer events none allows scrolling through them */}
+           <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
+           <div className="absolute inset-y-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
+           
+           {/* Webkit scrollbar hide style injection */}
+           <style>{`
+             .no-scrollbar::-webkit-scrollbar {
+               display: none;
+             }
+           `}</style>
 
-           <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+           {/* 
+              Inner Flex Container:
+              - Desktop (md+): animate-marquee active
+              - Mobile: No animation, just flex items for scrolling
+           */}
+           <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-6 md:px-0 no-scrollbar">
              {duplicatedTestimonials.map((testi, index) => (
                  <div 
                     key={`${testi.id}-${index}`} 
                     onClick={() => openModal(testi)}
-                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-6 md:mr-8 group relative cursor-pointer"
+                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center"
                  >
                     <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
                         {/* Glass Shine */}
