@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Reveal from './Reveal';
+import MagneticButton from './MagneticButton';
 
 const ROLES = [
   "Full Stack Web Developer",
@@ -61,8 +62,8 @@ const Hero: React.FC = () => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 25; // Division controls sensitivity
-    const y = (e.clientY - top - height / 2) / 25;
+    const x = (e.clientX - left - width / 2) / 20; // Increased sensitivity (was 25)
+    const y = (e.clientY - top - height / 2) / 20;
 
     setRotate({ x: -y, y: x });
   };
@@ -92,21 +93,21 @@ const Hero: React.FC = () => {
         <div className="absolute inset-0 pointer-events-none preserve-3d">
             {/* React Icon */}
             <div className="absolute top-[10%] left-[10%] animate-float-slow" style={{ transform: 'translateZ(60px)' }}>
-                <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center shadow-2xl opacity-80">
+                <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center shadow-2xl opacity-80 backdrop-blur-xl border border-white/30">
                     <i className="fab fa-react text-4xl text-[#61DAFB] animate-spin-slow"></i>
                 </div>
             </div>
             
             {/* Code Icon */}
             <div className="absolute bottom-[20%] right-[15%] animate-float-medium" style={{ transform: 'translateZ(80px)' }}>
-                <div className="w-20 h-20 glass rounded-full flex items-center justify-center shadow-2xl opacity-80 bg-gradient-to-br from-blue-500/20 to-purple-500/20">
+                <div className="w-20 h-20 glass rounded-full flex items-center justify-center shadow-2xl opacity-80 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/30">
                      <i className="fas fa-code text-3xl text-blue-500"></i>
                 </div>
             </div>
 
              {/* Lightning Icon */}
              <div className="absolute top-[20%] right-[20%] animate-float-fast" style={{ transform: 'translateZ(40px)' }}>
-                <div className="w-12 h-12 glass rounded-xl flex items-center justify-center shadow-lg opacity-60">
+                <div className="w-12 h-12 glass rounded-xl flex items-center justify-center shadow-lg opacity-60 backdrop-blur-xl border border-white/30">
                      <i className="fas fa-bolt text-2xl text-yellow-500"></i>
                 </div>
             </div>
@@ -115,7 +116,7 @@ const Hero: React.FC = () => {
         {/* Status Badge */}
         <div style={{ transform: 'translateZ(30px)' }} className="mb-8">
           <Reveal>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/50 dark:border-white/10 shadow-lg">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-md">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
@@ -140,7 +141,7 @@ const Hero: React.FC = () => {
         {/* Typing Effect */}
         <div style={{ transform: 'translateZ(40px)' }} className="mb-10 h-8 flex items-center justify-center">
            <Reveal delay={200}>
-             <div className="text-xl md:text-2xl font-mono text-gray-600 dark:text-gray-300 bg-white/30 dark:bg-black/20 backdrop-blur-sm px-6 py-2 rounded-lg border border-white/20">
+             <div className="text-xl md:text-2xl font-mono text-gray-600 dark:text-gray-300 bg-white/30 dark:bg-black/20 backdrop-blur-md px-6 py-2 rounded-lg border border-white/20 shadow-sm">
                 <span className="text-blue-500 mr-2">&gt;</span>
                 {text}
                 <span className="animate-pulse ml-1 inline-block w-2.5 h-5 bg-blue-500 align-middle"></span>
@@ -158,23 +159,20 @@ const Hero: React.FC = () => {
           </Reveal>
         </div>
 
-        {/* Buttons */}
+        {/* Buttons with Magnetic & Glassmorphism */}
         <div style={{ transform: 'translateZ(60px)' }}>
           <Reveal delay={400}>
             <div className="flex flex-col sm:flex-row gap-5 items-center justify-center">
-              <a 
-                href="#work" 
-                className="group relative px-8 py-4 rounded-2xl bg-blue-600 text-white font-bold overflow-hidden shadow-lg shadow-blue-500/30 transition-all hover:scale-105 active:scale-95 hover:shadow-blue-500/50"
-              >
+              
+              <MagneticButton href="#work" variant="glass-primary" className="group overflow-hidden">
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
                 <span className="relative flex items-center gap-2">View Projects <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></span>
-              </a>
-              <a 
-                href="#contact" 
-                className="px-8 py-4 rounded-2xl bg-white/50 dark:bg-white/10 backdrop-blur-md border border-gray-200 dark:border-white/10 text-black dark:text-white font-bold hover:bg-white dark:hover:bg-white/20 transition-all hover:scale-105 active:scale-95"
-              >
+              </MagneticButton>
+
+              <MagneticButton href="#contact" variant="glass-secondary">
                 Contact Me
-              </a>
+              </MagneticButton>
+
             </div>
           </Reveal>
         </div>
