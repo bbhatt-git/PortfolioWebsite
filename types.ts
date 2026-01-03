@@ -1,4 +1,3 @@
-
 export interface Project {
   id: string;
   title: string;
@@ -13,11 +12,6 @@ export interface Project {
    * Defines the display sequence of the project.
    */
   order: number;
-  caseStudy?: {
-    challenge: string;
-    solution: string;
-    results: string;
-  };
 }
 
 export interface Testimonial {

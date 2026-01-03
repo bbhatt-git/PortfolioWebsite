@@ -64,10 +64,8 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
              className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-105" 
           />
           
-          {/* Gradient Overlay at Bottom of Image for smooth transition */}
           <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/10 to-transparent dark:from-[#161618]/50"></div>
 
-          {/* Glass Overlay on Image (visible on hover) - View Details */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] flex items-center justify-center">
              <div className="px-6 py-3 rounded-full bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold text-sm transform scale-90 opacity-0 translate-y-4 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl flex items-center gap-2">
                <span>View Details</span> <i className="fas fa-arrow-right text-xs"></i>
@@ -75,7 +73,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="p-6 md:p-8 flex flex-col flex-1 relative">
            
            <div className="flex justify-between items-start mb-3 relative z-10">
@@ -97,7 +94,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
              {project.desc}
            </p>
 
-           {/* Tech Stack - Modern Clean Pills */}
            <div className="flex flex-wrap gap-2 mt-auto relative z-10 border-t border-gray-100 dark:border-white/5 pt-4">
              {project.stack.split(/[•,]/).slice(0, 3).map((tech, i) => (
                 <span key={i} className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-md border border-gray-200 dark:border-white/5">
@@ -188,28 +184,18 @@ const Projects: React.FC = () => {
         )}
       </div>
 
-      {/* Full Page Project Detail Overlay */}
       {selectedProject && (
         <div className="fixed inset-0 z-[100] bg-[#F2F2F7] dark:bg-[#050505] overflow-y-auto animate-slide-up">
            
-           {/* Sticky Header Actions */}
            <div className="fixed top-0 left-0 right-0 z-[110] flex justify-between items-center px-6 py-4 md:px-12 md:py-6 pointer-events-none">
               <div className="pointer-events-auto">
-                 <button onClick={closeModal} className="w-12 h-12 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-xl hover:scale-110 transition-transform">
+                 <button onClick={closeModal} className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-xl hover:scale-110 transition-transform">
                     <i className="fas fa-arrow-left"></i>
                  </button>
               </div>
-              <div className="pointer-events-auto flex gap-3">
-                 {selectedProject.liveUrl && (
-                    <a href={selectedProject.liveUrl} target="_blank" className="px-6 py-3 rounded-full bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-colors">
-                       Visit Site
-                    </a>
-                 )}
-              </div>
            </div>
 
-           {/* Hero Image Section */}
-           <div className="w-full h-[40vh] md:h-[65vh] relative overflow-hidden group">
+           <div className="w-full h-[40vh] md:h-[60vh] relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F2F2F7] dark:to-[#050505] z-10"></div>
                <img 
                  src={selectedProject.image} 
@@ -218,127 +204,73 @@ const Projects: React.FC = () => {
                />
            </div>
 
-           {/* Content Container */}
-           <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-24 md:-mt-48 pb-32">
-               <div className="max-w-5xl mx-auto">
+           <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-20 md:-mt-32 pb-32">
+               <div className="max-w-4xl mx-auto">
                    
-                   {/* Title Card */}
-                   <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/20 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
+                   <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/40 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
                        
-                       <h1 className="text-3xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight relative z-10">{selectedProject.title}</h1>
+                       <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-black dark:text-white mb-6 leading-tight relative z-10 tracking-tighter">{selectedProject.title}</h1>
+                       
                        <div className="flex flex-wrap gap-2 mb-8 relative z-10">
                           {selectedProject.stack.split(/[•,]/).map((tech, i) => (
-                             <span key={i} className="px-4 py-2 rounded-xl bg-white/50 dark:bg-white/10 border border-white/20 text-gray-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+                             <span key={i} className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-gray-700 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest backdrop-blur-md">
                                 {tech.trim()}
                              </span>
                           ))}
                        </div>
-                       <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-light relative z-10">
+                       
+                       <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed font-medium relative z-10 mb-10">
                           {selectedProject.desc}
                        </p>
 
-                       {/* Key Highlights Section */}
                        {selectedProject.highlights && selectedProject.highlights.length > 0 && (
-                           <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10 relative z-10">
-                               <h4 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4">Key Highlights</h4>
-                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                   {selectedProject.highlights.map((highlight, idx) => (
-                                       <div key={idx} className="flex items-start gap-3">
-                                           <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mt-0.5 shrink-0">
-                                               <i className="fas fa-check text-[10px]"></i>
-                                           </div>
-                                           <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">{highlight}</p>
+                           <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                               {selectedProject.highlights.map((highlight, idx) => (
+                                   <div key={idx} className="flex items-center gap-3 p-3 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/5">
+                                       <div className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                           <i className="fas fa-check text-[10px]"></i>
                                        </div>
-                                   ))}
-                               </div>
+                                       <p className="text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-tight">{highlight}</p>
+                                   </div>
+                               ))}
                            </div>
                        )}
-                   </div>
 
-                   {/* Case Study Grid */}
-                   {(selectedProject.caseStudy?.challenge || selectedProject.caseStudy?.solution || selectedProject.caseStudy?.results) && (
-                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-                           {/* Challenge */}
-                           {selectedProject.caseStudy.challenge && (
-                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform duration-300">
-                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                      <span className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i className="fas fa-mountain"></i></span>
-                                      The Challenge
-                                   </h3>
-                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
-                                      {selectedProject.caseStudy.challenge}
-                                   </p>
-                               </div>
+                       <div className="mt-12 flex flex-col sm:flex-row gap-4 relative z-10">
+                           {selectedProject.liveUrl && (
+                              <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-center text-sm shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
+                                 <i className="fas fa-globe group-hover:rotate-12 transition-transform"></i> Live Preview
+                              </a>
                            )}
-
-                           {/* Solution */}
-                           {selectedProject.caseStudy.solution && (
-                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-green-500 hover:-translate-y-1 transition-transform duration-300">
-                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                      <span className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center text-lg"><i className="fas fa-lightbulb"></i></span>
-                                      The Solution
-                                   </h3>
-                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
-                                      {selectedProject.caseStudy.solution}
-                                   </p>
-                               </div>
-                           )}
-
-                           {/* Results */}
-                           {selectedProject.caseStudy.results && (
-                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-purple-500 hover:-translate-y-1 transition-transform duration-300">
-                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
-                                      <span className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-lg"><i className="fas fa-chart-line"></i></span>
-                                      The Results
-                                   </h3>
-                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
-                                      {selectedProject.caseStudy.results}
-                                   </p>
-                               </div>
+                           {selectedProject.codeUrl && (
+                              <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-white/10 dark:bg-white/10 backdrop-blur-xl border border-white/20 dark:border-white/10 text-black dark:text-white font-black text-center text-sm hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
+                                 <i className="fab fa-github-alt text-lg group-hover:scale-110 transition-transform"></i> View Code
+                              </a>
                            )}
                        </div>
-                   )}
-
-                   {/* Links Section */}
-                   <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-                       {selectedProject.liveUrl && (
-                          <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-4 md:py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-lg shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
-                             <i className="fas fa-external-link-alt"></i> Live Preview
-                          </a>
-                       )}
-                       {selectedProject.codeUrl && (
-                          <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-4 md:py-5 rounded-2xl bg-white dark:bg-white/10 text-black dark:text-white border border-gray-200 dark:border-white/10 font-bold text-center text-lg hover:bg-gray-50 dark:hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
-                             <i className="fab fa-github"></i> View Code
-                          </a>
-                       )}
                    </div>
 
-                   {/* New CTA Section */}
-                   <div className="mt-24 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-purple-600 text-center text-white relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500">
-                        {/* Decorative background elements */}
-                        <div className="absolute top-0 left-0 w-full h-full bg-noise opacity-20"></div>
-                        <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-blob"></div>
-                        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-black/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+                   <div className="mt-20 p-10 md:p-14 rounded-[2.5rem] bg-black text-center text-white relative overflow-hidden shadow-2xl">
+                        <div className="absolute inset-0 bg-noise opacity-10"></div>
+                        <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] animate-pulse"></div>
                         
                         <div className="relative z-10">
-                            <h3 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">Want to start a project like this?</h3>
-                            <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-light leading-relaxed">
-                                Let's collaborate and bring your unique vision to life with pixel-perfect design and robust code.
+                            <h3 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter">Ready to build your vision?</h3>
+                            <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-xl mx-auto font-medium leading-relaxed">
+                                Let's transform your ideas into a high-performance digital reality.
                             </p>
                             <button 
                                 onClick={() => {
                                     closeModal();
                                     setTimeout(() => {
                                       const contactSection = document.getElementById('contact');
-                                      if (contactSection) {
-                                          contactSection.scrollIntoView({ behavior: 'smooth' });
-                                      }
+                                      if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
                                     }, 100);
                                 }}
-                                className="px-10 py-4 rounded-2xl bg-white text-blue-600 font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-white/20 flex items-center gap-3 mx-auto"
+                                className="px-10 py-4 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-2xl flex items-center gap-3 mx-auto"
                             >
-                                Let's Talk <i className="fas fa-arrow-right"></i>
+                                Let's Talk <i className="fas fa-arrow-right text-[10px]"></i>
                             </button>
                         </div>
                     </div>

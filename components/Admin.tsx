@@ -25,7 +25,6 @@ const Admin: React.FC = () => {
 
   // Form State
   const [projectForm, setProjectForm] = useState({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
-  const [caseStudyForm, setCaseStudyForm] = useState({ challenge: '', solution: '', results: '' });
   const [techInput, setTechInput] = useState('');
   const [techStackList, setTechStackList] = useState<string[]>([]);
   const [highlightInput, setHighlightInput] = useState('');
@@ -78,7 +77,6 @@ const Admin: React.FC = () => {
     setSelectedMessage(msg);
     setCurrentView('message-viewer');
     
-    // Immediate local update for seen status to clear notifications instantly
     if (!msg.seen) {
       setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, seen: true } : m));
       try {
@@ -93,13 +91,11 @@ const Admin: React.FC = () => {
     if (proj) {
       setEditingProject(proj);
       setProjectForm({ title: proj.title, desc: proj.desc, liveUrl: proj.liveUrl || '', codeUrl: proj.codeUrl || '', imageUrl: proj.image });
-      setCaseStudyForm({ challenge: proj.caseStudy?.challenge || '', solution: proj.caseStudy?.solution || '', results: proj.caseStudy?.results || '' });
       setTechStackList(proj.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean));
       setHighlightsList(proj.highlights || []);
     } else {
       setEditingProject(null);
       setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
-      setCaseStudyForm({ challenge: '', solution: '', results: '' });
       setTechStackList([]);
       setHighlightsList([]);
     }
@@ -113,7 +109,6 @@ const Admin: React.FC = () => {
       image: projectForm.imageUrl || 'https://via.placeholder.com/1200x800',
       stack: techStackList.join(' • '),
       highlights: highlightsList,
-      caseStudy: caseStudyForm,
       order: editingProject ? editingProject.order : projects.length
     };
     try {
@@ -189,7 +184,6 @@ const Admin: React.FC = () => {
   return (
     <div className="h-screen flex bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-slate-200 font-sans overflow-hidden transition-colors duration-700">
       
-      {/* SIDEBAR */}
       <aside className="w-16 md:w-56 bg-black flex flex-col shrink-0 z-50">
           <div className="p-6 pb-8 flex items-center gap-3">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-black text-xs">BR</div>
@@ -207,13 +201,11 @@ const Admin: React.FC = () => {
           </div>
       </aside>
 
-      {/* MAIN */}
       <main className="flex-1 flex flex-col overflow-hidden">
           
           <header className="h-12 bg-white dark:bg-black/50 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-6 shrink-0 z-40 transition-colors">
               <h2 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">{currentView.replace('-', ' ')}</h2>
               <div className="flex items-center gap-5">
-                  {/* Theme Toggle Added */}
                   <button onClick={toggleTheme} className="w-8 h-8 rounded-lg text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
                     <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'} text-xs`}></i>
                   </button>
@@ -234,7 +226,6 @@ const Admin: React.FC = () => {
 
           <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
               
-              {/* VIEW: DASHBOARD */}
               {currentView === 'dashboard' && (
                   <div className="animate-fade-up max-w-5xl mx-auto">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -297,7 +288,6 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
-              {/* VIEW: PROJECTS LIST */}
               {currentView === 'projects-list' && (
                   <div className="animate-fade-up max-w-4xl mx-auto">
                       <div className="flex justify-between items-center mb-5">
@@ -334,7 +324,6 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
-              {/* VIEW: MESSAGES LIST */}
               {currentView === 'messages-list' && (
                   <div className="animate-fade-up max-w-4xl mx-auto">
                       <h1 className="text-sm font-black tracking-widest mb-5 uppercase text-slate-700 dark:text-slate-300">Incoming Signals</h1>
@@ -362,7 +351,6 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
-              {/* PROJECT EDITOR */}
               {currentView === 'project-editor' && (
                   <div className="animate-fade-up max-w-4xl mx-auto pb-12">
                       <div className="flex items-center justify-between mb-6 pb-4 border-b border-black/5">
@@ -434,7 +422,6 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
-              {/* VIEW: MESSAGE VIEWER */}
               {currentView === 'message-viewer' && selectedMessage && (
                   <div className="animate-fade-up flex justify-center pt-2">
                       <div className="w-full max-w-xl glass-strong rounded-2xl shadow-xl overflow-hidden flex flex-col relative animate-scale-in border border-white dark:border-white/5">
@@ -471,7 +458,6 @@ const Admin: React.FC = () => {
           </div>
       </main>
 
-      {/* PURGE CONFIRMATION MODAL */}
       {deleteModal && deleteModal.show && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fade-in">
               <div className="w-full max-w-xs glass-strong rounded-2xl border border-white dark:border-white/10 shadow-2xl animate-scale-in text-center p-8">
