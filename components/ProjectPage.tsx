@@ -232,38 +232,41 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
           </div>
         </div>
 
-        {/* HERO SECTION - Image with Overlay */}
-        <header className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden flex items-end">
-            <div className="absolute inset-0 z-0">
+        {/* HERO SECTION - Dynamic Auto-Height Image */}
+        <header className="relative w-full bg-[#050505]">
+            <div className="relative w-full">
+                {/* Image defines height of header now - 'nit height' logic */}
                 <img 
                     src={project.image} 
                     alt={project.title} 
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-auto block min-h-[40vh] max-h-[90vh] object-cover md:object-contain bg-[#050505]"
                 />
-                <div className="absolute inset-0 bg-black/30"></div>
-                {/* Gradient for text readability only - no heavy morphing */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-            </div>
+                
+                {/* Overlays */}
+                <div className="absolute inset-0 bg-black/20"></div>
+                {/* Gradient to blend image bottom into page background */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#F2F2F7] dark:from-[#050505] via-transparent to-transparent opacity-90"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
 
-            <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-24">
-                <div className="max-w-5xl">
-                    <Reveal variant="skew-up" triggerOnMount>
-                        <div className="space-y-6">
-                            <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600 text-[10px] font-black text-white uppercase tracking-[0.3em] shadow-xl shadow-blue-600/20 border border-blue-400/20">
-                                {project.category || 'System Architecture'}
-                            </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-ultra leading-[0.9] drop-shadow-2xl">
-                                {project.title}
-                            </h1>
-                            {/* Removed Description from Overlay */}
-                        </div>
-                    </Reveal>
+                <div className="absolute bottom-0 left-0 w-full z-10 pb-8 px-6">
+                    <div className="container mx-auto max-w-5xl">
+                        <Reveal variant="skew-up" triggerOnMount>
+                            <div className="space-y-4 md:space-y-6">
+                                <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600 text-[10px] font-black text-white uppercase tracking-[0.3em] shadow-xl shadow-blue-600/20 border border-blue-400/20">
+                                    {project.category || 'System Architecture'}
+                                </span>
+                                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-ultra leading-[0.9] drop-shadow-2xl">
+                                    {project.title}
+                                </h1>
+                            </div>
+                        </Reveal>
+                    </div>
                 </div>
             </div>
         </header>
 
         {/* PAGE CONTENT - Starts clearly AFTER the hero image */}
-        <div className="relative z-20 bg-[#F2F2F7] dark:bg-[#050505] pt-12 md:pt-20 border-t border-white/10">
+        <div className="relative z-20 bg-[#F2F2F7] dark:bg-[#050505] pt-12 md:pt-20">
             
             {/* NEW: Description Section in Main Content Area */}
             <div className="container mx-auto px-6 mb-16">
