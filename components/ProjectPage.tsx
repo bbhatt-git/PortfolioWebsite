@@ -62,7 +62,8 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      // Trigger scroll effect earlier
+      setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -126,6 +127,26 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
     }
   };
 
+  const currentUrl = window.location.href;
+  const shareText = project ? `Check out this project: ${project.title} by Bhupesh Bhatt` : '';
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: project?.title || 'Project Showcase',
+          text: shareText,
+          url: currentUrl,
+        });
+        setIsShareOpen(false);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+        setToast({ show: true, message: 'System sharing not available on this device', type: 'error' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#050505] flex items-center justify-center">
@@ -148,8 +169,6 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   }
 
   const techItems = project.stack ? project.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean) : [];
-  const currentUrl = window.location.href;
-  const shareText = `Check out this project: ${project.title} by Bhupesh Bhatt`;
 
   return (
     <Layout>
@@ -164,63 +183,70 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
         )}
 
         {/* TOP STICKY NAVIGATION */}
-        <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-black/5 dark:border-white/5 py-3 shadow-md' : 'py-8'}`}>
+        <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? 'bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-black/5 dark:border-white/5 py-3 shadow-md' : 'py-6'}`}>
           <div className="container mx-auto px-6 flex items-center justify-between">
+            {/* Minimal Back Icon */}
             <button 
               onClick={handleBack}
-              className={`group flex items-center gap-4 text-[10px] font-black transition-all uppercase tracking-[0.4em] ${isScrolled ? 'text-gray-500 hover:text-blue-600' : 'text-white/70 hover:text-white'}`}
+              className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all duration-300 group hover:scale-110 active:scale-95 ${
+                isScrolled 
+                  ? 'bg-gray-100 dark:bg-white/10 border-gray-200 dark:border-white/10 text-gray-600 dark:text-white' 
+                  : 'bg-black/20 border-white/10 text-white hover:bg-black/40'
+              }`}
+              title="Back to Archive"
             >
-              <i className="fas fa-long-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
-              <span>Back to Archive</span>
+              <i className="fas fa-arrow-left text-sm group-hover:-translate-x-0.5 transition-transform"></i>
             </button>
             
-            <div className={`transition-all duration-500 absolute left-1/2 -translate-x-1/2 ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+            {/* Title Fade In on Scroll */}
+            <div className={`transition-all duration-500 absolute left-1/2 -translate-x-1/2 ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                <h1 className="text-sm font-black text-gray-900 dark:text-white truncate max-w-[200px] text-center">{project.title}</h1>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                {project.liveUrl && (
-                 <a href={project.liveUrl} target="_blank" className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] hover:scale-110 transition-transform">
+                 <a href={project.liveUrl} target="_blank" className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs hover:scale-110 transition-transform shadow-lg shadow-blue-600/30">
                    <i className="fas fa-external-link-alt"></i>
                  </a>
                )}
-               <button onClick={() => setIsShareOpen(true)} className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] hover:scale-110 transition-transform ${isScrolled ? 'bg-gray-100 dark:bg-white/10 text-gray-500' : 'bg-white/10 text-white/70'}`}>
+               <button 
+                 onClick={() => setIsShareOpen(true)} 
+                 className={`w-10 h-10 rounded-full flex items-center justify-center text-xs hover:scale-110 transition-transform backdrop-blur-md border ${
+                   isScrolled 
+                    ? 'bg-gray-100 dark:bg-white/10 border-gray-200 dark:border-white/10 text-gray-600 dark:text-white' 
+                    : 'bg-black/20 border-white/10 text-white hover:bg-black/40'
+                 }`}
+               >
                   <i className="fas fa-share-nodes"></i>
                </button>
             </div>
           </div>
         </div>
 
-        {/* IMMERSIVE BACKGROUND HERO */}
-        <header className="relative w-full h-[85vh] md:h-[90vh] overflow-hidden flex items-end">
-            {/* Background Image Layer */}
+        {/* HERO SECTION - Image with Overlay */}
+        <header className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden flex items-end">
             <div className="absolute inset-0 z-0">
                 <img 
                     src={project.image} 
                     alt={project.title} 
-                    className="w-full h-full object-cover object-top scale-105"
+                    className="w-full h-full object-cover object-center"
                 />
-                
-                {/* DARK OVERLAY FOR TEXT READABILITY */}
-                <div className="absolute inset-0 bg-black/40 z-10"></div>
-
-                {/* DYNAMIC MORPHING GRADIENT BLEND */}
-                {/* This div blends the bottom of the image into the page background based on theme */}
-                <div className="absolute inset-x-0 bottom-0 h-[60%] z-20 bg-gradient-to-t from-[#F2F2F7] via-[#F2F2F7]/40 to-transparent dark:from-[#050505] dark:via-[#050505]/40 transition-colors duration-1000"></div>
+                <div className="absolute inset-0 bg-black/30"></div>
+                {/* Gradient for text readability only - no heavy morphing */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
             </div>
 
-            {/* HERO CONTENT OVER IMAGE */}
-            <div className="container mx-auto px-6 relative z-30 pb-16 md:pb-24">
-                <div className="max-w-4xl">
+            <div className="container mx-auto px-6 relative z-10 pb-16 md:pb-24">
+                <div className="max-w-5xl">
                     <Reveal variant="skew-up" triggerOnMount>
-                        <div className="space-y-4 md:space-y-6">
-                            <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600 text-[10px] font-black text-white uppercase tracking-[0.3em] shadow-xl shadow-blue-600/20">
+                        <div className="space-y-6">
+                            <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600 text-[10px] font-black text-white uppercase tracking-[0.3em] shadow-xl shadow-blue-600/20 border border-blue-400/20">
                                 {project.category || 'System Architecture'}
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-ultra leading-[0.85]">
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-ultra leading-[0.9] drop-shadow-2xl">
                                 {project.title}
                             </h1>
-                            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed font-semibold max-w-2xl">
+                            <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-medium max-w-2xl drop-shadow-md">
                                 {project.desc}
                             </p>
                         </div>
@@ -229,12 +255,12 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             </div>
         </header>
 
-        {/* PAGE CONTENT STARTS HERE (BLENDED) */}
-        <div className="relative z-40">
+        {/* PAGE CONTENT - Starts clearly AFTER the hero image */}
+        <div className="relative z-20 bg-[#F2F2F7] dark:bg-[#050505] pt-16 md:pt-24 border-t border-white/10">
             
             {/* QUICK ACTIONS BUTTONS */}
-            <div className="container mx-auto px-6 -mt-8 md:-mt-12 mb-24 md:mb-32">
-                <Reveal variant="zoom-in" triggerOnMount delay={300}>
+            <div className="container mx-auto px-6 mb-24">
+                <Reveal variant="zoom-in" triggerOnMount delay={200}>
                     <div className="flex flex-wrap gap-4 md:gap-6">
                         {project.liveUrl && (
                             <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-[0.4em] shadow-2xl shadow-blue-600/40 transition-all hover:-translate-y-1 flex items-center gap-3">
@@ -242,11 +268,11 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                             </a>
                         )}
                         {project.codeUrl && (
-                            <a href={project.codeUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-5 rounded-2xl bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-white dark:hover:bg-white/5 hover:-translate-y-1">
-                                <i className="fab fa-github text-sm"></i> Source Repository
+                            <a href={project.codeUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-5 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:bg-gray-50 dark:hover:bg-white/10 hover:-translate-y-1 shadow-lg">
+                                <i className="fab fa-github text-sm"></i> Source Code
                             </a>
                         )}
-                        <button onClick={openContactModal} className="px-10 py-5 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:opacity-80 hover:-translate-y-1">
+                        <button onClick={openContactModal} className="px-10 py-5 rounded-2xl bg-black dark:bg-[#1C1C1E] text-white font-black text-[10px] uppercase tracking-[0.4em] transition-all hover:opacity-80 hover:-translate-y-1 shadow-lg">
                             Project Inquiry
                         </button>
                     </div>
@@ -254,22 +280,22 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             </div>
 
             {/* TECHNOLOGIES SECTION */}
-            <section className="py-24 md:py-32 border-t border-black/5 dark:border-white/5 bg-white/20 dark:bg-white/5">
+            <section className="py-12 md:py-20">
               <div className="container mx-auto px-6">
                 <Reveal variant="slide">
-                  <div className="flex flex-col items-center mb-16 text-center">
+                  <div className="flex flex-col items-start mb-12">
                     <h2 className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.5em] mb-4">The Stack</h2>
                     <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Core Technologies</h3>
                   </div>
                 </Reveal>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                   {techItems.map((tech, i) => {
                     const { icon, color } = getTechIcon(tech);
                     return (
-                      <Reveal key={i} delay={i * 100} variant="zoom-in">
-                        <div className="glass-strong p-8 rounded-[2rem] border border-white/80 dark:border-white/10 flex flex-col items-center justify-center gap-5 text-center transition-all hover:-translate-y-2 hover:bg-white dark:hover:bg-white/5 group h-full shadow-sm hover:shadow-xl">
-                          <div className={`w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center ${color} text-2xl shadow-inner border border-black/5 dark:border-white/5 group-hover:scale-110 transition-transform`}>
+                      <Reveal key={i} delay={i * 50} variant="zoom-in">
+                        <div className="bg-white dark:bg-[#161618] p-8 rounded-[2rem] border border-gray-100 dark:border-white/5 flex flex-col items-center justify-center gap-5 text-center transition-all hover:-translate-y-2 hover:shadow-xl group h-full">
+                          <div className={`w-14 h-14 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center ${color} text-2xl shadow-sm border border-gray-100 dark:border-white/5 group-hover:scale-110 transition-transform`}>
                             <i className={icon}></i>
                           </div>
                           <span className="text-[11px] font-black text-gray-800 dark:text-gray-200 uppercase tracking-widest">{tech}</span>
@@ -282,19 +308,19 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             </section>
 
             {/* KEY HIGHLIGHTS */}
-            <section className="py-24 md:py-32">
+            <section className="py-12 md:py-20 bg-white/50 dark:bg-white/5 border-y border-gray-200 dark:border-white/5">
               <div className="container mx-auto px-6">
                 <Reveal variant="slide">
-                  <div className="flex flex-col items-center mb-16 text-center">
+                  <div className="flex flex-col items-start mb-12">
                     <h2 className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-[0.5em] mb-4">Project Metrics</h2>
                     <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Performance Highlights</h3>
                   </div>
                 </Reveal>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {(project.highlights || ['Cloud Integration', 'Mobile Optimized', 'SEO Performance', 'Secure Protocol', 'AI-Powered Search']).map((h, i) => (
                     <Reveal key={i} delay={i * 80} variant="fade">
-                      <div className="p-8 rounded-[1.5rem] glass-strong border border-black/5 dark:border-white/5 flex items-center gap-6 group hover:bg-white dark:hover:bg-white/10 transition-all hover:scale-[1.02]">
+                      <div className="p-8 rounded-[1.5rem] bg-white dark:bg-[#161618] border border-gray-100 dark:border-white/5 flex items-center gap-6 group hover:shadow-lg transition-all hover:scale-[1.01]">
                         <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
                           <i className="fas fa-check text-xs"></i>
                         </div>
@@ -307,24 +333,24 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             </section>
 
             {/* NARRATIVE SECTION */}
-            <section className="bg-gray-100 dark:bg-white/5 py-24 md:py-32">
+            <section className="py-24 md:py-32">
               <div className="container mx-auto px-6">
                 <Reveal variant="slide">
-                  <div className="flex flex-col items-center mb-16 text-center">
+                  <div className="flex flex-col items-start mb-16">
                     <h2 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.5em] mb-4">The Narrative</h2>
                     <h3 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Case Study Breakdown</h3>
                   </div>
                 </Reveal>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {[
                     { title: 'The Challenge', desc: 'Implementing a scalable architecture that handles high-concurrent traffic while maintaining ultra-low latency user interface and consistent design language.', icon: 'fa-triangle-exclamation', color: 'text-orange-500' },
                     { title: 'The Solution', desc: 'Integrated a modern tech stack centered on React and Node.js with distributed database systems and real-time synchronization hooks for maximum responsiveness.', icon: 'fa-lightbulb', color: 'text-blue-600' },
                     { title: 'The Results', desc: 'Successfully deployed a production-ready environment achieving 99.9% uptime and a significant reduction in system overhead compared to legacy frameworks.', icon: 'fa-chart-line', color: 'text-green-500' }
                   ].map((item, i) => (
                     <Reveal key={i} delay={i * 200} variant="3d">
-                      <div className="h-full glass-strong p-10 md:p-12 rounded-[2.5rem] border border-white/80 dark:border-white/10 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all">
-                        <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-xl mb-8 border border-black/5 dark:border-white/5">
+                      <div className="h-full bg-white dark:bg-[#161618] p-10 md:p-12 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all">
+                        <div className="w-12 h-12 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-xl mb-8 border border-gray-100 dark:border-white/5">
                            <i className={`fas ${item.icon} ${item.color}`}></i>
                         </div>
                         <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4">{item.title}</h3>
@@ -339,7 +365,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             </section>
 
             {/* CALL TO ACTION */}
-            <section className="py-32 md:py-48 text-center relative overflow-hidden bg-[#F2F2F7] dark:bg-[#050505]">
+            <section className="py-32 md:py-48 text-center relative overflow-hidden">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] animate-liquid pointer-events-none"></div>
 
               <div className="container mx-auto px-6 relative z-10">
@@ -367,26 +393,35 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
             <Footer />
         </div>
 
-        {/* CUSTOM SHARE MODAL */}
+        {/* ENHANCED SHARE MODAL */}
         {isShareOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-scale-in" onClick={() => setIsShareOpen(false)}>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xl p-4 animate-scale-in" onClick={() => setIsShareOpen(false)}>
               <div 
-                 className="w-full max-w-md bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-3xl rounded-3xl shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden"
+                 className="w-full max-w-md bg-white/90 dark:bg-[#161618]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden relative"
                  onClick={e => e.stopPropagation()}
               >
-                  <div className="p-8 text-center border-b border-black/5 dark:border-white/5 relative">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">Share Project</h3>
-                      <button onClick={() => setIsShareOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500">
+                  {/* Decorative Elements inside Modal */}
+                  <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px] pointer-events-none"></div>
+                  <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-[60px] pointer-events-none"></div>
+
+                  <div className="p-8 text-center border-b border-black/5 dark:border-white/5 relative z-10">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Share Project</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">Spread the word across your network</p>
+                      
+                      <button 
+                        onClick={() => setIsShareOpen(false)} 
+                        className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
+                      >
                           <i className="fas fa-times text-sm"></i>
                       </button>
                   </div>
                   
-                  <div className="p-8 grid grid-cols-3 gap-6">
+                  <div className="p-8 grid grid-cols-3 gap-6 relative z-10">
                       <button onClick={handleCopyLink} className="flex flex-col items-center gap-3 group">
-                          <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm group-hover:bg-gray-100 dark:group-hover:bg-white/10">
                               <i className="fas fa-link"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500">Copy Link</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Copy Link</span>
                       </button>
                       
                       <a 
@@ -395,10 +430,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-14 h-14 rounded-2xl bg-black dark:bg-white flex items-center justify-center text-xl text-white dark:text-black group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-black dark:bg-white flex items-center justify-center text-xl text-white dark:text-black group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg">
                               <i className="fab fa-x-twitter"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500">X</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">X</span>
                       </a>
 
                       <a 
@@ -407,10 +442,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-14 h-14 rounded-2xl bg-[#0077b5] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-[#0077b5] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-blue-500/30">
                               <i className="fab fa-linkedin-in"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500">LinkedIn</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">LinkedIn</span>
                       </a>
 
                        <a 
@@ -419,10 +454,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-14 h-14 rounded-2xl bg-[#1877F2] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-[#1877F2] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-blue-500/30">
                               <i className="fab fa-facebook-f"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500">Facebook</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Facebook</span>
                       </a>
 
                       <a 
@@ -431,11 +466,19 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-[#25D366] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-green-500/30">
                               <i className="fab fa-whatsapp"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500">WhatsApp</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">WhatsApp</span>
                       </a>
+
+                      {/* Native Share Button */}
+                      <button onClick={handleNativeShare} className="flex flex-col items-center gap-3 group">
+                          <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm group-hover:bg-gray-100 dark:group-hover:bg-white/10">
+                              <i className="fas fa-ellipsis-h"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">More</span>
+                      </button>
                   </div>
               </div>
           </div>
