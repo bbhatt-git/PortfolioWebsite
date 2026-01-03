@@ -34,8 +34,8 @@ const Testimonials: React.FC = () => {
         // Only run auto-scroll logic on mobile devices (< 768px) where we use overflow-x-auto
         // AND when not paused by user interaction
         if (!isPaused && window.innerWidth < 768) { 
-             // Increased speed to 2px per frame for "normal" speed feel (approx 120px/sec at 60fps)
-             scrollContainer.scrollLeft += 2; 
+             // Significantly increased speed to 3.5px per frame for much faster scrolling
+             scrollContainer.scrollLeft += 3.5; 
 
              // Infinite scroll reset logic
              // If we have scrolled past half the content (the first set of testimonials), reset to 0
@@ -90,8 +90,8 @@ const Testimonials: React.FC = () => {
               setTimeout(() => setIsPaused(false), 2000);
           }}
         >
-           {/* Fade edges - pointer events none allows scrolling through them */}
-           <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
+           {/* Fade edges - Left mask hidden on mobile to fix visual cut-off of the first card */}
+           <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none hidden md:block"></div>
            <div className="absolute inset-y-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
            
            {/* Webkit scrollbar hide style injection */}
@@ -105,8 +105,9 @@ const Testimonials: React.FC = () => {
               Inner Flex Container:
               - Desktop (md+): animate-marquee active
               - Mobile: No animation, just flex items for scrolling
+              - Mobile Padding: px-4 (matches item mr-4 to ensure smooth loop reset without jump)
            */}
-           <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-6 md:px-0 no-scrollbar">
+           <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-4 md:px-0 no-scrollbar">
              {duplicatedTestimonials.map((testi, index) => (
                  <div 
                     key={`${testi.id}-${index}`} 

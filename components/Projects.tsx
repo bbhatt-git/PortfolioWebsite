@@ -170,7 +170,12 @@ const Projects: React.FC = () => {
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {projects.map((project, index) => (
-              <Reveal key={project.id} delay={index * 100} variant="flip-up" className="h-full">
+              <Reveal 
+                key={project.id} 
+                delay={index * 100} 
+                variant={index % 2 === 0 ? "rotate-left" : "rotate-right"} 
+                className="h-full"
+              >
                 <ProjectCard project={project} onClick={() => openModal(project)} />
               </Reveal>
             ))}
