@@ -268,34 +268,36 @@ const Projects: React.FC = () => {
                      </div>
                    </Reveal>
 
-                   {/* Cinematic Sections */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                      <Reveal delay={150}>
-                         <div className="glass rounded-[2.5rem] p-10 md:p-12 border border-white/50 dark:border-white/10 h-full group hover:bg-white/90 dark:hover:bg-white/5 transition-all duration-700">
-                            <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">
-                               <i className="fas fa-mountain"></i>
-                            </div>
-                            <h3 className="text-2xl font-bold mb-6 text-black dark:text-white tracking-tight">The Challenge</h3>
-                            <p className="text-gray-500 dark:text-gray-400 leading-relaxed font-medium text-lg">
-                               {selectedProject.caseStudy?.challenge || "Addressing user experience friction through deep architectural changes and performance-driven interface optimizations for scale."}
-                            </p>
-                         </div>
-                      </Reveal>
+                   {/* Case Study Sections (Conditional) */}
+                   {selectedProject.caseStudy && (
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <Reveal delay={150}>
+                           <div className="glass rounded-[2.5rem] p-10 md:p-12 border border-white/50 dark:border-white/10 h-full group hover:bg-white/90 dark:hover:bg-white/5 transition-all duration-700">
+                              <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">
+                                 <i className="fas fa-mountain"></i>
+                              </div>
+                              <h3 className="text-2xl font-bold mb-6 text-black dark:text-white tracking-tight">The Challenge</h3>
+                              <p className="text-gray-500 dark:text-gray-400 leading-relaxed font-medium text-lg">
+                                 {selectedProject.caseStudy.challenge}
+                              </p>
+                           </div>
+                        </Reveal>
 
-                      <Reveal delay={250}>
-                         <div className="glass rounded-[2.5rem] p-10 md:p-12 border border-white/50 dark:border-white/10 h-full group hover:bg-white/90 dark:hover:bg-white/5 transition-all duration-700">
-                            <div className="w-14 h-14 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">
-                               <i className="fas fa-lightbulb"></i>
-                            </div>
-                            <h3 className="text-2xl font-bold mb-6 text-black dark:text-white tracking-tight">The Solution</h3>
-                            <p className="text-gray-500 dark:text-gray-400 leading-relaxed font-medium text-lg">
-                               {selectedProject.caseStudy?.solution || "Developing a reactive, modular design language supported by a robust cloud-native infrastructure for real-time engagement."}
-                            </p>
-                         </div>
-                      </Reveal>
-                   </div>
+                        <Reveal delay={250}>
+                           <div className="glass rounded-[2.5rem] p-10 md:p-12 border border-white/50 dark:border-white/10 h-full group hover:bg-white/90 dark:hover:bg-white/5 transition-all duration-700">
+                              <div className="w-14 h-14 rounded-2xl bg-green-500/10 text-green-500 flex items-center justify-center text-xl mb-8 group-hover:scale-110 transition-transform">
+                                 <i className="fas fa-lightbulb"></i>
+                              </div>
+                              <h3 className="text-2xl font-bold mb-6 text-black dark:text-white tracking-tight">The Solution</h3>
+                              <p className="text-gray-500 dark:text-gray-400 leading-relaxed font-medium text-lg">
+                                 {selectedProject.caseStudy.solution}
+                              </p>
+                           </div>
+                        </Reveal>
+                     </div>
+                   )}
 
-                   {/* Full Width Visuals or Next Project Hook */}
+                   {/* Next Project Hook */}
                    <Reveal delay={350}>
                       <div 
                         onClick={navigateToNextProject}
@@ -342,29 +344,10 @@ const Projects: React.FC = () => {
                                     <i className="fas fa-chevron-right text-xs group-hover:translate-x-2 transition-transform"></i>
                                  </a>
                               )}
+                              {!selectedProject.liveUrl && !selectedProject.codeUrl && (
+                                <p className="text-gray-500 dark:text-gray-400 text-sm italic">Private repository or internal project.</p>
+                              )}
                            </div>
-
-                           <div className="mt-12 pt-10 border-t border-gray-100 dark:border-white/5">
-                              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-8">Role & Deliverables</h4>
-                              <div className="space-y-6">
-                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">Type</span>
-                                    <span className="text-base font-bold text-black dark:text-white">{selectedProject.category || "Interactive System"}</span>
-                                 </div>
-                                 <div className="flex flex-col gap-1.5">
-                                    <span className="text-[10px] font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">Year</span>
-                                    <span className="text-base font-bold text-black dark:text-white">2024</span>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* Social Share / Contact Hook */}
-                        <div className="glass rounded-[2.5rem] p-8 border border-white/40 dark:border-white/5 flex items-center justify-between group cursor-pointer hover:bg-blue-600 transition-colors duration-500">
-                           <p className="text-sm font-bold tracking-tight text-gray-500 group-hover:text-white transition-colors">Discuss a similar project?</p>
-                           <a href="#contact" onClick={closeModal} className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center group-hover:bg-white group-hover:text-blue-600 transition-all">
-                              <i className="fas fa-envelope text-sm"></i>
-                           </a>
                         </div>
                       </div>
                    </Reveal>

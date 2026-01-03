@@ -111,7 +111,7 @@ const Hero: React.FC = () => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="min-h-screen flex flex-col justify-center items-center text-center relative pt-24 px-6 overflow-hidden perspective-2000"
+      className="min-h-screen flex flex-col justify-center items-center text-center relative pt-32 pb-40 md:pb-32 px-6 overflow-hidden perspective-2000"
     >
       
       {/* Dynamic Background Spotlight */}
