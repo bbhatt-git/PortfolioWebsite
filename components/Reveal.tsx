@@ -16,6 +16,7 @@ interface RevealProps {
   className?: string;
   variant?: RevealVariant;
   duration?: number;
+  triggerOnMount?: boolean;
 }
 
 const Reveal: React.FC<RevealProps> = ({ 
@@ -23,12 +24,19 @@ const Reveal: React.FC<RevealProps> = ({
   delay = 0, 
   className = '', 
   variant = '3d',
-  duration = 1000 
+  duration = 1000,
+  triggerOnMount = false
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (triggerOnMount) {
+      // Force visibility on mount with a tiny delay to ensure transition play
+      const timer = setTimeout(() => setIsVisible(true), 50);
+      return () => clearTimeout(timer);
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -47,7 +55,7 @@ const Reveal: React.FC<RevealProps> = ({
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [triggerOnMount]);
 
   const style: React.CSSProperties = {
     transitionDelay: `${delay}ms`,

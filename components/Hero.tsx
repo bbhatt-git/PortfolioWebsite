@@ -115,7 +115,7 @@ const Hero: React.FC = () => {
 
         {/* Status Badge */}
         <div style={{ transform: 'translateZ(30px)' }} className="mb-8">
-          <Reveal>
+          <Reveal triggerOnMount>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-md">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -128,7 +128,7 @@ const Hero: React.FC = () => {
         
         {/* Main Heading */}
         <div style={{ transform: 'translateZ(50px)' }} className="mb-6 relative z-10 w-full px-4">
-          <Reveal delay={100}>
+          <Reveal delay={100} triggerOnMount>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-none text-black dark:text-white mb-2 drop-shadow-xl">
               Hello, I'm
             </h1>
@@ -140,7 +140,7 @@ const Hero: React.FC = () => {
 
         {/* Typing Effect */}
         <div style={{ transform: 'translateZ(40px)' }} className="mb-10 h-8 flex items-center justify-center">
-           <Reveal delay={200}>
+           <Reveal delay={200} triggerOnMount>
              <div className="text-xl md:text-2xl font-mono text-gray-600 dark:text-gray-300 bg-white/30 dark:bg-black/20 backdrop-blur-md px-6 py-2 rounded-lg border border-white/20 shadow-sm">
                 <span className="text-blue-500 mr-2">&gt;</span>
                 {text}
@@ -151,7 +151,7 @@ const Hero: React.FC = () => {
 
         {/* Description */}
         <div style={{ transform: 'translateZ(30px)' }} className="max-w-2xl mx-auto mb-12 px-6">
-          <Reveal delay={300}>
+          <Reveal delay={300} triggerOnMount>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">
                I build accessible, pixel-perfect, and performant web experiences.
                Passionate about merging <span className="font-semibold text-black dark:text-white">design</span> and <span className="font-semibold text-black dark:text-white">technology</span> to solve real-world problems.
@@ -161,7 +161,7 @@ const Hero: React.FC = () => {
 
         {/* Buttons with Magnetic & Glassmorphism */}
         <div style={{ transform: 'translateZ(60px)' }}>
-          <Reveal delay={400}>
+          <Reveal delay={400} triggerOnMount>
             <div className="flex flex-col sm:flex-row gap-5 items-center justify-center">
               
               <MagneticButton href="#work" variant="glass-primary" className="group overflow-hidden">
