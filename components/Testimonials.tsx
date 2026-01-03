@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Reveal from './Reveal';
 import { TESTIMONIALS } from '../constants';
 import { Testimonial } from '../types';
@@ -13,13 +13,20 @@ const Testimonials: React.FC = () => {
 
   const openModal = (testimonial: Testimonial) => {
     setSelectedTestimonial(testimonial);
-    document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setSelectedTestimonial(null);
-    document.body.style.overflow = 'auto';
   };
+
+  useEffect(() => {
+    if (selectedTestimonial) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedTestimonial]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

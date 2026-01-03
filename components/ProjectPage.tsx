@@ -61,6 +61,15 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    if (isContactModalOpen || isShareOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isContactModalOpen, isShareOpen]);
+
+  useEffect(() => {
     const handleScroll = () => {
       // Trigger scroll effect earlier
       setIsScrolled(window.scrollY > 50);

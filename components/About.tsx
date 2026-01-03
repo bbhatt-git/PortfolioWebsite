@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import { STATS } from '../constants';
 
@@ -44,13 +44,20 @@ const About: React.FC = () => {
 
   const openModal = (tech: TechItem) => {
     setSelectedTech(tech);
-    document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setSelectedTech(null);
-    document.body.style.overflow = 'auto';
   };
+
+  useEffect(() => {
+    if (selectedTech) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedTech]);
 
   const navigateToCV = () => {
     window.history.pushState({}, '', '/cv');

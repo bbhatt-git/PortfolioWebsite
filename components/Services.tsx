@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import { SERVICES } from '../constants';
 import { Service } from '../types';
@@ -8,13 +8,20 @@ const Services: React.FC = () => {
 
   const openModal = (service: Service) => {
     setSelectedService(service);
-    document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
     setSelectedService(null);
-    document.body.style.overflow = 'auto';
   };
+
+  useEffect(() => {
+    if (selectedService) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedService]);
 
   return (
     <section id="services" className="py-24 relative overflow-hidden">

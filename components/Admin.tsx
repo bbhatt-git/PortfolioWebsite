@@ -41,6 +41,15 @@ const Admin: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (deleteModal && deleteModal.show) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [deleteModal]);
+
   const fetchMessages = async () => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
@@ -87,11 +96,6 @@ const Admin: React.FC = () => {
     if (!msg.seen) {
       await updateMessageSeenStatus(msg.id, true);
     }
-  };
-
-  const handleToggleSeen = async (e: React.MouseEvent, msgId: string, currentStatus: boolean) => {
-    e.stopPropagation();
-    await updateMessageSeenStatus(msgId, !currentStatus);
   };
 
   const navigateToEditor = (proj?: Project) => {
@@ -163,6 +167,20 @@ const Admin: React.FC = () => {
   };
 
   const newSubmissionsCount = messages.filter(m => isMsgNew(m)).length;
+
+  const addTech = () => {
+    if (techInput.trim()) {
+      setTechStackList([...techStackList, techInput.trim()]);
+      setTechInput('');
+    }
+  };
+
+  const addHighlight = () => {
+    if (highlightInput.trim()) {
+      setHighlightsList([...highlightsList, highlightInput.trim()]);
+      setHighlightInput('');
+    }
+  };
 
   if (loading) return (
     <div className="h-screen bg-[#f0f2f5] flex items-center justify-center">
@@ -405,66 +423,65 @@ const Admin: React.FC = () => {
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Asset Title</label>
-                                  <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="e.g. NextGen Dashboard" />
+                                  <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="e.g. Project Nova" />
                                 </div>
                                 <div className="space-y-2">
-                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Media Source URL</label>
+                                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Cover Image URL</label>
                                   <input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="https://..." />
                                 </div>
+                              </div>
+                              
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">System Description</label>
+                                 <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm min-h-[150px]" placeholder="Brief technical overview..." />
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Live Endpoint</label>
                                   <input value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="https://..." />
                                 </div>
                                 <div className="space-y-2">
                                   <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Source Repository</label>
-                                  <input value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="GitHub link..." />
+                                  <input value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm" placeholder="https://github.com/..." />
                                 </div>
-                              </div>
-                              <div className="space-y-2 pt-4">
-                                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">System Narrative</label>
-                                <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full px-5 py-4 border border-gray-200 rounded h-48 resize-none outline-none focus:ring-1 focus:ring-[#1890ff] transition-all font-medium text-sm leading-relaxed" placeholder="Detailed project breakdown..." />
                               </div>
                           </div>
 
-                          {/* Tech & Metrics */}
-                          <div className="lg:col-span-4 space-y-8">
-                              <div className="bg-white p-8 rounded shadow-sm border border-gray-100 space-y-8">
-                                   <div className="space-y-4">
-                                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tech Arsenal</label>
-                                       <div className="flex gap-2">
-                                          <input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), techInput && (setTechStackList([...techStackList, techInput]), setTechInput('')))} className="flex-1 px-4 py-3 border border-gray-200 rounded text-sm outline-none focus:ring-1 focus:ring-[#1890ff]" placeholder="Add tool..." />
-                                          <button onClick={() => { if(techInput) {setTechStackList([...techStackList, techInput]); setTechInput('');} }} className="w-12 h-12 bg-gray-800 text-white rounded font-bold transition-all active:scale-95 text-lg hover:bg-black">+</button>
-                                       </div>
-                                       <div className="flex flex-wrap gap-1.5 pt-2">
-                                           {techStackList.map(t => (
-                                               <span key={t} className="px-3 py-1.5 bg-blue-50 text-[10px] font-black text-[#1890ff] border border-blue-100 rounded flex items-center gap-2 group">
-                                                   {t} <button onClick={() => setTechStackList(techStackList.filter(i => i !== t))} className="text-gray-400 hover:text-red-500">×</button>
-                                               </span>
-                                           ))}
-                                       </div>
-                                   </div>
+                          {/* Tech & Highlights */}
+                          <div className="lg:col-span-4 space-y-6">
+                              <div className="bg-white p-8 rounded shadow-sm border border-gray-100 space-y-6">
+                                  <div className="space-y-4">
+                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Tech Stack</label>
+                                     <div className="flex gap-2">
+                                       <input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTech())} className="flex-1 px-4 py-3 border border-gray-200 rounded outline-none text-sm" placeholder="Add tech..." />
+                                       <button onClick={addTech} type="button" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-600 font-bold text-lg">+</button>
+                                     </div>
+                                     <div className="flex flex-wrap gap-2">
+                                       {techStackList.map((t, i) => (
+                                         <span key={i} className="px-3 py-1 bg-blue-50 text-[#1890ff] text-xs font-bold rounded border border-blue-100 flex items-center gap-2">
+                                           {t} <i className="fas fa-times cursor-pointer hover:text-red-500" onClick={() => setTechStackList(techStackList.filter((_, idx) => idx !== i))}></i>
+                                         </span>
+                                       ))}
+                                     </div>
+                                  </div>
 
-                                   <div className="space-y-4 pt-8 border-t border-gray-50">
-                                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Performance Highlights</label>
-                                       <div className="flex gap-2">
-                                          <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), highlightInput && (setHighlightsList([...highlightsList, highlightInput]), setHighlightInput('')))} className="flex-1 px-4 py-3 border border-gray-200 rounded text-sm outline-none focus:ring-1 focus:ring-[#1890ff]" placeholder="Add metric..." />
-                                          <button onClick={() => { if(highlightInput) {setHighlightsList([...highlightsList, highlightInput]); setHighlightInput('');} }} className="w-12 h-12 bg-[#1890ff] text-white rounded font-bold transition-all active:scale-95 text-lg hover:bg-[#40a9ff]">+</button>
-                                       </div>
-                                       <div className="space-y-2 pt-2">
-                                           {highlightsList.map((h, i) => (
-                                               <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-100 text-[11px] font-bold text-gray-600 group">
-                                                   <span className="truncate pr-4">• {h}</span>
-                                                   <button onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))} className="text-gray-300 hover:text-red-500 transition-colors"><i className="fas fa-times"></i></button>
-                                               </div>
-                                           ))}
-                                       </div>
-                                   </div>
-                              </div>
-                              <div className="bg-white p-4 rounded shadow-sm border border-gray-100 overflow-hidden">
-                                 <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-4">Media Preview</p>
-                                 <div className="aspect-video bg-gray-50 rounded border border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                                    {projectForm.imageUrl ? <img src={projectForm.imageUrl} className="w-full h-full object-cover" /> : <i className="fas fa-image text-3xl text-gray-200"></i>}
-                                 </div>
+                                  <div className="space-y-4 pt-6 border-t border-gray-50">
+                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Performance Highlights</label>
+                                     <div className="flex gap-2">
+                                       <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addHighlight())} className="flex-1 px-4 py-3 border border-gray-200 rounded outline-none text-sm" placeholder="Add highlight..." />
+                                       <button onClick={addHighlight} type="button" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-600 font-bold text-lg">+</button>
+                                     </div>
+                                     <ul className="space-y-2">
+                                       {highlightsList.map((h, i) => (
+                                         <li key={i} className="text-xs text-gray-600 flex items-start gap-2 bg-gray-50 p-2 rounded">
+                                            <i className="fas fa-check text-green-500 mt-0.5"></i>
+                                            <span className="flex-1">{h}</span>
+                                            <i className="fas fa-times cursor-pointer text-gray-400 hover:text-red-500" onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))}></i>
+                                         </li>
+                                       ))}
+                                     </ul>
+                                  </div>
                               </div>
                           </div>
                       </div>
@@ -473,105 +490,101 @@ const Admin: React.FC = () => {
 
               {/* VIEW: MESSAGES */}
               {currentView === 'messages' && (
-                  <div className="bg-white rounded shadow-sm border border-gray-100 overflow-hidden animate-fade-in max-w-6xl mx-auto">
-                      <div className="p-8 border-b border-gray-50 flex justify-between items-center bg-gray-50/20">
-                          <div>
-                            <h2 className="text-xl font-bold text-gray-800">Inquiry Repository</h2>
-                            <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">Total of {messages.length} incoming signals logged.</p>
-                          </div>
-                      </div>
-                      <div className="divide-y divide-gray-50">
-                          {messages.map(m => {
-                              const isNew = isMsgNew(m);
-                              return (
-                                <div key={m.id} onClick={() => openMessage(m)} className="p-8 flex items-center justify-between hover:bg-gray-50/50 cursor-pointer transition-all group">
-                                    <div className="flex items-center gap-8">
-                                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center font-bold text-xl border transition-all ${isNew ? 'bg-[#1890ff] text-white border-[#1890ff] shadow-lg shadow-[#1890ff]/20' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
-                                          {m.name[0].toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <div className="flex items-center gap-3">
-                                              <h4 className={`font-bold text-lg tracking-tight ${isNew ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</h4>
-                                              <button onClick={(e) => handleToggleSeen(e, m.id, m.seen)} className={`w-8 h-8 rounded flex items-center justify-center transition-all ${m.seen ? 'text-[#1890ff] bg-blue-50' : 'text-gray-200 hover:text-blue-500'}`}>
-                                                <i className={`fas ${m.seen ? 'fa-eye' : 'fa-eye-slash'} text-xs`}></i>
-                                              </button>
-                                            </div>
-                                            <p className="text-sm text-gray-400 mt-1 font-medium">{m.email}</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right flex items-center gap-10">
-                                        <div className="hidden md:block">
-                                          <p className="text-[10px] font-bold text-gray-300 uppercase mb-1 tracking-widest">Timestamp</p>
-                                          <p className="text-xs text-gray-500 font-bold">{m.timestamp?.toDate().toLocaleString()}</p>
-                                        </div>
-                                        <i className="fas fa-chevron-right text-gray-200 group-hover:text-[#1890ff] transition-colors"></i>
-                                    </div>
-                                </div>
-                              );
-                          })}
-                          {messages.length === 0 && <div className="py-32 text-center text-gray-300 italic">Signal stream is silent.</div>}
-                      </div>
+                <div className="bg-white rounded shadow-sm border border-gray-100 animate-fade-in max-w-7xl mx-auto flex flex-col h-[600px]">
+                  <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/30">
+                     <h2 className="text-xl font-bold text-gray-800">Inquiry Stream</h2>
+                     <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{messages.length} Messages</span>
                   </div>
+                  <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
+                     {messages.map(m => {
+                        const isNew = isMsgNew(m);
+                        return (
+                          <div key={m.id} onClick={() => openMessage(m)} className={`px-8 py-5 flex items-center gap-6 cursor-pointer hover:bg-blue-50/50 transition-colors group ${!m.seen ? 'bg-blue-50/30' : ''}`}>
+                             <div className={`w-3 h-3 rounded-full shrink-0 ${!m.seen ? 'bg-[#1890ff]' : 'bg-transparent border border-gray-300'}`}></div>
+                             <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center font-bold text-gray-500 shadow-sm text-lg">
+                               {m.name.charAt(0).toUpperCase()}
+                             </div>
+                             <div className="flex-1 min-w-0">
+                               <div className="flex justify-between items-center mb-1">
+                                  <h3 className={`font-bold text-base ${!m.seen ? 'text-gray-900' : 'text-gray-600'}`}>{m.name}</h3>
+                                  <span className="text-xs text-gray-400 group-hover:text-[#1890ff] transition-colors">{m.timestamp?.toDate().toLocaleString()}</span>
+                               </div>
+                               <p className={`text-sm truncate ${!m.seen ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>{m.message}</p>
+                             </div>
+                             <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ show: true, type: 'message', id: m.id, name: `Message from ${m.name}` }); }} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-all opacity-0 group-hover:opacity-100">
+                               <i className="fas fa-trash-alt"></i>
+                             </button>
+                          </div>
+                        );
+                     })}
+                     {messages.length === 0 && <div className="p-20 text-center text-gray-400 italic">No messages received.</div>}
+                  </div>
+                </div>
               )}
 
               {/* VIEW: MESSAGE VIEWER */}
               {currentView === 'message-viewer' && selectedMessage && (
-                  <div className="animate-fade-in flex justify-center pt-10">
-                      <div className="w-full max-w-3xl bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col border border-gray-100 animate-scale-in">
-                          <div className="h-14 flex items-center px-8 justify-between bg-gray-50/50 border-b border-gray-100">
-                             <div className="flex gap-2">
-                               <div onClick={() => setCurrentView('messages')} className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer hover:bg-red-500 transition-colors shadow-sm"></div>
-                               <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-                               <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
-                             </div>
-                             <div className="flex items-center gap-6">
-                                <button onClick={(e) => handleToggleSeen(e, selectedMessage.id, selectedMessage.seen)} className={`text-[11px] font-bold flex items-center gap-2 tracking-widest ${selectedMessage.seen ? 'text-[#1890ff]' : 'text-gray-400'}`}>
-                                  <i className={`fas ${selectedMessage.seen ? 'fa-eye' : 'fa-eye-slash'} text-sm`}></i>
-                                  {isMsgNew(selectedMessage) ? 'NEW SUBMISSION' : (selectedMessage.seen ? 'SEEN' : 'OLD ARCHIVE')}
-                                </button>
-                                <i onClick={() => setCurrentView('messages')} className="fas fa-times text-gray-400 cursor-pointer hover:text-red-500 text-lg transition-colors"></i>
-                             </div>
-                          </div>
-                          <div className="p-12 space-y-10">
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               <div className="p-6 bg-gray-50/50 rounded border border-gray-100 shadow-inner">
-                                 <p className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Sender Identification</p>
-                                 <p className="font-bold text-xl text-gray-800">{selectedMessage.name}</p>
+                <div className="animate-fade-in max-w-4xl mx-auto space-y-6">
+                   <button onClick={() => setCurrentView('messages')} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#1890ff] transition-colors mb-4">
+                      <i className="fas fa-arrow-left"></i> Back to Stream
+                   </button>
+                   
+                   <div className="bg-white rounded shadow-lg border border-gray-100 overflow-hidden">
+                      <div className="px-10 py-8 border-b border-gray-100 bg-gray-50/30 flex justify-between items-start">
+                         <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 rounded-full bg-[#1890ff] text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/30">
+                               {selectedMessage.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                               <h1 className="text-2xl font-bold text-gray-900">{selectedMessage.name}</h1>
+                               <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                                  <i className="fas fa-envelope"></i>
+                                  <a href={`mailto:${selectedMessage.email}`} className="hover:text-[#1890ff] hover:underline">{selectedMessage.email}</a>
                                </div>
-                               <div className="p-6 bg-gray-50/50 rounded border border-gray-100 shadow-inner overflow-hidden">
-                                 <p className="text-[10px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Digital Endpoint</p>
-                                 <p className="font-bold text-[#1890ff] text-sm truncate">{selectedMessage.email}</p>
-                               </div>
-                             </div>
-                             <div className="p-10 min-h-[300px] text-gray-700 leading-relaxed text-lg bg-white border border-gray-100 rounded-xl shadow-inner whitespace-pre-wrap font-medium">
-                               {selectedMessage.message}
-                             </div>
-                          </div>
-                          <div className="p-10 border-t border-gray-100 bg-gray-50/30 flex justify-between items-center">
-                             <button onClick={() => setDeleteModal({ show: true, type: 'message', id: selectedMessage.id, name: `Inquiry from ${selectedMessage.name}` })} className="text-red-500 text-xs font-bold hover:underline uppercase tracking-widest">Purge Log</button>
-                             <a href={`mailto:${selectedMessage.email}`} className="bg-[#1890ff] text-white px-10 py-4 rounded-lg font-bold text-sm shadow-xl shadow-[#1890ff]/30 hover:bg-[#40a9ff] transition-all active:scale-95 uppercase tracking-widest">Respond Channel</a>
-                          </div>
+                            </div>
+                         </div>
+                         <div className="text-right text-xs text-gray-400">
+                            <p className="font-bold uppercase tracking-widest mb-1">Received</p>
+                            <p>{selectedMessage.timestamp?.toDate().toLocaleString()}</p>
+                         </div>
                       </div>
-                  </div>
+                      
+                      <div className="p-10 min-h-[300px]">
+                         <p className="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap font-serif">
+                           {selectedMessage.message}
+                         </p>
+                      </div>
+
+                      <div className="px-10 py-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-4">
+                         <button onClick={() => setDeleteModal({ show: true, type: 'message', id: selectedMessage.id, name: `Message from ${selectedMessage.name}` })} className="px-6 py-2 border border-red-200 text-red-600 rounded text-sm font-bold hover:bg-red-50 transition-colors">Delete</button>
+                         <a href={`mailto:${selectedMessage.email}`} className="px-6 py-2 bg-[#1890ff] text-white rounded text-sm font-bold hover:bg-[#40a9ff] transition-colors shadow-lg shadow-blue-500/20">Reply via Email</a>
+                      </div>
+                   </div>
+                </div>
               )}
 
           </div>
-      </main>
 
-      {/* DELETE CONFIRMATION MODAL */}
-      {deleteModal && deleteModal.show && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-              <div className="w-full max-w-[380px] bg-white rounded-lg shadow-2xl p-10 text-center animate-scale-in">
-                  <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl mb-6 bg-red-50 text-red-500 shadow-inner"><i className="fas fa-trash-alt"></i></div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">Confirm Purge</h3>
-                  <p className="text-sm text-gray-500 mb-10 leading-relaxed">System state change is permanent. Proceed with deleting <span className="font-bold text-red-500 underline decoration-red-200">"{deleteModal.name}"</span>?</p>
-                  <div className="flex gap-4">
-                      <button onClick={() => setDeleteModal(null)} className="flex-1 py-3.5 rounded border border-gray-200 font-bold text-sm hover:bg-gray-50 transition-all text-gray-500 uppercase tracking-widest">Abort</button>
-                      <button onClick={handleDelete} className="flex-1 py-3.5 rounded bg-red-600 text-white font-bold text-sm shadow-xl shadow-red-500/30 hover:bg-red-500 transition-all uppercase tracking-widest">Execute</button>
-                  </div>
+          {/* DELETE CONFIRMATION MODAL */}
+          {deleteModal && (
+            <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full p-6 animate-scale-in">
+                <div className="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl mb-4 mx-auto">
+                  <i className="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Confirm Deletion</h3>
+                <p className="text-gray-500 text-center text-sm mb-6">
+                  Are you sure you want to delete <span className="font-bold text-gray-800">"{deleteModal.name}"</span>? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={() => setDeleteModal(null)} className="flex-1 py-2.5 border border-gray-300 rounded text-gray-700 font-bold hover:bg-gray-50 transition-colors">Cancel</button>
+                  <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white rounded font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20">Delete</button>
+                </div>
               </div>
-          </div>
-      )}
+            </div>
+          )}
+
+      </main>
     </div>
   );
 };
