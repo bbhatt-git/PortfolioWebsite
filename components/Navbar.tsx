@@ -34,19 +34,40 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const target = document.querySelector(href);
-    if (target) {
-      const offset = 80; // Adjusted offset for mobile
-      const elementPosition = target.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - offset;
+    
+    // Check if we are on a project page or other sub-route
+    if (window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
+        window.dispatchEvent(new Event('pushstate'));
+        
+        // Wait for route change to render home, then scroll
+        setTimeout(() => {
+            const targetId = href.substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+                const offset = 80;
+                const elementPosition = target.getBoundingClientRect().top + window.scrollY;
+                const offsetPosition = elementPosition - offset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+            }
+        }, 100);
+    } else {
+        // We are already on home page, just scroll
+        const target = document.querySelector(href);
+        if (target) {
+            const offset = 80; // Adjusted offset for mobile
+            const elementPosition = target.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-      window.history.pushState(null, "", href);
-      setIsMobileMenuOpen(false);
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+            window.history.pushState(null, "", href);
+        }
     }
+    
+    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [

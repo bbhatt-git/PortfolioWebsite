@@ -135,11 +135,11 @@ const Projects: React.FC = () => {
     fetchProjects();
   }, []);
 
-  // Updated navigation to use slug format
+  // Use history API for navigation
   const navigateToProject = (project: Project) => {
-    // Convert title to slug: "My Cool Project" -> "my-cool-project"
     const slug = project.title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
-    window.location.hash = `#/project/${slug}`;
+    window.history.pushState({}, '', `/project/${slug}`);
+    window.dispatchEvent(new Event('pushstate'));
   };
 
   return (

@@ -18,7 +18,9 @@ const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState(window.location.hash);
+  
+  // Use pathname instead of hash for routing
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   useEffect(() => {
     // Theme Logic
@@ -33,12 +35,16 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Handle Hash Change for Routing
-    const handleHashChange = () => {
-      setCurrentRoute(window.location.hash);
+    // Handle Route Changes (History API)
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+      window.scrollTo(0, 0);
     };
 
-    window.addEventListener('hashchange', handleHashChange);
+    // Listen for browser back/forward
+    window.addEventListener('popstate', handleLocationChange);
+    // Listen for custom pushstate events from components
+    window.addEventListener('pushstate', handleLocationChange);
 
     // Keyboard Shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,7 +63,8 @@ const App: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('pushstate', handleLocationChange);
     }
   }, []);
 
@@ -74,21 +81,19 @@ const App: React.FC = () => {
   };
 
   // Route Handling
-  if (currentRoute === '#/admin') {
+  if (currentPath === '/admin') {
     return <Admin />;
   }
 
-  if (currentRoute === '#/cv') {
+  if (currentPath === '/cv') {
     return <CV />;
   }
 
-  // Changed route check to singular 'project' and passes the slug
-  if (currentRoute.startsWith('#/project/')) {
-    // Format: #/project/my-cool-project-name
-    const parts = currentRoute.split('/');
-    const projectSlug = parts.slice(2).join('/'); // Handles slashes if any (though usually slug has none)
-    if (projectSlug) {
-      return <ProjectPage slug={projectSlug} />;
+  // Check for /project/slug
+  if (currentPath.startsWith('/project/')) {
+    const slug = currentPath.split('/project/')[1];
+    if (slug) {
+      return <ProjectPage slug={slug} />;
     }
   }
 

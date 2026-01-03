@@ -52,7 +52,6 @@ const getTechIcon = (tech: string) => {
 // Utility to create slug from title
 const createSlug = (title: string) => title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
 
-// Component now accepts slug instead of ID
 const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +108,8 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   }, [isContactModalOpen, isShareOpen]);
 
   const handleBack = () => {
-    window.location.hash = '#work';
+    window.history.pushState({}, '', '/');
+    window.dispatchEvent(new Event('pushstate'));
   };
 
   const openContactModal = () => {
@@ -126,7 +126,6 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
     }
   };
 
-  // Helper to extract domain from URL for the browser bar
   const getDomain = (url?: string) => {
       if (!url) return 'localhost:3000';
       try {
@@ -468,9 +467,6 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
         {/* Full Page Contact Modal */}
         {isContactModalOpen && (
           <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl overflow-y-auto animate-fade-in flex flex-col">
-            {/* Desktop: Close button handled inside Contact component's window chrome */}
-            {/* Mobile: Close button handled inside Contact component's mobile header */}
-            
             <div className="flex-1 flex items-center justify-center p-0 md:p-4">
               <Contact onSuccess={() => setIsContactModalOpen(false)} onClose={() => setIsContactModalOpen(false)} isModal={true} />
             </div>
