@@ -1,46 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Reveal from './Reveal';
 import { STATS } from '../constants';
 
+interface TechItem {
+  name: string;
+  icon: string;
+  color: string;
+  desc: string;
+}
+
 const About: React.FC = () => {
+  const [selectedTech, setSelectedTech] = useState<TechItem | null>(null);
   
-  const frontendStack = [
-    { name: "React", icon: "fab fa-react", color: "text-blue-400" },
-    { name: "Next.js", icon: "fas fa-layer-group", color: "text-black dark:text-white" },
-    { name: "Vite", icon: "fas fa-bolt", color: "text-yellow-400" },
-    { name: "TypeScript", icon: "fas fa-code", color: "text-blue-600" },
-    { name: "Tailwind CSS", icon: "fas fa-wind", color: "text-cyan-400" },
-    { name: "HTML", icon: "fab fa-html5", color: "text-orange-500" },
-    { name: "CSS", icon: "fab fa-css3-alt", color: "text-blue-500" },
-    { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400" },
-    { name: "Flutter", icon: "fas fa-mobile-alt", color: "text-blue-400" },
+  const frontendStack: TechItem[] = [
+    { name: "React", icon: "fab fa-react", color: "text-blue-400", desc: "A JavaScript library for building user interfaces, maintaining state, and creating reusable UI components." },
+    { name: "Next.js", icon: "fas fa-layer-group", color: "text-black dark:text-white", desc: "The React Framework for production, enabling server-side rendering, static site generation, and optimized performance." },
+    { name: "Vite", icon: "fas fa-bolt", color: "text-yellow-400", desc: "A build tool that provides a faster and leaner development experience for modern web projects." },
+    { name: "TypeScript", icon: "fas fa-code", color: "text-blue-600", desc: "A strongly typed superset of JavaScript that adds static typing, making code more robust and maintainable." },
+    { name: "Tailwind CSS", icon: "fas fa-wind", color: "text-cyan-400", desc: "A utility-first CSS framework for rapidly building custom user interfaces without leaving your HTML." },
+    { name: "HTML", icon: "fab fa-html5", color: "text-orange-500", desc: "The standard markup language for documents designed to be displayed in a web browser." },
+    { name: "CSS", icon: "fab fa-css3-alt", color: "text-blue-500", desc: "Style sheet language used for describing the presentation of a document written in HTML." },
+    { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400", desc: "The programming language of the Web, enabling interactive behavior on web pages." },
+    { name: "Flutter", icon: "fas fa-mobile-alt", color: "text-blue-400", desc: "Google's UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase." },
   ];
 
-  const backendStack = [
-    { name: "Node JS", icon: "fab fa-node", color: "text-green-500" },
-    { name: "Python", icon: "fab fa-python", color: "text-yellow-300" },
-    { name: "PHP", icon: "fab fa-php", color: "text-indigo-400" },
-    { name: "MySQL", icon: "fas fa-database", color: "text-orange-400" },
-    { name: "MongoDB", icon: "fas fa-leaf", color: "text-green-600" },
-    { name: "Firebase", icon: "fas fa-fire", color: "text-yellow-500" },
-    { name: "C", icon: "fas fa-code", color: "text-blue-500" },
+  const backendStack: TechItem[] = [
+    { name: "Node JS", icon: "fab fa-node", color: "text-green-500", desc: "JavaScript runtime built on Chrome's V8 JavaScript engine, perfect for building scalable network applications." },
+    { name: "Python", icon: "fab fa-python", color: "text-yellow-300", desc: "A high-level programming language known for its readability and massive ecosystem of libraries." },
+    { name: "PHP", icon: "fab fa-php", color: "text-indigo-400", desc: "A popular general-purpose scripting language that is especially suited to web development." },
+    { name: "MySQL", icon: "fas fa-database", color: "text-orange-400", desc: "An open-source relational database management system, reliable and widely used." },
+    { name: "MongoDB", icon: "fas fa-leaf", color: "text-green-600", desc: "A NoSQL database program that uses JSON-like documents with optional schemas." },
+    { name: "Firebase", icon: "fas fa-fire", color: "text-yellow-500", desc: "A platform developed by Google for creating mobile and web applications with real-time databases and authentication." },
+    { name: "C", icon: "fas fa-code", color: "text-blue-500", desc: "A foundational procedural programming language that provides low-level access to system memory." },
   ];
 
-  const toolsStack = [
-    { name: "Git", icon: "fab fa-git-alt", color: "text-red-500" },
-    { name: "Figma", icon: "fab fa-figma", color: "text-pink-500" },
-    { name: "Adobe Photoshop", icon: "fas fa-image", color: "text-blue-700" },
-    { name: "Wordpress", icon: "fab fa-wordpress", color: "text-blue-600" },
-    { name: "AI/ML", icon: "fas fa-brain", color: "text-purple-500" },
+  const toolsStack: TechItem[] = [
+    { name: "Git", icon: "fab fa-git-alt", color: "text-red-500", desc: "A distributed version control system for tracking changes in source code during software development." },
+    { name: "Figma", icon: "fab fa-figma", color: "text-pink-500", desc: "A collaborative web application for interface design, with additional offline features enabled by desktop applications." },
+    { name: "Adobe Photoshop", icon: "fas fa-image", color: "text-blue-700", desc: "The industry standard for digital image processing and editing." },
+    { name: "Wordpress", icon: "fab fa-wordpress", color: "text-blue-600", desc: "A free and open-source content management system written in PHP and paired with a MySQL or MariaDB database." },
+    { name: "AI/ML", icon: "fas fa-brain", color: "text-purple-500", desc: "Leveraging Artificial Intelligence and Machine Learning models to solve complex problems and automate tasks." },
   ];
 
-  const renderTechPills = (techs: typeof frontendStack) => (
+  const openModal = (tech: TechItem) => {
+    setSelectedTech(tech);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setSelectedTech(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  const renderTechPills = (techs: TechItem[]) => (
     <div className="flex flex-wrap gap-2.5">
        {techs.map((tech, i) => (
-         <div key={i} className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/5 hover:bg-white/70 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-default shadow-sm">
+         <button 
+            key={i} 
+            onClick={() => openModal(tech)}
+            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/5 hover:bg-white/70 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 shadow-sm active:scale-95"
+         >
              <i className={`${tech.icon} ${tech.color} text-base group-hover:scale-110 transition-transform`}></i>
              <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{tech.name}</span>
-         </div>
+         </button>
        ))}
     </div>
   );
@@ -124,7 +146,7 @@ const About: React.FC = () => {
         <Reveal variant="3d" delay={300}>
             <div className="text-center mb-10">
                 <h3 className="text-3xl font-bold mb-3 tracking-tight">My Technical Arsenal</h3>
-                <p className="text-gray-500 dark:text-gray-400">A comprehensive toolkit of modern technologies.</p>
+                <p className="text-gray-500 dark:text-gray-400">Tap on any technology to learn more.</p>
             </div>
         </Reveal>
 
@@ -169,6 +191,43 @@ const About: React.FC = () => {
             </Reveal>
         </div>
       </div>
+
+      {/* Tech Detail Overlay Modal */}
+      {selectedTech && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-scale-in"
+          onClick={closeModal}
+        >
+          <div 
+            className="w-full max-w-md bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
+            onClick={e => e.stopPropagation()}
+          >
+             {/* Decorative Background */}
+             <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-blue-500/10 to-purple-500/10 pointer-events-none"></div>
+             
+             {/* Close Button */}
+             <button 
+                onClick={closeModal}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors z-20 text-gray-500 dark:text-gray-300"
+              >
+                <i className="fas fa-times text-sm"></i>
+             </button>
+
+             <div className="p-8 flex flex-col items-center text-center relative z-10">
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#252528] shadow-xl flex items-center justify-center text-4xl mb-6 border border-white/40 dark:border-white/5 ring-4 ring-white/20 dark:ring-black/20">
+                    <i className={`${selectedTech.icon} ${selectedTech.color}`}></i>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{selectedTech.name}</h3>
+                <div className="w-12 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-6"></div>
+                
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                   {selectedTech.desc}
+                </p>
+             </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

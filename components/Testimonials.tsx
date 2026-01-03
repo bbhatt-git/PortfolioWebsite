@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Reveal from './Reveal';
 import { TESTIMONIALS } from '../constants';
 import { Testimonial } from '../types';
 
 const Testimonials: React.FC = () => {
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Create a duplicated list for seamless looping (primarily for desktop marquee)
   const duplicatedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
@@ -12,12 +14,42 @@ const Testimonials: React.FC = () => {
   const openModal = (testimonial: Testimonial) => {
     setSelectedTestimonial(testimonial);
     document.body.style.overflow = 'hidden';
+    setIsPaused(true); // Pause auto-scroll when modal is open
   };
 
   const closeModal = () => {
     setSelectedTestimonial(null);
     document.body.style.overflow = 'auto';
+    setIsPaused(false);
   };
+
+  // Auto-scroll logic for mobile
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer) return;
+
+    let animationId: number;
+
+    const scroll = () => {
+        // Only run auto-scroll logic on mobile devices (< 768px) where we use overflow-x-auto
+        // AND when not paused by user interaction
+        if (!isPaused && window.innerWidth < 768) { 
+             scrollContainer.scrollLeft += 0.5; // Adjust speed here (0.5 is slow and smooth)
+
+             // Infinite scroll reset logic
+             // If we have scrolled past half the content (the first set of testimonials), reset to 0
+             // We use scrollWidth / 2 because the list is exactly duplicated
+             if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
+                 scrollContainer.scrollLeft = 0;
+             }
+        }
+        animationId = requestAnimationFrame(scroll);
+    };
+
+    animationId = requestAnimationFrame(scroll);
+
+    return () => cancelAnimationFrame(animationId);
+  }, [isPaused]);
 
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden">
@@ -42,11 +74,19 @@ const Testimonials: React.FC = () => {
         {/* 
             Container with Scroll Logic:
             - Desktop (md+): overflow-hidden (for Marquee)
-            - Mobile: overflow-x-auto, snap-x (for Swipe)
+            - Mobile: overflow-x-auto, snap-x (for Swipe) + JS Auto Scroll
         */}
         <div 
+          ref={scrollRef}
           className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 snap-x snap-mandatory scroll-smooth touch-pan-x z-20"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} /* Hide scrollbar Firefox/IE */
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => {
+              // Small delay before resuming to allow fling to settle
+              setTimeout(() => setIsPaused(false), 1000);
+          }}
         >
            {/* Fade edges - pointer events none allows scrolling through them */}
            <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
