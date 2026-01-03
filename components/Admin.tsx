@@ -45,6 +45,7 @@ const Admin: React.FC = () => {
   const fetchMessages = async () => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
+    // Ensure 'seen' field is handled correctly. Defaults to false if not present in doc.
     setMessages(snap.docs.map(doc => ({ id: doc.id, seen: false, ...doc.data() })));
   };
 
@@ -83,10 +84,22 @@ const Admin: React.FC = () => {
     if (!msg.seen) {
       setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, seen: true } : m));
       try {
-        await updateDoc(doc(db, "messages", msg.id), { seen: true });
+        const msgRef = doc(db, "messages", msg.id);
+        await updateDoc(msgRef, { seen: true });
       } catch (err) { 
         console.error("Update seen failed", err); 
       }
+    }
+  };
+
+  const toggleMessageSeen = async (e: React.MouseEvent, msg: any) => {
+    e.stopPropagation();
+    const newStatus = !msg.seen;
+    setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, seen: newStatus } : m));
+    try {
+      await updateDoc(doc(db, "messages", msg.id), { seen: newStatus });
+    } catch (err) {
+      console.error("Toggle seen failed", err);
     }
   };
 
@@ -358,13 +371,16 @@ const Admin: React.FC = () => {
                                     <div key={m.id} className="p-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-white/5 transition-all cursor-pointer group" onClick={() => openMessage(m)}>
                                         <div className="flex items-center gap-5 min-w-0">
                                             <div className="relative shrink-0">
-                                                <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center font-black text-sm text-gray-600 dark:text-gray-300 shadow-sm border border-black/5">
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border border-black/5 shadow-sm transition-colors ${m.seen ? 'bg-gray-100 dark:bg-white/10 text-gray-400' : 'bg-blue-600 text-white border-blue-600'}`}>
                                                   {m.name[0].toUpperCase()}
                                                 </div>
-                                                {!m.seen && <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 border-2 border-white dark:border-midnight rounded-full shadow-lg"></span>}
+                                                {!m.seen && <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border-2 border-white dark:border-midnight rounded-full shadow-lg"></span>}
                                             </div>
                                             <div className="truncate">
-                                                <p className={`text-[14px] font-black truncate tracking-tight transition-colors ${!m.seen ? 'text-blue-600' : 'text-gray-800 dark:text-gray-200'}`}>{m.name}</p>
+                                                <div className="flex items-center gap-2">
+                                                   <p className={`text-[14px] font-black truncate tracking-tight transition-colors ${!m.seen ? 'text-blue-600' : 'text-gray-800 dark:text-gray-200'}`}>{m.name}</p>
+                                                   <i className={`fas ${m.seen ? 'fa-eye text-gray-300' : 'fa-eye-slash text-blue-500'} text-[10px]`}></i>
+                                                </div>
                                                 <p className="text-[9px] font-bold text-gray-400 uppercase truncate tracking-widest">{m.email}</p>
                                             </div>
                                         </div>
@@ -454,13 +470,18 @@ const Admin: React.FC = () => {
                               <div key={m.id} onClick={() => openMessage(m)} className="p-6 flex items-center justify-between hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer group transition-all">
                                   <div className="flex items-center gap-6">
                                       <div className="relative">
-                                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-base shadow-sm border ${!m.seen ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 dark:bg-white/10 text-gray-400 border-black/5 dark:border-white/5'}`}>
+                                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-base shadow-sm border transition-all ${!m.seen ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 dark:bg-white/10 text-gray-400 border-black/5 dark:border-white/5'}`}>
                                             {m.name[0].toUpperCase()}
                                           </div>
                                           {!m.seen && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 border-2 border-white dark:border-midnight rounded-full shadow-lg"></span>}
                                       </div>
                                       <div>
-                                          <h4 className={`font-black text-base tracking-tight transition-colors ${!m.seen ? 'text-blue-600' : 'text-gray-800 dark:text-gray-200'}`}>{m.name}</h4>
+                                          <div className="flex items-center gap-3">
+                                             <h4 className={`font-black text-base tracking-tight transition-colors ${!m.seen ? 'text-blue-600' : 'text-gray-800 dark:text-gray-200'}`}>{m.name}</h4>
+                                             <button onClick={(e) => toggleMessageSeen(e, m)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${m.seen ? 'bg-gray-100 dark:bg-white/5 text-blue-500' : 'bg-blue-600/10 text-gray-400 hover:text-blue-500'}`} title={m.seen ? "Mark as unseen" : "Mark as seen"}>
+                                                <i className={`fas ${m.seen ? 'fa-eye' : 'fa-eye-slash'} text-[12px]`}></i>
+                                             </button>
+                                          </div>
                                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{m.email}</p>
                                       </div>
                                   </div>
@@ -626,7 +647,13 @@ const Admin: React.FC = () => {
                                <div className="w-3 h-3 rounded-full bg-[#28C840] shadow-sm"></div>
                              </div>
                              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Signal_Log_Protocol</span>
-                             <i onClick={() => setCurrentView('messages-list')} className="fas fa-times text-[12px] text-gray-400 cursor-pointer hover:text-red-500 transition-colors"></i>
+                             <div className="flex items-center gap-4">
+                               <button onClick={(e) => toggleMessageSeen(e, selectedMessage)} className={`text-[10px] font-black uppercase flex items-center gap-2 ${selectedMessage.seen ? 'text-blue-500' : 'text-gray-400'}`}>
+                                 <i className={`fas ${selectedMessage.seen ? 'fa-eye' : 'fa-eye-slash'}`}></i>
+                                 {selectedMessage.seen ? 'Seen' : 'Unseen'}
+                               </button>
+                               <i onClick={() => setCurrentView('messages-list')} className="fas fa-times text-[12px] text-gray-400 cursor-pointer hover:text-red-500 transition-colors"></i>
+                             </div>
                           </div>
                           <div className="p-10 space-y-8">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
