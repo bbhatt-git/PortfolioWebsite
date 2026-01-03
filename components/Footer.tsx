@@ -89,6 +89,15 @@ const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="flex items-center gap-3 group">
+                <i className="fas fa-phone text-blue-500 group-hover:rotate-12 transition-transform"></i>
+                <a href="tel:+9779761184935" className="hover:text-black dark:hover:text-white transition-colors relative">
+                    <span className="relative py-1">
+                      +977 9761184935
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
+                    </span>
+                </a>
+              </li>
+              <li className="flex items-center gap-3 group">
                 <i className="fas fa-map-marker-alt text-blue-500 group-hover:rotate-12 transition-transform"></i>
                 <span className="group-hover:text-black dark:group-hover:text-white transition-colors">Mahendranagar, Nepal</span>
               </li>

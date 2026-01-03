@@ -5,6 +5,7 @@ import { Project } from '../types';
 import Layout from './Layout';
 import Footer from './Footer';
 import Reveal from './Reveal';
+import Toast from './Toast';
 
 /**
  * Enhanced mapping logic to assign professional brand icons and colors.
@@ -56,6 +57,7 @@ const getTechIcon = (tech: string) => {
 const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -87,6 +89,30 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     window.location.hash = '#work';
   };
 
+  const handleShare = async () => {
+    if (!project) return;
+    const shareData = {
+      title: project.title,
+      text: project.desc,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setToast({ show: true, message: 'Link copied to clipboard!', type: 'success' });
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
+
+  const navigateToContact = () => {
+    window.location.hash = '#/contact';
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#050505] flex items-center justify-center">
@@ -114,6 +140,14 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     <Layout>
       <div className="bg-[#F2F2F7] dark:bg-[#050505] min-h-screen transition-colors duration-1000">
         
+        {toast.show && (
+          <Toast 
+            message={toast.message} 
+            type={toast.type} 
+            onClose={() => setToast({ ...toast, show: false })} 
+          />
+        )}
+
         {/* Top Header Navigation */}
         <div className="container mx-auto px-6 pt-12 md:pt-16">
           <button 
@@ -152,9 +186,18 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
                   <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600/10 border border-blue-600/20 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em]">
                     {project.category || 'System Architecture'}
                   </span>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white tracking-ultra leading-[0.9]">
-                    {project.title}
-                  </h1>
+                  <div className="flex justify-between items-start">
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white tracking-ultra leading-[0.9]">
+                      {project.title}
+                    </h1>
+                    <button 
+                      onClick={handleShare}
+                      className="w-12 h-12 rounded-2xl glass-strong border border-black/5 dark:border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-all shadow-sm"
+                      title="Share Project"
+                    >
+                      <i className="fas fa-share-nodes"></i>
+                    </button>
+                  </div>
                 </div>
                 
                 <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-medium max-w-xl">
@@ -167,9 +210,9 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
                       <i className="fas fa-external-link-alt"></i> See Live Project
                     </a>
                   )}
-                  <a href="#contact" className="px-10 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 flex items-center justify-center gap-3">
+                  <button onClick={navigateToContact} className="px-10 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 flex items-center justify-center gap-3">
                     Inquire Similar
-                  </a>
+                  </button>
                 </div>
               </div>
             </Reveal>
@@ -277,7 +320,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <div className="pt-8">
                   <button 
-                    onClick={() => window.location.hash = '#contact'}
+                    onClick={navigateToContact}
                     className="px-14 py-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-[0.4em] shadow-[0_24px_48px_-12px_rgba(37,99,235,0.4)] transition-all hover:scale-105 active:scale-95"
                   >
                     Initiate Contact
