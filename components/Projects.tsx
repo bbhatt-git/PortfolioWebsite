@@ -220,7 +220,7 @@ const Projects: React.FC = () => {
 
            {/* Content Container */}
            <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-24 md:-mt-48 pb-32">
-               <div className="max-w-4xl mx-auto">
+               <div className="max-w-5xl mx-auto">
                    
                    {/* Title Card */}
                    <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/20 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
@@ -237,30 +237,68 @@ const Projects: React.FC = () => {
                        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-light relative z-10">
                           {selectedProject.desc}
                        </p>
+
+                       {/* Key Highlights Section */}
+                       {selectedProject.highlights && selectedProject.highlights.length > 0 && (
+                           <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10 relative z-10">
+                               <h4 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4">Key Highlights</h4>
+                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                   {selectedProject.highlights.map((highlight, idx) => (
+                                       <div key={idx} className="flex items-start gap-3">
+                                           <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center mt-0.5 shrink-0">
+                                               <i className="fas fa-check text-[10px]"></i>
+                                           </div>
+                                           <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">{highlight}</p>
+                                       </div>
+                                   ))}
+                               </div>
+                           </div>
+                       )}
                    </div>
 
-                   {/* Grid Layout for Details */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform duration-300">
-                           <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i className="fas fa-mountain"></i></span>
-                              The Challenge
-                           </h3>
-                           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                              {selectedProject.caseStudy?.challenge || "Navigating complex user requirements while maintaining a clean, intuitive interface was the primary hurdle. Performance optimization on low-end devices was also critical."}
-                           </p>
-                       </div>
+                   {/* Case Study Grid */}
+                   {(selectedProject.caseStudy?.challenge || selectedProject.caseStudy?.solution || selectedProject.caseStudy?.results) && (
+                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
+                           {/* Challenge */}
+                           {selectedProject.caseStudy.challenge && (
+                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform duration-300">
+                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
+                                      <span className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i className="fas fa-mountain"></i></span>
+                                      The Challenge
+                                   </h3>
+                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
+                                      {selectedProject.caseStudy.challenge}
+                                   </p>
+                               </div>
+                           )}
 
-                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-green-500 hover:-translate-y-1 transition-transform duration-300">
-                           <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center text-lg"><i className="fas fa-lightbulb"></i></span>
-                              The Solution
-                           </h3>
-                           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                              {selectedProject.caseStudy?.solution || "We implemented a modular architecture using modern frameworks. Advanced caching strategies and server-side rendering were utilized to ensure lightning-fast load times."}
-                           </p>
+                           {/* Solution */}
+                           {selectedProject.caseStudy.solution && (
+                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-green-500 hover:-translate-y-1 transition-transform duration-300">
+                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
+                                      <span className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center text-lg"><i className="fas fa-lightbulb"></i></span>
+                                      The Solution
+                                   </h3>
+                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
+                                      {selectedProject.caseStudy.solution}
+                                   </p>
+                               </div>
+                           )}
+
+                           {/* Results */}
+                           {selectedProject.caseStudy.results && (
+                               <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-purple-500 hover:-translate-y-1 transition-transform duration-300">
+                                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
+                                      <span className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-lg"><i className="fas fa-chart-line"></i></span>
+                                      The Results
+                                   </h3>
+                                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm md:text-base">
+                                      {selectedProject.caseStudy.results}
+                                   </p>
+                               </div>
+                           )}
                        </div>
-                   </div>
+                   )}
 
                    {/* Links Section */}
                    <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">

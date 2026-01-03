@@ -32,9 +32,19 @@ const Admin: React.FC = () => {
     imageUrl: '',
   });
 
-  // Tech Stack State
+  // Case Study State
+  const [caseStudyForm, setCaseStudyForm] = useState({
+    challenge: '',
+    solution: '',
+    results: ''
+  });
+
+  // Tech Stack & Highlights State
   const [techInput, setTechInput] = useState('');
   const [techStackList, setTechStackList] = useState<string[]>([]);
+  
+  const [highlightInput, setHighlightInput] = useState('');
+  const [highlightsList, setHighlightsList] = useState<string[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -154,7 +164,13 @@ const Admin: React.FC = () => {
       codeUrl: proj.codeUrl || '',
       imageUrl: proj.image,
     });
+    setCaseStudyForm({
+      challenge: proj.caseStudy?.challenge || '',
+      solution: proj.caseStudy?.solution || '',
+      results: proj.caseStudy?.results || ''
+    });
     setTechStackList(proj.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean));
+    setHighlightsList(proj.highlights || []);
     setIsProjectModalOpen(true);
   };
 
@@ -170,6 +186,20 @@ const Admin: React.FC = () => {
 
   const handleRemoveTech = (index: number) => {
     setTechStackList(techStackList.filter((_, i) => i !== index));
+  };
+
+  const handleAddHighlight = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (e.type === 'click' || (e as React.KeyboardEvent).key === 'Enter') {
+        e.preventDefault();
+        if (highlightInput.trim() && highlightsList.length < 10) {
+            setHighlightsList([...highlightsList, highlightInput.trim()]);
+            setHighlightInput('');
+        }
+    }
+  };
+
+  const handleRemoveHighlight = (index: number) => {
+    setHighlightsList(highlightsList.filter((_, i) => i !== index));
   };
 
   const handleSaveProject = async (e: React.FormEvent) => {
@@ -191,6 +221,12 @@ const Admin: React.FC = () => {
         codeUrl: projectForm.codeUrl,
         image: projectImage,
         stack: stackString,
+        highlights: highlightsList,
+        caseStudy: {
+           challenge: caseStudyForm.challenge,
+           solution: caseStudyForm.solution,
+           results: caseStudyForm.results
+        },
         // If new project, add it to the end
         ...(editingProject ? {} : { order: projects.length })
       };
@@ -208,13 +244,17 @@ const Admin: React.FC = () => {
       closeProjectModal();
     } catch (err) {
       alert('Error saving project');
+      console.error(err);
     }
   };
 
   const closeProjectModal = () => {
     setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
+    setCaseStudyForm({ challenge: '', solution: '', results: '' });
     setTechStackList([]);
+    setHighlightsList([]);
     setTechInput('');
+    setHighlightInput('');
     setEditingProject(null);
     setIsProjectModalOpen(false);
   };
@@ -572,6 +612,8 @@ const Admin: React.FC = () => {
                    </div>
                    <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
                       <form onSubmit={handleSaveProject} className="space-y-5">
+                        
+                        {/* BASIC INFO */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
                             <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" required />
@@ -581,6 +623,7 @@ const Admin: React.FC = () => {
                             <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-28 resize-none text-gray-900 dark:text-white" required />
                         </div>
                         
+                        {/* TECH STACK */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Tech Stack ({techStackList.length}/15)</label>
                             <div className="flex gap-2">
@@ -622,6 +665,68 @@ const Admin: React.FC = () => {
                             </div>
                         </div>
 
+                         {/* HIGHLIGHTS */}
+                         <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Key Highlights ({highlightsList.length}/10)</label>
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={highlightInput} 
+                                    onChange={e => setHighlightInput(e.target.value)} 
+                                    onKeyDown={handleAddHighlight}
+                                    placeholder="e.g. Improved performance by 40%" 
+                                    className="flex-1 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" 
+                                    disabled={highlightsList.length >= 10}
+                                />
+                                <button 
+                                    type="button" 
+                                    onClick={handleAddHighlight}
+                                    disabled={!highlightInput.trim() || highlightsList.length >= 10}
+                                    className="w-12 bg-black dark:bg-white text-white dark:text-black rounded-xl flex items-center justify-center hover:opacity-80 disabled:opacity-50 transition-opacity font-bold text-lg"
+                                >
+                                    <i className="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                            <ul className="space-y-2 mt-3 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 dark:border-white/5 min-h-[60px]">
+                                {highlightsList.map((item, idx) => (
+                                    <li key={idx} className="flex justify-between items-center bg-white/50 dark:bg-white/5 px-3 py-2 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 border border-white/20 dark:border-white/5 animate-scale-in">
+                                        <span>• {item}</span>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => handleRemoveHighlight(idx)}
+                                            className="text-gray-400 hover:text-red-500 transition-colors"
+                                        >
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </li>
+                                ))}
+                                {highlightsList.length === 0 && (
+                                    <span className="text-xs text-gray-400 font-medium italic">No highlights added yet.</span>
+                                )}
+                            </ul>
+                        </div>
+
+                        {/* CASE STUDY SECTION */}
+                        <div className="pt-4 border-t border-gray-200/50 dark:border-white/10">
+                            <h4 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Case Study Details</h4>
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-blue-500 ml-1">The Challenge</label>
+                                    <textarea value={caseStudyForm.challenge} onChange={e => setCaseStudyForm({...caseStudyForm, challenge: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-24 resize-none text-gray-900 dark:text-white text-sm" placeholder="What problems did you face?" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-green-500 ml-1">The Solution</label>
+                                    <textarea value={caseStudyForm.solution} onChange={e => setCaseStudyForm({...caseStudyForm, solution: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-green-500 transition-colors h-24 resize-none text-gray-900 dark:text-white text-sm" placeholder="How did you solve them?" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-purple-500 ml-1">The Results</label>
+                                    <textarea value={caseStudyForm.results} onChange={e => setCaseStudyForm({...caseStudyForm, results: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-purple-500 transition-colors h-24 resize-none text-gray-900 dark:text-white text-sm" placeholder="What was the outcome?" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* LINKS & IMAGE */}
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Image URL</label>
                             <input 
@@ -644,6 +749,7 @@ const Admin: React.FC = () => {
                                 <input type="url" value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" />
                             </div>
                         </div>
+
                         <div className="pt-4 flex justify-end gap-3 sticky bottom-0 z-10">
                             <button type="button" onClick={closeProjectModal} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-700 dark:text-gray-300">Cancel</button>
                             <button type="submit" className="px-8 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">{editingProject ? 'Save Changes' : 'Publish Project'}</button>
