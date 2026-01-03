@@ -58,6 +58,15 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -172,108 +181,117 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
           />
         )}
 
-        {/* Top Header Navigation */}
-        <div className="container mx-auto px-6 pt-12 md:pt-16">
-          <button 
-            onClick={handleBack}
-            className="group flex items-center gap-4 text-[10px] font-black text-gray-400 hover:text-blue-600 transition-all uppercase tracking-[0.4em]"
-          >
-            <i className="fas fa-long-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
-            Back to Archive
-          </button>
+        {/* Sticky Top Header Navigation */}
+        <div className={`sticky top-0 z-[60] transition-all duration-300 ${isScrolled ? 'bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-black/5 dark:border-white/5 py-3 shadow-sm' : 'bg-transparent py-8'}`}>
+          <div className="container mx-auto px-6 flex items-center justify-between">
+            <button 
+              onClick={handleBack}
+              className="group flex items-center gap-4 text-[10px] font-black text-gray-400 hover:text-blue-600 transition-all uppercase tracking-[0.4em]"
+            >
+              <i className="fas fa-long-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+              <span className={`${isScrolled ? 'hidden sm:inline' : 'inline'}`}>Back to Archive</span>
+            </button>
+            
+            <div className={`transition-all duration-500 ${isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
+               <h1 className="text-sm font-black text-gray-900 dark:text-white truncate max-w-[150px] sm:max-w-xs">{project.title}</h1>
+            </div>
+
+            <div className="flex items-center gap-4">
+               {project.liveUrl && (
+                 <a href={project.liveUrl} target="_blank" className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] hover:scale-110 transition-transform">
+                   <i className="fas fa-external-link-alt"></i>
+                 </a>
+               )}
+               <button onClick={() => setIsShareOpen(true)} className="w-8 h-8 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center text-gray-500 text-[10px] hover:scale-110 transition-transform">
+                  <i className="fas fa-share-nodes"></i>
+               </button>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Section */}
-        <header className="container mx-auto px-6 pt-12 pb-24 md:pb-32">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
-            
-            {/* Left View - Sleek Browser Window Aesthetic */}
-            <Reveal variant="rotate-left" triggerOnMount>
-              <div className="relative group perspective-1000">
-                {/* Ambient Glow behind */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[2rem] blur-3xl -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
-                
-                {/* Browser Frame */}
-                <div className="relative rounded-xl bg-[#F0F0F3] dark:bg-[#121212] overflow-hidden shadow-2xl border border-white/40 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 transform transition-transform duration-700 group-hover:rotate-x-2 group-hover:scale-[1.01]">
-                   
-                   {/* Browser Toolbar */}
-                   <div className="bg-white/80 dark:bg-[#1C1C1E]/90 backdrop-blur-md px-4 py-3 flex items-center gap-4 border-b border-black/5 dark:border-white/5 z-20 relative">
-                       {/* Traffic Lights */}
-                       <div className="flex gap-2 shrink-0">
-                         <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] border border-[#E0443E]/50"></div>
-                         <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]/50"></div>
-                         <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] border border-[#1AAB29]/50"></div>
-                       </div>
-                       
-                       {/* URL Bar Simulation */}
-                       <div className="flex-1 bg-gray-100 dark:bg-[#2C2C2E] rounded-md h-7 flex items-center justify-center overflow-hidden relative shadow-inner">
-                          <div className="flex items-center gap-2 opacity-60">
-                             <i className="fas fa-lock text-[8px] text-gray-500"></i>
-                             <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono tracking-tight select-none">
-                                {getDomain(project.liveUrl)}
-                             </span>
-                          </div>
-                          {/* Progress bar hint */}
-                          <div className="absolute bottom-0 left-0 h-[1px] bg-blue-500 w-full opacity-0 group-hover:opacity-50 transition-opacity duration-1000"></div>
-                       </div>
-
-                       <div className="w-8 shrink-0 flex justify-end opacity-30">
-                          <i className="fas fa-rotate-right text-xs"></i>
-                       </div>
-                   </div>
-
-                   {/* Viewport/Image */}
-                   <div className="aspect-[16/10] overflow-hidden relative bg-gray-100 dark:bg-black/40 group-hover:cursor-n-resize">
-                      <img 
-                          src={project.image} 
-                          alt={project.title} 
-                          className="w-full h-full object-cover object-top transition-transform duration-[1.5s] ease-in-out group-hover:translate-y-[-10%]" 
-                      />
-                      {/* Screen Gloss/Reflection */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-10"></div>
-                   </div>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* Right Metadata */}
-            <Reveal variant="skew-up" triggerOnMount delay={200}>
-              <div className="space-y-8">
-                <div className="space-y-4">
+        {/* Hero Showcase Section */}
+        <header className="container mx-auto px-6 pt-12 pb-24 lg:pb-32">
+          <div className="flex flex-col items-center mb-20 lg:mb-28 text-center">
+            <Reveal variant="skew-up" triggerOnMount>
+               <div className="space-y-6">
                   <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600/10 border border-blue-600/20 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em]">
                     {project.category || 'System Architecture'}
                   </span>
-                  <div className="flex justify-between items-start">
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white tracking-ultra leading-[0.9]">
-                      {project.title}
-                    </h1>
-                    <button 
-                      onClick={() => setIsShareOpen(true)}
-                      className="w-12 h-12 rounded-2xl glass-strong border border-black/5 dark:border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-all shadow-sm"
-                      title="Share Project"
-                    >
-                      <i className="fas fa-share-nodes"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-medium max-w-xl">
-                  {project.desc}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-5 pt-4">
-                  {project.liveUrl && (
-                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="px-10 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-blue-600/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
-                      <i className="fas fa-external-link-alt"></i> See Live Project
-                    </a>
-                  )}
-                  <button onClick={openContactModal} className="px-10 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 flex items-center justify-center gap-3">
-                    Inquire Similar
-                  </button>
-                </div>
-              </div>
+                  <h1 className="text-5xl md:text-7xl lg:text-9xl font-black text-gray-900 dark:text-white tracking-ultra leading-[0.85] mb-8">
+                    {project.title}
+                  </h1>
+                  <p className="text-lg md:text-2xl text-gray-500 dark:text-gray-400 leading-relaxed font-medium max-w-2xl mx-auto">
+                    {project.desc}
+                  </p>
+               </div>
             </Reveal>
           </div>
+
+          {/* Immersive Mac Display Layout */}
+          <Reveal variant="zoom-in" triggerOnMount delay={200}>
+            <div className="relative max-w-6xl mx-auto group">
+              {/* Ultra Deep Shadow & Glow */}
+              <div className="absolute -inset-10 bg-gradient-to-tr from-blue-500/20 via-transparent to-purple-500/20 rounded-[4rem] blur-[100px] -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-1000"></div>
+              
+              <div className="relative rounded-[2.5rem] bg-[#E5E5E7] dark:bg-[#121214] p-2 sm:p-4 md:p-6 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] dark:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.7)] border border-white/20 dark:border-white/5 ring-1 ring-black/5 dark:ring-white/5 transition-transform duration-700 ease-out group-hover:scale-[1.005]">
+                 
+                 {/* Internal Window Container */}
+                 <div className="relative rounded-[1.5rem] md:rounded-[2rem] bg-white dark:bg-black overflow-hidden shadow-2xl">
+                    
+                    {/* Browser Toolbar (macOS Style) */}
+                    <div className="bg-[#F6F6F6] dark:bg-[#1E1E1E] px-4 md:px-6 py-4 flex items-center justify-between border-b border-black/5 dark:border-white/10 z-20 relative">
+                        <div className="flex gap-2.5">
+                          <div className="w-3 h-3 rounded-full bg-[#FF5F57] shadow-inner"></div>
+                          <div className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-inner"></div>
+                          <div className="w-3 h-3 rounded-full bg-[#28C840] shadow-inner"></div>
+                        </div>
+                        
+                        <div className="absolute left-1/2 -translate-x-1/2 w-1/2 max-w-[400px]">
+                           <div className="bg-white dark:bg-black/30 border border-black/5 dark:border-white/10 rounded-lg h-8 flex items-center justify-center shadow-sm overflow-hidden px-4">
+                              <div className="flex items-center gap-2 opacity-50 overflow-hidden">
+                                 <i className="fas fa-lock text-[10px] text-gray-400"></i>
+                                 <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono tracking-tight truncate">
+                                    {getDomain(project.liveUrl)}
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
+
+                        <div className="flex gap-4 opacity-40 text-xs">
+                           <i className="fas fa-arrow-left"></i>
+                           <i className="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+
+                    {/* The Full Thumbnail View */}
+                    <div className="aspect-[16/9] md:aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-zinc-900 group-hover:cursor-zoom-in">
+                       <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover object-top transition-transform duration-[3s] ease-in-out group-hover:translate-y-[-15%]" 
+                       />
+                       {/* Subtle Glass Tint */}
+                       <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/5 pointer-events-none z-10"></div>
+                    </div>
+                 </div>
+
+                 {/* Display Foot/Stand Base Hint (Subtle shadow below) */}
+                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[60%] h-4 bg-black/40 blur-2xl rounded-full opacity-30"></div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Action Buttons Below Showcase */}
+          <Reveal variant="fade" delay={400} className="flex justify-center gap-6 mt-16 md:mt-24">
+             {project.liveUrl && (
+                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="px-12 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-blue-600/40 transition-all hover:-translate-y-1 flex items-center gap-3">
+                  <i className="fas fa-external-link-alt text-xs"></i> Open Deployment
+                </a>
+             )}
+             <button onClick={openContactModal} className="px-12 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 hover:-translate-y-1">
+                Project Inquiry
+             </button>
+          </Reveal>
         </header>
 
         {/* Technologies Section */}
