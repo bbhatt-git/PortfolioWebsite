@@ -7,8 +7,9 @@ const About: React.FC = () => {
   const frontendStack = [
     { name: "React", icon: "fab fa-react", color: "text-blue-400" },
     { name: "Next.js", icon: "fas fa-layer-group", color: "text-black dark:text-white" },
+    { name: "Vite", icon: "fas fa-bolt", color: "text-yellow-400" },
+    { name: "TypeScript", icon: "fas fa-code", color: "text-blue-600" },
     { name: "Tailwind CSS", icon: "fas fa-wind", color: "text-cyan-400" },
-    { name: "Bootstrap", icon: "fab fa-bootstrap", color: "text-purple-600" },
     { name: "HTML", icon: "fab fa-html5", color: "text-orange-500" },
     { name: "CSS", icon: "fab fa-css3-alt", color: "text-blue-500" },
     { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400" },
@@ -19,12 +20,14 @@ const About: React.FC = () => {
     { name: "Node JS", icon: "fab fa-node", color: "text-green-500" },
     { name: "Python", icon: "fab fa-python", color: "text-yellow-300" },
     { name: "PHP", icon: "fab fa-php", color: "text-indigo-400" },
-    { name: "C", icon: "fas fa-code", color: "text-blue-500" },
     { name: "MySQL", icon: "fas fa-database", color: "text-orange-400" },
+    { name: "MongoDB", icon: "fas fa-leaf", color: "text-green-600" },
     { name: "Firebase", icon: "fas fa-fire", color: "text-yellow-500" },
+    { name: "C", icon: "fas fa-code", color: "text-blue-500" },
   ];
 
   const toolsStack = [
+    { name: "Git", icon: "fab fa-git-alt", color: "text-red-500" },
     { name: "Figma", icon: "fab fa-figma", color: "text-pink-500" },
     { name: "Adobe Photoshop", icon: "fas fa-image", color: "text-blue-700" },
     { name: "Wordpress", icon: "fab fa-wordpress", color: "text-blue-600" },

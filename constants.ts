@@ -1,9 +1,9 @@
 import { Project, Service, Testimonial, Stat } from './types';
 
 export const TECH_STACK = [
-  'HTML', 'CSS', 'JavaScript', 'C', 'Python', 'PHP', 'MySQL', 'Node JS', 
-  'Next.js', 'React', 'Tailwind CSS', 'AI/ML', 'Bootstrap', 'Firebase', 
-  'Wordpress', 'Figma', 'Flutter', 'Adobe Photoshop'
+  'HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Vite', 
+  'Tailwind CSS', 'Node JS', 'Python', 'PHP', 'C', 'MySQL', 'MongoDB', 
+  'Firebase', 'Git', 'Figma', 'Flutter', 'Adobe Photoshop', 'AI/ML'
 ];
 
 export const STATS: Stat[] = [

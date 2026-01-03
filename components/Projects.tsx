@@ -259,6 +259,35 @@ const Projects: React.FC = () => {
                           </a>
                        )}
                    </div>
+
+                   {/* New CTA Section */}
+                   <div className="mt-24 p-10 md:p-14 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-purple-600 text-center text-white relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500">
+                        {/* Decorative background elements */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-noise opacity-20"></div>
+                        <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-blob"></div>
+                        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-black/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+                        
+                        <div className="relative z-10">
+                            <h3 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight">Want to start a project like this?</h3>
+                            <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                                Let's collaborate and bring your unique vision to life with pixel-perfect design and robust code.
+                            </p>
+                            <button 
+                                onClick={() => {
+                                    closeModal();
+                                    setTimeout(() => {
+                                      const contactSection = document.getElementById('contact');
+                                      if (contactSection) {
+                                          contactSection.scrollIntoView({ behavior: 'smooth' });
+                                      }
+                                    }, 100);
+                                }}
+                                className="px-10 py-4 rounded-2xl bg-white text-blue-600 font-bold text-lg hover:scale-105 transition-transform shadow-xl hover:shadow-white/20 flex items-center gap-3 mx-auto"
+                            >
+                                Let's Talk <i className="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
                </div>
            </div>
         </div>
