@@ -1,41 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
-  const footerRef = useRef<HTMLElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!footerRef.current) return;
-    const { left, top, width, height } = footerRef.current.getBoundingClientRect();
-    // Calculate normalized position from center for parallax
-    const x = (e.clientX - left - width / 2) / 40; 
-    const y = (e.clientY - top - height / 2) / 40;
-    setMousePos({ x, y });
-  };
-
-  const handleMouseLeave = () => {
-    setMousePos({ x: 0, y: 0 });
-  };
 
   return (
     <footer 
-      ref={footerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-20 pb-12 overflow-hidden perspective-1000"
+      className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-20 pb-12 overflow-hidden"
     >
-      {/* Decorative Orbs with 3D Parallax */}
+      {/* Decorative Orbs - Static */}
       <div 
         className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50"
       ></div>
       <div 
-        className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] transition-transform duration-500 ease-out will-change-transform"
-        style={{ transform: `translate3d(${mousePos.x * -2}px, ${mousePos.y * -2}px, 0)` }}
+        className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]"
       ></div>
       <div 
-        className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px] transition-transform duration-500 ease-out will-change-transform"
-        style={{ transform: `translate3d(${mousePos.x * 2}px, ${mousePos.y * 2}px, 0)` }}
+        className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px]"
       ></div>
 
       <div className="container mx-auto px-6 relative z-10">
@@ -119,10 +99,9 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar with 3D Effect */}
+        {/* Bottom Bar - Static */}
         <div 
-           className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 transition-transform duration-300 ease-out will-change-transform"
-           style={{ transform: `translate3d(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px, 0)` }}
+           className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6"
         >
           <div className="text-sm text-gray-400 order-2 md:order-1">
              © {year} Bhupesh Raj Bhatt. All rights reserved.
