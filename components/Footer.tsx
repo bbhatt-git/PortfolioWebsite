@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer 
-      className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-20 pb-12 overflow-hidden"
+      className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-12 md:pt-20 pb-8 md:pb-12 overflow-hidden"
     >
       {/* Decorative Orbs - Static */}
       <div 
@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
       ></div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-8 mb-12 md:mb-20">
           {/* Brand Column */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
@@ -28,7 +28,9 @@ const Footer: React.FC = () => {
               </div>
               <span className="text-2xl font-bold tracking-tighter text-gray-900 dark:text-white">Bhupesh Bhatt</span>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 max-w-sm text-lg leading-relaxed mb-8">
+            
+            {/* Description - Hidden on Mobile */}
+            <p className="hidden md:block text-gray-500 dark:text-gray-400 max-w-sm text-lg leading-relaxed mb-8">
               Empowering brands through pixel-perfect design and scalable development solutions. Let's create something extraordinary together.
             </p>
             
@@ -53,8 +55,8 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Nav Column */}
-          <div>
+          {/* Nav Column - Hidden on Mobile */}
+          <div className="hidden md:block">
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-900 dark:text-white mb-6">Quick Links</h4>
             <ul className="space-y-4">
               {['Home', 'About', 'Services', 'Work', 'Contact'].map((link) => (
@@ -79,7 +81,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-4 text-gray-500 dark:text-gray-400">
               <li className="flex items-center gap-3 group">
                 <i className="fas fa-envelope text-blue-500 group-hover:scale-110 transition-transform"></i>
-                <a href="mailto:hello@bbhatt.com.np" className="hover:text-black dark:hover:text-white transition-colors relative">
+                <a href="mailto:hello@bbhatt.com.np" className="hover:text-black dark:hover:text-white transition-colors relative break-all">
                     <span className="relative py-1">
                       hello@bbhatt.com.np
                       <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
@@ -103,16 +105,16 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar - Static */}
+        {/* Bottom Bar */}
         <div 
-           className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6"
+           className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-center md:text-left"
         >
           <div className="text-sm text-gray-400 order-2 md:order-1">
              © {year} Bhupesh Raj Bhatt. All rights reserved.
           </div>
           
-          <div className="order-1 md:order-2">
-             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight hover:shadow-lg transition-all hover:scale-105">
+          <div className="order-1 md:order-2 w-full md:w-auto">
+             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight hover:shadow-lg transition-all hover:scale-105 inline-block">
                 Designed & Crafted by <span className="font-bold text-gray-900 dark:text-white ml-1">Bhupesh Raj Bhatt</span>
              </div>
           </div>

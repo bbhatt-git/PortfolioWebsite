@@ -89,31 +89,31 @@ const Services: React.FC = () => {
       {selectedService && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in" onClick={closeModal}>
            <div 
-             className="w-full max-w-2xl bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
+             className="w-full max-w-2xl bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative flex flex-col max-h-[85vh]"
              onClick={e => e.stopPropagation()}
            >
               {/* Header Decoration */}
-              <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-blue-600/20 to-purple-600/20 pointer-events-none"></div>
-              <div className="absolute top-[-50px] right-[-50px] w-60 h-60 bg-blue-500/20 rounded-full blur-[80px]"></div>
+              <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-blue-600/20 to-purple-600/20 pointer-events-none shrink-0"></div>
+              <div className="absolute top-[-50px] right-[-50px] w-60 h-60 bg-blue-500/20 rounded-full blur-[80px] shrink-0"></div>
 
               {/* Close Button */}
               <button 
                 onClick={closeModal}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white dark:hover:bg-red-500 transition-colors z-20 text-black dark:text-white"
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white dark:hover:bg-red-500 transition-colors z-20 text-black dark:text-white"
               >
                 <i className="fas fa-times"></i>
               </button>
 
-              <div className="p-8 md:p-12 relative z-10">
+              <div className="p-6 md:p-12 relative z-10 overflow-y-auto custom-scrollbar">
                  {/* Icon */}
-                 <div className="w-20 h-20 rounded-3xl bg-white dark:bg-[#252528] shadow-2xl flex items-center justify-center text-3xl md:text-4xl text-blue-600 dark:text-blue-400 mb-8 border border-white/40 dark:border-white/10 ring-4 ring-white/20 dark:ring-black/20">
+                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-white dark:bg-[#252528] shadow-2xl flex items-center justify-center text-3xl md:text-4xl text-blue-600 dark:text-blue-400 mb-6 md:mb-8 border border-white/40 dark:border-white/10 ring-4 ring-white/20 dark:ring-black/20 shrink-0">
                     <i className={`fas ${selectedService.icon}`}></i>
                  </div>
 
-                 <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">{selectedService.title}</h3>
+                 <h3 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">{selectedService.title}</h3>
                  
-                 <div className="bg-white/50 dark:bg-black/20 p-6 rounded-2xl border border-black/5 dark:border-white/5 mb-8">
-                     <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-light">
+                 <div className="bg-white/50 dark:bg-black/20 p-5 md:p-6 rounded-2xl border border-black/5 dark:border-white/5 mb-8">
+                     <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-light">
                         {selectedService.details || selectedService.desc}
                      </p>
                  </div>
@@ -123,9 +123,9 @@ const Services: React.FC = () => {
                       <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-5 flex items-center gap-2">
                         <span className="w-8 h-[1px] bg-gray-300 dark:bg-gray-700"></span> What's Included
                       </h4>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         {selectedService.features.map((feature, idx) => (
-                           <li key={idx} className="flex items-center gap-3 text-gray-700 dark:text-gray-200 p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-default">
+                           <li key={idx} className="flex items-center gap-3 text-gray-700 dark:text-gray-200 p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-default border border-transparent hover:border-black/5 dark:hover:border-white/5">
                               <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
                                 <i className="fas fa-check text-xs"></i>
                               </div>
@@ -143,7 +143,7 @@ const Services: React.FC = () => {
                             const contact = document.getElementById('contact');
                             if (contact) contact.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                        className="flex-1 py-3 md:py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                         Get Started <i className="fas fa-arrow-right"></i>
                     </button>

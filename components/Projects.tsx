@@ -204,7 +204,7 @@ const Projects: React.FC = () => {
            </div>
 
            {/* Hero Image Section */}
-           <div className="w-full h-[50vh] md:h-[65vh] relative overflow-hidden group">
+           <div className="w-full h-[40vh] md:h-[65vh] relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F2F2F7] dark:to-[#050505] z-10"></div>
                <img 
                  src={selectedProject.image} 
@@ -221,7 +221,7 @@ const Projects: React.FC = () => {
                    <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/20 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
                        
-                       <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight relative z-10">{selectedProject.title}</h1>
+                       <h1 className="text-3xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight relative z-10">{selectedProject.title}</h1>
                        <div className="flex flex-wrap gap-2 mb-8 relative z-10">
                           {selectedProject.stack.split(/[•,]/).map((tech, i) => (
                              <span key={i} className="px-4 py-2 rounded-xl bg-white/50 dark:bg-white/10 border border-white/20 text-gray-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
@@ -260,19 +260,19 @@ const Projects: React.FC = () => {
                    {/* Links Section */}
                    <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
                        {selectedProject.liveUrl && (
-                          <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-lg shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                          <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-4 md:py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-lg shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
                              <i className="fas fa-external-link-alt"></i> Live Preview
                           </a>
                        )}
                        {selectedProject.codeUrl && (
-                          <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-white dark:bg-white/10 text-black dark:text-white border border-gray-200 dark:border-white/10 font-bold text-center text-lg hover:bg-gray-50 dark:hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                          <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-4 md:py-5 rounded-2xl bg-white dark:bg-white/10 text-black dark:text-white border border-gray-200 dark:border-white/10 font-bold text-center text-lg hover:bg-gray-50 dark:hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
                              <i className="fab fa-github"></i> View Code
                           </a>
                        )}
                    </div>
 
                    {/* New CTA Section */}
-                   <div className="mt-24 p-10 md:p-14 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-purple-600 text-center text-white relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500">
+                   <div className="mt-24 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-purple-600 text-center text-white relative overflow-hidden shadow-2xl hover:scale-[1.01] transition-transform duration-500">
                         {/* Decorative background elements */}
                         <div className="absolute top-0 left-0 w-full h-full bg-noise opacity-20"></div>
                         <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-blob"></div>

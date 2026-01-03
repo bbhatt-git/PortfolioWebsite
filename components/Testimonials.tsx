@@ -46,15 +46,15 @@ const Testimonials: React.FC = () => {
              {duplicatedTestimonials.map((testi, index) => (
                  <div 
                     key={`${testi.id}-${index}`} 
-                    className="w-[300px] md:w-[400px] flex-shrink-0 mr-6 md:mr-8 group relative"
+                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-6 md:mr-8 group relative"
                  >
-                    <div className="h-full flex flex-col p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
+                    <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
                         {/* Glass Shine */}
                         <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50 pointer-events-none"></div>
                         
                         {/* Quote Icon */}
                         <div className="absolute top-6 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                           <i className="fas fa-quote-right text-5xl text-black dark:text-white"></i>
+                           <i className="fas fa-quote-right text-4xl md:text-5xl text-black dark:text-white"></i>
                         </div>
 
                         {/* Stars */}
