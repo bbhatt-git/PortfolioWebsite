@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   
-  // Mouse position state
+  // Mouse position state for tilting effect
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
 
   // Typing Effect State
@@ -57,13 +57,13 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, typingSpeed]);
 
-  // Parallax Logic
+  // Parallax Tilt Logic
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 20; // Increased sensitivity (was 25)
-    const y = (e.clientY - top - height / 2) / 20;
+    const x = (e.clientX - left - width / 2) / 25; 
+    const y = (e.clientY - top - height / 2) / 25;
 
     setRotate({ x: -y, y: x });
   };
@@ -81,105 +81,109 @@ const Hero: React.FC = () => {
       className="min-h-screen flex flex-col justify-center items-center text-center relative pt-20 overflow-hidden perspective-2000"
     >
       
-      {/* 3D Container */}
+      {/* 3D Scene Wrapper */}
       <div 
-        className="relative preserve-3d transition-transform duration-200 ease-out-expo w-full max-w-5xl mx-auto flex flex-col items-center"
+        className="relative preserve-3d transition-transform duration-500 ease-[cubic-bezier(0.03,0.98,0.52,0.99)] w-full max-w-5xl mx-auto flex flex-col items-center"
         style={{ 
           transform: isMobile ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
         }}
       >
         
-        {/* Floating 3D Elements */}
+        {/* Deep 3D Space Elements */}
         <div className="absolute inset-0 pointer-events-none preserve-3d">
-            {/* HERO BLOB: Deep 3D Background Blob that moves with the tilt */}
+            {/* HERO BLOB: Enhanced 3D Background Atmosphere */}
             <div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[100px] opacity-20 dark:opacity-10 mix-blend-screen pointer-events-none"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-25 dark:opacity-15 mix-blend-screen pointer-events-none animate-pulse-slow"
                 style={{ 
-                    transform: 'translateZ(-60px)',
-                    background: 'radial-gradient(circle, rgba(59,130,246,0.6) 0%, rgba(147,51,234,0.4) 50%, transparent 70%)' 
+                    transform: 'translateZ(-100px)',
+                    background: 'radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(147,51,234,0.3) 50%, transparent 70%)' 
                 }}
             ></div>
 
-            {/* React Icon */}
-            <div className="absolute top-[10%] left-[10%] animate-float-slow" style={{ transform: 'translateZ(60px)' }}>
-                <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center shadow-2xl opacity-80 backdrop-blur-xl border border-white/30">
-                    <i className="fab fa-react text-4xl text-[#61DAFB] animate-spin-slow"></i>
+            {/* React Icon - Foreground Deep Layer */}
+            <div className="absolute top-[5%] left-[5%] animate-float-slow" style={{ transform: 'translateZ(120px)' }}>
+                <div className="w-20 h-20 glass-strong rounded-[1.5rem] flex items-center justify-center shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/40 ring-1 ring-white/20">
+                    <i className="fab fa-react text-5xl text-[#61DAFB] animate-spin-slow"></i>
                 </div>
             </div>
             
-            {/* Code Icon */}
-            <div className="absolute bottom-[20%] right-[15%] animate-float-medium" style={{ transform: 'translateZ(80px)' }}>
-                <div className="w-20 h-20 glass rounded-full flex items-center justify-center shadow-2xl opacity-80 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl border border-white/30">
-                     <i className="fas fa-code text-3xl text-blue-500"></i>
+            {/* Code Icon - Foreground Layer */}
+            <div className="absolute bottom-[15%] right-[10%] animate-float-medium" style={{ transform: 'translateZ(150px)' }}>
+                <div className="w-24 h-24 glass-strong rounded-full flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/40 ring-1 ring-white/20">
+                     <i className="fas fa-code text-4xl text-blue-500 drop-shadow-md"></i>
                 </div>
             </div>
 
-             {/* Lightning Icon */}
-             <div className="absolute top-[20%] right-[20%] animate-float-fast" style={{ transform: 'translateZ(40px)' }}>
-                <div className="w-12 h-12 glass rounded-xl flex items-center justify-center shadow-lg opacity-60 backdrop-blur-xl border border-white/30">
-                     <i className="fas fa-bolt text-2xl text-yellow-500"></i>
+             {/* Lightning Icon - Mid Layer */}
+             <div className="absolute top-[25%] right-[15%] animate-float-fast" style={{ transform: 'translateZ(80px)' }}>
+                <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center shadow-lg opacity-80 backdrop-blur-xl border border-white/30 ring-1 ring-white/10">
+                     <i className="fas fa-bolt text-3xl text-yellow-500 drop-shadow-sm"></i>
                 </div>
             </div>
         </div>
 
-        {/* Status Badge */}
-        <div style={{ transform: 'translateZ(30px)' }} className="mb-8">
+        {/* Status Chip */}
+        <div style={{ transform: 'translateZ(60px)' }} className="mb-10">
           <Reveal triggerOnMount>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-white/50 dark:border-white/10 shadow-lg backdrop-blur-md">
-              <span className="relative flex h-2.5 w-2.5">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-strong border border-white/60 dark:border-white/10 shadow-xl backdrop-blur-3xl ring-1 ring-white/30">
+              <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
               </span>
-              <span className="text-xs font-bold tracking-widest uppercase text-gray-600 dark:text-gray-300">Available for Hire</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300">Available for Design & Dev</span>
             </div>
           </Reveal>
         </div>
         
-        {/* Main Heading */}
-        <div style={{ transform: 'translateZ(50px)' }} className="mb-6 relative z-10 w-full px-4">
+        {/* Title Group */}
+        <div style={{ transform: 'translateZ(100px)' }} className="mb-8 relative z-10 w-full px-6">
           <Reveal delay={100} triggerOnMount>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-none text-black dark:text-white mb-2 drop-shadow-xl">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white mb-2 drop-shadow-2xl">
               Hello, I'm
             </h1>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 animate-gradient bg-[length:200%_auto] pb-4">
+            <h2 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 animate-gradient bg-[length:200%_auto] pb-6">
                Bhupesh Bhatt
-            </h1>
+            </h2>
           </Reveal>
         </div>
 
-        {/* Typing Effect */}
-        <div style={{ transform: 'translateZ(40px)' }} className="mb-10 h-8 flex items-center justify-center">
+        {/* Animated Terminal Command Box */}
+        <div style={{ transform: 'translateZ(80px)' }} className="mb-12 h-10 flex items-center justify-center">
            <Reveal delay={200} triggerOnMount>
-             <div className="text-xl md:text-2xl font-mono text-gray-600 dark:text-gray-300 bg-white/30 dark:bg-black/20 backdrop-blur-md px-6 py-2 rounded-lg border border-white/20 shadow-sm">
-                <span className="text-blue-500 mr-2">&gt;</span>
+             <div className="text-lg md:text-xl font-mono text-gray-700 dark:text-gray-200 glass-strong px-8 py-3 rounded-2xl border border-white/40 shadow-xl ring-1 ring-white/20">
+                <span className="text-blue-600 font-bold mr-3">~</span>
+                <span className="text-gray-400 mr-2">$</span>
                 {text}
-                <span className="animate-pulse ml-1 inline-block w-2.5 h-5 bg-blue-500 align-middle"></span>
+                <span className="animate-pulse ml-1 inline-block w-2.5 h-6 bg-blue-600 align-middle"></span>
              </div>
            </Reveal>
         </div>
 
-        {/* Description */}
-        <div style={{ transform: 'translateZ(30px)' }} className="max-w-2xl mx-auto mb-12 px-6">
+        {/* Hero Bio Description */}
+        <div style={{ transform: 'translateZ(60px)' }} className="max-w-3xl mx-auto mb-16 px-8">
           <Reveal delay={300} triggerOnMount>
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">
-               I build accessible, pixel-perfect, and performant web experiences.
-               Passionate about merging <span className="font-semibold text-black dark:text-white">design</span> and <span className="font-semibold text-black dark:text-white">technology</span> to solve real-world problems.
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">
+               I engineer high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">accessible architectures</span> with a relentless focus on aesthetics. 
+               Blending deep design intuition with technical mastery.
             </p>
           </Reveal>
         </div>
 
-        {/* Buttons with Magnetic & Glassmorphism */}
-        <div style={{ transform: 'translateZ(60px)' }}>
+        {/* CTA Interaction Layer */}
+        <div style={{ transform: 'translateZ(130px)' }}>
           <Reveal delay={400} triggerOnMount>
-            <div className="flex flex-col sm:flex-row gap-5 items-center justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
               
-              <MagneticButton href="#work" variant="glass-primary" className="group overflow-hidden">
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                <span className="relative flex items-center gap-2">View Projects <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></span>
+              <MagneticButton href="#work" variant="glass-primary" className="group px-10 py-5">
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                <span className="relative flex items-center gap-3 text-lg">
+                  Explore Selected Work 
+                  <i className="fas fa-arrow-right text-sm group-hover:translate-x-2 transition-transform duration-500"></i>
+                </span>
               </MagneticButton>
 
-              <MagneticButton href="#contact" variant="glass-secondary">
-                Contact Me
+              <MagneticButton href="#contact" variant="glass-secondary" className="px-10 py-5 text-lg">
+                Start a Conversation
               </MagneticButton>
 
             </div>
