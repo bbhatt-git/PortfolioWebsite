@@ -34,7 +34,8 @@ const Testimonials: React.FC = () => {
         // Only run auto-scroll logic on mobile devices (< 768px) where we use overflow-x-auto
         // AND when not paused by user interaction
         if (!isPaused && window.innerWidth < 768) { 
-             scrollContainer.scrollLeft += 0.5; // Adjust speed here (0.5 is slow and smooth)
+             // Using 1px speed to ensure movement on all pixel densities
+             scrollContainer.scrollLeft += 1; 
 
              // Infinite scroll reset logic
              // If we have scrolled past half the content (the first set of testimonials), reset to 0
@@ -74,18 +75,19 @@ const Testimonials: React.FC = () => {
         {/* 
             Container with Scroll Logic:
             - Desktop (md+): overflow-hidden (for Marquee)
-            - Mobile: overflow-x-auto, snap-x (for Swipe) + JS Auto Scroll
+            - Mobile: overflow-x-auto (for Swipe) + JS Auto Scroll
+            - Removed snap-x/snap-mandatory to prevent fighting with JS auto-scroll
         */}
         <div 
           ref={scrollRef}
-          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 snap-x snap-mandatory scroll-smooth touch-pan-x z-20"
+          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 scroll-smooth touch-pan-x z-20"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} /* Hide scrollbar Firefox/IE */
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={() => setIsPaused(true)}
           onTouchEnd={() => {
-              // Small delay before resuming to allow fling to settle
-              setTimeout(() => setIsPaused(false), 1000);
+              // Delay before resuming to allow fling to settle
+              setTimeout(() => setIsPaused(false), 2000);
           }}
         >
            {/* Fade edges - pointer events none allows scrolling through them */}
@@ -109,7 +111,7 @@ const Testimonials: React.FC = () => {
                  <div 
                     key={`${testi.id}-${index}`} 
                     onClick={() => openModal(testi)}
-                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center"
+                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer"
                  >
                     <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
                         {/* Glass Shine */}
