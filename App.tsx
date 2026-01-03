@@ -83,8 +83,11 @@ const App: React.FC = () => {
   }
 
   if (currentRoute.startsWith('#/projects/')) {
-    const projectId = currentRoute.split('/')[2];
-    return <ProjectPage id={projectId} />;
+    const parts = currentRoute.split('/');
+    const projectId = parts[2];
+    if (projectId) {
+      return <ProjectPage id={projectId} />;
+    }
   }
 
   return (

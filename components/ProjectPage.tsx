@@ -10,12 +10,10 @@ import Contact from './Contact';
 
 /**
  * Enhanced mapping logic to assign professional brand icons and colors.
- * Prioritizes framework-specific icons over generic language icons.
  */
 const getTechIcon = (tech: string) => {
   const t = tech.toLowerCase().trim();
 
-  // 1. SPECIFIC FRAMEWORKS & TOOLS (Highest Priority)
   if (t.includes('vite')) return { icon: 'fas fa-bolt', color: 'text-[#646CFF]' };
   if (t.includes('tailwind')) return { icon: 'fas fa-wind', color: 'text-[#06B6D4]' };
   if (t.includes('next')) return { icon: 'fas fa-layer-group', color: 'text-gray-900 dark:text-white' };
@@ -26,7 +24,6 @@ const getTechIcon = (tech: string) => {
   if (t.includes('openstreetmap') || t.includes('osm')) return { icon: 'fas fa-map', color: 'text-[#7EBC6F]' };
   if (t.includes('wordpress')) return { icon: 'fab fa-wordpress', color: 'text-[#21759B]' };
 
-  // 2. LANGUAGES & CORE TECH
   if (t.includes('typescript') || t === 'ts') return { icon: 'fas fa-code', color: 'text-[#3178C6]' };
   if (t.includes('javascript') || t === 'js') return { icon: 'fab fa-js', color: 'text-[#F7DF1E]' };
   if (t.includes('html')) return { icon: 'fab fa-html5', color: 'text-[#E34F26]' };
@@ -36,19 +33,16 @@ const getTechIcon = (tech: string) => {
   if (t.includes('node')) return { icon: 'fab fa-node-js', color: 'text-[#339933]' };
   if (t === 'c' || t === 'cpp' || t.includes('c++')) return { icon: 'fas fa-microchip', color: 'text-[#A8B9CC]' };
 
-  // 3. DATABASES & BACKEND
   if (t.includes('firebase')) return { icon: 'fas fa-fire', color: 'text-[#FFCA28]' };
   if (t.includes('mongo')) return { icon: 'fas fa-leaf', color: 'text-[#47A248]' };
   if (t.includes('mysql') || t.includes('sql') || t.includes('postgres')) return { icon: 'fas fa-database', color: 'text-[#4479A1]' };
 
-  // 4. DESIGN & APIS
   if (t.includes('figma')) return { icon: 'fab fa-figma', color: 'text-[#F24E1E]' };
   if (t.includes('canva')) return { icon: 'fas fa-palette', color: 'text-[#00C4CC]' };
   if (t.includes('photoshop') || t.includes('adobe')) return { icon: 'fas fa-image', color: 'text-[#31A8FF]' };
   if (t.includes('github') || t.includes('git')) return { icon: 'fab fa-github', color: 'text-gray-900 dark:text-white' };
   if (t.includes('api')) return { icon: 'fas fa-gears', color: 'text-gray-500' };
 
-  // 5. AI & BOTs
   if (t.includes('ai') || t.includes('ml') || t.includes('intelligence') || t.includes('gemini') || t.includes('gpt')) return { icon: 'fas fa-brain', color: 'text-[#8B5CF6]' };
   if (t.includes('bot') || t.includes('chat')) return { icon: 'fas fa-robot', color: 'text-[#3B82F6]' };
 
@@ -63,6 +57,10 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     const fetchProject = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         const docRef = doc(db, "projects", id);
@@ -145,7 +143,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     );
   }
 
-  const techItems = project.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean);
+  const techItems = project.stack ? project.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean) : [];
 
   return (
     <Layout>
@@ -170,11 +168,11 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
           </button>
         </div>
 
-        {/* Hero Section: Corporate Split Layout */}
+        {/* Hero Section */}
         <header className="container mx-auto px-6 pt-12 pb-24 md:pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             
-            {/* Left: Device / Project View */}
+            {/* Left View */}
             <Reveal variant="rotate-left" triggerOnMount>
               <div className="relative">
                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none"></div>
@@ -190,7 +188,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
               </div>
             </Reveal>
 
-            {/* Right: Metadata */}
+            {/* Right Metadata */}
             <Reveal variant="skew-up" triggerOnMount delay={200}>
               <div className="space-y-8">
                 <div className="space-y-4">
@@ -230,7 +228,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
           </div>
         </header>
 
-        {/* Technologies Section - Bento Grid */}
+        {/* Technologies Section */}
         <section className="bg-white/40 dark:bg-white/5 py-24 md:py-32 border-y border-black/5 dark:border-white/5">
           <div className="container mx-auto px-6">
             <Reveal variant="slide">
@@ -258,7 +256,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
           </div>
         </section>
 
-        {/* Key Highlights - Checklist UI */}
+        {/* Key Highlights */}
         <section className="py-24 md:py-32">
           <div className="container mx-auto px-6">
             <Reveal variant="slide">
@@ -283,7 +281,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
           </div>
         </section>
 
-        {/* Case Study Grid - Narrative UI */}
+        {/* Case Study Grid */}
         <section className="bg-white/40 dark:bg-white/5 py-24 md:py-32">
           <div className="container mx-auto px-6">
             <Reveal variant="slide">
@@ -347,7 +345,6 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
         {/* Full Page Contact Modal */}
         {isContactModalOpen && (
           <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl overflow-y-auto animate-fade-in">
-            {/* Close Button */}
             <button 
               onClick={() => setIsContactModalOpen(false)}
               className="fixed top-6 right-6 z-[110] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-800 dark:text-white hover:rotate-90 transition-all duration-300 shadow-lg hover:shadow-2xl"
@@ -356,8 +353,8 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
               <i className="fas fa-times text-xl"></i>
             </button>
             
-            <div className="min-h-screen flex items-center justify-center">
-              <Contact onSuccess={() => setIsContactModalOpen(false)} />
+            <div className="min-h-screen flex items-center justify-center p-4">
+              <Contact onSuccess={() => setIsContactModalOpen(false)} isModal={true} />
             </div>
           </div>
         )}

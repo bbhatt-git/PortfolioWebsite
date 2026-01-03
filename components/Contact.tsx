@@ -6,9 +6,10 @@ import { db } from "../firebase";
 
 interface ContactProps {
   onSuccess?: () => void;
+  isModal?: boolean;
 }
 
-const Contact: React.FC<ContactProps> = ({ onSuccess }) => {
+const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
@@ -55,9 +56,11 @@ const Contact: React.FC<ContactProps> = ({ onSuccess }) => {
   };
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
-      {/* Ambient Background Glow for Liquid Effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-[120px] pointer-events-none"></div>
+    <section id="contact" className={`${isModal ? 'py-4' : 'py-24'} relative overflow-hidden`}>
+      {/* Ambient Background Glow for Liquid Effect - Hidden in Modal */}
+      {!isModal && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-[120px] pointer-events-none"></div>
+      )}
 
       {toast.show && (
         <Toast 
@@ -67,15 +70,18 @@ const Contact: React.FC<ContactProps> = ({ onSuccess }) => {
         />
       )}
 
-      <div className="container mx-auto px-4 max-w-4xl relative z-10">
-        <Reveal variant="skew-up">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 tracking-tight">Let's start a project</h2>
-            <p className="text-gray-500 dark:text-gray-400">Open for freelance opportunities and collaborations.</p>
-          </div>
-        </Reveal>
+      <div className={`container mx-auto px-4 max-w-4xl relative z-10 ${isModal ? 'flex justify-center items-center' : ''}`}>
+        
+        {!isModal && (
+            <Reveal variant="skew-up">
+            <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold mb-4 tracking-tight">Let's start a project</h2>
+                <p className="text-gray-500 dark:text-gray-400">Open for freelance opportunities and collaborations.</p>
+            </div>
+            </Reveal>
+        )}
 
-        <Reveal delay={200} variant="zoom-in">
+        <Reveal delay={isModal ? 0 : 200} variant="zoom-in" className={isModal ? 'w-full max-w-2xl' : 'w-full'}>
           {/* macOS Mail Window - Liquid Glass Style */}
           <div className="group relative backdrop-blur-3xl bg-white/40 dark:bg-[#1c1c1e]/40 rounded-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20 transition-transform duration-500 hover:scale-[1.005]">
             
@@ -178,38 +184,40 @@ const Contact: React.FC<ContactProps> = ({ onSuccess }) => {
           </div>
         </Reveal>
         
-        {/* Social Links Row */}
-        <Reveal delay={300} variant="3d">
-          <div className="flex justify-center gap-6 md:gap-10 mt-16 flex-wrap">
-            <a href="https://github.com/bbhatt-git" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
-               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
-                 <i className="fab fa-github"></i>
-               </div>
-               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">GitHub</span>
-            </a>
-            
-            <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
-               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
-                 <i className="fab fa-linkedin"></i>
-               </div>
-               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">LinkedIn</span>
-            </a>
+        {/* Social Links Row - Hidden in Modal */}
+        {!isModal && (
+            <Reveal delay={300} variant="3d">
+            <div className="flex justify-center gap-6 md:gap-10 mt-16 flex-wrap">
+                <a href="https://github.com/bbhatt-git" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                    <i className="fab fa-github"></i>
+                </div>
+                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">GitHub</span>
+                </a>
+                
+                <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                    <i className="fab fa-linkedin"></i>
+                </div>
+                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">LinkedIn</span>
+                </a>
 
-            <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#1877F2] transition-colors">
-               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
-                 <i className="fab fa-facebook"></i>
-               </div>
-               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Facebook</span>
-            </a>
+                <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#1877F2] transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                    <i className="fab fa-facebook"></i>
+                </div>
+                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Facebook</span>
+                </a>
 
-            <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#E4405F] transition-colors">
-               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
-                 <i className="fab fa-instagram"></i>
-               </div>
-               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Instagram</span>
-            </a>
-          </div>
-        </Reveal>
+                <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#E4405F] transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
+                    <i className="fab fa-instagram"></i>
+                </div>
+                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Instagram</span>
+                </a>
+            </div>
+            </Reveal>
+        )}
       </div>
     </section>
   );
