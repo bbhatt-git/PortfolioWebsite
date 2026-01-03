@@ -13,11 +13,13 @@ import Terminal from './components/Terminal';
 import Admin from './components/Admin';
 import CV from './components/CV';
 import ProjectPage from './components/ProjectPage';
+import Preloader from './components/Preloader';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Use pathname instead of hash for routing
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -82,52 +84,69 @@ const App: React.FC = () => {
 
   // Route Handling
   if (currentPath === '/admin') {
-    return <Admin />;
+    return (
+      <>
+        {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+        <Admin />
+      </>
+    );
   }
 
   if (currentPath === '/cv') {
-    return <CV />;
+    return (
+      <>
+        {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+        <CV />
+      </>
+    );
   }
 
   // Check for /project/slug
   if (currentPath.startsWith('/project/')) {
     const rawSlug = currentPath.split('/project/')[1];
-    // Robustly handle trailing slashes (common on refresh) and query params
     const slug = rawSlug ? rawSlug.split('?')[0].replace(/\/$/, '') : '';
     
     if (slug) {
-      return <ProjectPage slug={slug} />;
+      return (
+        <>
+          {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+          <ProjectPage slug={slug} />
+        </>
+      );
     }
   }
 
   return (
-    <Layout>
-      <Navbar 
-        isDark={isDark} 
-        toggleTheme={toggleTheme} 
-        openSearch={() => setIsSearchOpen(true)}
-        openTerminal={() => setIsTerminalOpen(true)}
-      />
-      <main>
-        <Hero />
-        <About />
-        <Services />
-        <Projects />
-        <Testimonials />
-        <Contact />
-      </main>
-      <Footer />
-      
-      <CommandPalette 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
-        toggleTheme={toggleTheme} 
-      />
-      <Terminal 
-        isOpen={isTerminalOpen} 
-        onClose={() => setIsTerminalOpen(false)} 
-      />
-    </Layout>
+    <>
+      {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+      <Layout>
+        <Navbar 
+          isDark={isDark} 
+          toggleTheme={toggleTheme} 
+          openSearch={() => setIsSearchOpen(true)}
+          openTerminal={() => setIsTerminalOpen(true)}
+        />
+        <main>
+          <Hero />
+          <About />
+          <Services />
+          <Projects />
+          <Testimonials />
+          <Contact />
+        </main>
+        <Footer />
+        
+        <CommandPalette 
+          isOpen={isSearchOpen} 
+          onClose={() => setIsSearchOpen(false)} 
+          toggleTheme={toggleTheme} 
+        />
+        <Terminal 
+          isOpen={isTerminalOpen} 
+          onClose={() => setIsTerminalOpen(false)} 
+        />
+      </Layout>
+    </>
   );
 };
 
