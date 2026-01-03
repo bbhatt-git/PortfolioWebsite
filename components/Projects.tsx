@@ -33,70 +33,76 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     setGlare((prev) => ({ ...prev, opacity: 0 }));
   };
 
-  const displayUrl = project.liveUrl 
-    ? project.liveUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') 
-    : 'project.local';
-
   return (
     <div 
       ref={cardRef}
-      className="group relative rounded-[2rem] transition-all duration-300 ease-out-expo transform-gpu preserve-3d h-full perspective-1000 cursor-pointer"
+      className="group relative rounded-[2.5rem] transition-all duration-500 ease-out-expo transform-gpu preserve-3d h-full perspective-1000 cursor-pointer"
       style={{ transform: isTouch ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) scale3d(1, 1, 1)` }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
     >
+      {/* Glare Effect */}
       <div 
-        className="absolute inset-0 rounded-[2rem] z-50 pointer-events-none mix-blend-overlay transition-opacity duration-300"
+        className="absolute inset-0 rounded-[2.5rem] z-50 pointer-events-none mix-blend-overlay transition-opacity duration-300"
         style={{
           background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.4) 0%, transparent 80%)`,
-          opacity: glare.opacity * 0.7,
+          opacity: glare.opacity * 0.6,
         }}
       ></div>
 
-      <div className="bg-white/60 dark:bg-[#161618]/60 backdrop-blur-2xl rounded-[2rem] overflow-hidden shadow-xl dark:shadow-black/50 border border-white/40 dark:border-white/5 relative z-10 flex flex-col h-full transition-transform duration-300 preserve-3d"
-           style={{ transform: isHovered ? 'translateZ(30px)' : 'translateZ(0)' }}>
+      {/* Main Card Container */}
+      <div className="bg-white/40 dark:bg-[#161618]/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-2xl ring-1 ring-white/20 dark:ring-white/5 relative z-10 flex flex-col h-full transition-transform duration-300 preserve-3d"
+           style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)' }}>
         
-        <div className="h-10 bg-gray-100/50 dark:bg-[#1E1E20]/50 border-b border-gray-200 dark:border-white/5 flex items-center px-4 gap-2 shrink-0 preserve-3d">
-           <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]"></div>
-           </div>
-           <div className="flex-1 text-center">
-              <div className="inline-block px-3 py-0.5 rounded-md bg-white/40 dark:bg-black/20 text-[10px] text-gray-500 font-medium truncate max-w-[150px]">
-                {displayUrl}
-              </div>
-           </div>
-           <div className="w-10"></div>
-        </div>
-
-        <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-black shrink-0 overflow-hidden border-b border-gray-100 dark:border-white/5 group-hover:shadow-inner">
-          <img src={project.image} alt={project.title} className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-110" />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-             <span className="px-5 py-2 rounded-full bg-white/20 text-white font-bold text-sm backdrop-blur-md border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">View Project</span>
+        {/* Image Section with Overlay */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden group-hover:shadow-inner shrink-0 bg-gray-100 dark:bg-black/20">
+          <img src={project.image} alt={project.title} className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-105" />
+          
+          {/* Glass Overlay on Image (visible on hover) */}
+          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] flex items-center justify-center">
+             <div className="px-6 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white font-bold text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-xl">
+               View Case Study
+             </div>
           </div>
         </div>
 
-        <div className="p-6 flex flex-col flex-1 bg-white/30 dark:bg-[#161618]/30">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">{project.title}</h3>
-            <div className="flex gap-2" style={{ transform: 'translateZ(20px)' }}>
-               {project.codeUrl && (
+        {/* Content Section */}
+        <div className="p-6 md:p-8 flex flex-col flex-1 relative">
+           {/* Decorative Gradient Blob */}
+           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+           <div className="flex justify-between items-start mb-4 relative z-10">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {project.title}
+              </h3>
+              
+              {project.codeUrl && (
                   <button onClick={(e) => { e.stopPropagation(); window.open(project.codeUrl, '_blank'); }}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 text-gray-500 hover:text-black dark:hover:text-white transition-colors hover:scale-110">
-                    <i className="fab fa-github"></i>
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/50 dark:bg-white/5 border border-white/20 dark:border-white/5 text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110 hover:bg-white dark:hover:bg-white/20 shadow-sm"
+                    title="View Source Code"
+                  >
+                    <i className="fab fa-github text-lg"></i>
                   </button>
                )}
-            </div>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium mb-6 flex-1">{project.desc}</p>
-          <div className="flex flex-wrap gap-2 mt-auto">
-             {project.stack.split('•').slice(0, 3).map((tech, i) => (
-                <span key={i} className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-black/5 dark:bg-white/5 px-2 py-1 rounded border border-black/5 dark:border-white/5">{tech.trim()}</span>
+           </div>
+
+           <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2 font-medium mb-6 flex-1 relative z-10">
+             {project.desc}
+           </p>
+
+           {/* Tech Stack - Modern Glass Pills */}
+           <div className="flex flex-wrap gap-2 mt-auto relative z-10">
+             {project.stack.split(/[•,]/).slice(0, 3).map((tech, i) => (
+                <span key={i} className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 bg-white/40 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-white/40 dark:border-white/10 shadow-sm backdrop-blur-sm">
+                   {tech.trim()}
+                </span>
              ))}
-          </div>
+             {project.stack.split(/[•,]/).length > 3 && (
+                <span className="text-[11px] font-bold text-gray-400 px-2 py-1.5 flex items-center">+more</span>
+             )}
+           </div>
         </div>
       </div>
     </div>
@@ -212,7 +218,7 @@ const Projects: React.FC = () => {
                        
                        <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight relative z-10">{selectedProject.title}</h1>
                        <div className="flex flex-wrap gap-2 mb-8 relative z-10">
-                          {selectedProject.stack.split('•').map((tech, i) => (
+                          {selectedProject.stack.split(/[•,]/).map((tech, i) => (
                              <span key={i} className="px-4 py-2 rounded-xl bg-white/50 dark:bg-white/10 border border-white/20 text-gray-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
                                 {tech.trim()}
                              </span>
