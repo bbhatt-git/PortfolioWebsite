@@ -7,7 +7,7 @@ export const TECH_STACK = [
 ];
 
 export const STATS: Stat[] = [
-  { value: '1+', label: 'Years Exp.' },
+  { value: '2+', label: 'Years Exp.' },
   { value: '10+', label: 'Projects' },
   { value: '15+', label: 'Clients' },
 ];
