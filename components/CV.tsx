@@ -10,76 +10,102 @@ const CV: React.FC = () => {
   };
 
   const skills = {
-    frontend: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Vite', 'Framer Motion'],
-    backend: ['Node.js', 'Python', 'PHP', 'Firebase', 'MongoDB', 'MySQL'],
+    frontend: ['React', 'Next.js', 'TypeScript', 'Tailwind', 'Vite', 'Framer Motion'],
+    backend: ['Node.js', 'Python', 'PHP', 'Firebase', 'MongoDB', 'PostgreSQL'],
     mobile: ['Flutter', 'React Native'],
-    tools: ['Git', 'Docker', 'Figma', 'Photoshop', 'Postman']
+    tools: ['Git', 'Docker', 'Figma', 'AWS', 'Vercel']
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans selection:bg-blue-500/20 print:bg-white">
+    <div className="min-h-screen bg-[#F2F2F7] dark:bg-[#050505] font-sans selection:bg-blue-500/20 print:bg-white transition-colors duration-1000">
       
-      {/* TOOLBAR - HIDDEN ON PRINT */}
-      <nav className="fixed top-0 left-0 right-0 p-4 md:p-6 bg-white/90 backdrop-blur-md flex justify-between items-center print:hidden z-50 border-b border-gray-200 shadow-sm">
+      {/* TOOLBAR - High-end Glassmorphism */}
+      <nav className="fixed top-0 left-0 right-0 p-4 md:p-6 flex justify-between items-center print:hidden z-50">
           <button 
              onClick={handleBack}
-             className="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold flex items-center gap-2 transition-all active:scale-95 text-sm"
+             className="px-5 py-2.5 rounded-2xl glass-strong hover:bg-white dark:hover:bg-mac-gray text-gray-800 dark:text-gray-200 font-bold flex items-center gap-2 transition-all active:scale-95 text-sm shadow-xl"
           >
-             <i className="fas fa-arrow-left"></i> Back to Portfolio
+             <i className="fas fa-chevron-left text-xs"></i> Exit
           </button>
-          <button 
-             onClick={handlePrint}
-             className="px-7 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold flex items-center gap-2 transition-all shadow-xl shadow-blue-500/20 active:scale-95 text-sm"
-          >
-             <i className="fas fa-file-pdf"></i> Generate PDF
-          </button>
+          
+          <div className="flex gap-3">
+              <button 
+                onClick={handlePrint}
+                className="px-6 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold flex items-center gap-2 transition-all shadow-xl shadow-blue-500/30 active:scale-95 text-sm"
+              >
+                <i className="fas fa-download"></i> Save as PDF
+              </button>
+          </div>
       </nav>
 
       {/* PAGE WRAPPER */}
-      <div className="pt-24 pb-12 px-4 md:px-8 print:p-0 print:pt-0">
-         <div className="max-w-5xl mx-auto bg-white shadow-2xl overflow-hidden rounded-3xl print:shadow-none print:rounded-none print:max-w-full print:m-0">
+      <div className="pt-24 pb-20 px-4 md:px-8 print:p-0 print:pt-0">
+         <div className="max-w-5xl mx-auto glass-strong rounded-[2.5rem] shadow-2xl overflow-hidden print:shadow-none print:rounded-none print:max-w-full print:m-0 border border-white/40 dark:border-white/10">
             
-            {/* CV HEADER - IMPACTFUL & CLEAN */}
-            <header className="bg-slate-900 text-white p-10 md:p-14 flex flex-col md:flex-row justify-between items-center gap-8 print:bg-slate-900 print:text-white print:p-8">
-                <div className="text-center md:text-left">
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-2">Bhupesh Raj Bhatt</h1>
-                    <div className="flex items-center justify-center md:justify-start gap-4">
-                        <span className="w-12 h-1 bg-blue-500 rounded-full"></span>
-                        <p className="text-xl md:text-2xl font-bold text-blue-400 tracking-wide uppercase">Full Stack Architect</p>
+            {/* CV HEADER - Tech-forward and Premium */}
+            <header className="relative bg-slate-950 text-white p-10 md:p-16 overflow-hidden print:bg-white print:text-black print:p-8 print:border-b-2 print:border-black">
+                {/* Decorative Background for screen only */}
+                <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-blue-600/20 to-transparent pointer-events-none print:hidden"></div>
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl print:hidden"></div>
+                
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                    <div className="space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-black uppercase tracking-widest print:hidden">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                            System: Online
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[0.9] print:text-4xl">
+                            Bhupesh Raj <br/>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 print:text-black">Bhatt</span>
+                        </h1>
+                        <p className="text-xl md:text-2xl font-mono text-gray-400 font-medium">{'// Full Stack Software Architect'}</p>
                     </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-y-2 text-sm md:text-right font-medium opacity-90">
-                    <p className="flex items-center md:justify-end gap-3"><i className="fas fa-envelope text-blue-400 w-4"></i> hello@bbhatt.com.np</p>
-                    <p className="flex items-center md:justify-end gap-3"><i className="fas fa-globe text-blue-400 w-4"></i> www.bbhatt.com.np</p>
-                    <p className="flex items-center md:justify-end gap-3"><i className="fas fa-map-marker-alt text-blue-400 w-4"></i> Mahendranagar, Nepal</p>
-                    <p className="flex items-center md:justify-end gap-3"><i className="fab fa-github text-blue-400 w-4"></i> github.com/bbhatt-git</p>
+
+                    <div className="grid grid-cols-1 gap-3 text-sm font-medium text-gray-400 print:text-black print:text-xs">
+                        <a href="mailto:hello@bbhatt.com.np" className="flex items-center gap-3 hover:text-white transition-colors">
+                            <i className="fas fa-envelope text-blue-500 w-4"></i> hello@bbhatt.com.np
+                        </a>
+                        <a href="https://bbhatt.com.np" className="flex items-center gap-3 hover:text-white transition-colors">
+                            <i className="fas fa-link text-blue-500 w-4"></i> bbhatt.com.np
+                        </a>
+                        <div className="flex items-center gap-3">
+                            <i className="fas fa-map-pin text-blue-500 w-4"></i> Mahendranagar, Nepal
+                        </div>
+                        <div className="flex gap-4 pt-2 print:hidden">
+                            <a href="#" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"><i className="fab fa-github"></i></a>
+                            <a href="#" className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"><i className="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
                 </div>
             </header>
 
             {/* CONTENT GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 print:grid-cols-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-px bg-gray-200 dark:bg-white/5 print:bg-white">
                 
-                {/* LEFT SIDEBAR - COL 4 */}
-                <aside className="lg:col-span-4 bg-slate-50 p-10 space-y-12 border-r border-gray-100 print:col-span-4 print:p-6 print:bg-slate-50">
+                {/* SIDEBAR - Technical Specs */}
+                <aside className="lg:col-span-4 bg-white/50 dark:bg-black/20 p-8 md:p-12 space-y-12 print:col-span-4 print:p-6 print:bg-white">
                     
-                    {/* CORE SKILLS */}
+                    {/* SKILL RADAR */}
                     <section>
-                        <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
-                           <i className="fas fa-bolt text-blue-500"></i> Competencies
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2">
+                           <span className="w-4 h-[1px] bg-blue-500"></span> Technical Stack
                         </h2>
                         
-                        <div className="space-y-6">
+                        <div className="space-y-8">
                             {[
-                                { label: 'Frontend', items: skills.frontend },
-                                { label: 'Backend', items: skills.backend },
-                                { label: 'Mobile', items: skills.mobile },
-                                { label: 'Tools', items: skills.tools }
+                                { label: 'Frontend Engine', items: skills.frontend, icon: 'fa-code' },
+                                { label: 'Backend Systems', items: skills.backend, icon: 'fa-server' },
+                                { label: 'Mobile Deployment', items: skills.mobile, icon: 'fa-mobile-alt' },
+                                { label: 'Cloud & Tooling', items: skills.tools, icon: 'fa-terminal' }
                             ].map((group) => (
-                                <div key={group.label}>
-                                    <h3 className="text-[10px] font-black uppercase text-slate-800 mb-3">{group.label}</h3>
-                                    <div className="flex flex-wrap gap-2">
+                                <div key={group.label} className="space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <i className={`fas ${group.icon} text-gray-400 text-xs`}></i>
+                                        <h3 className="text-xs font-bold text-gray-800 dark:text-gray-200">{group.label}</h3>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1.5">
                                         {group.items.map(item => (
-                                            <span key={item} className="px-2.5 py-1 bg-white border border-slate-200 rounded-md text-[10px] font-bold text-slate-600 print:border-slate-300">
+                                            <span key={item} className="px-2.5 py-1 rounded-md bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-tighter">
                                                 {item}
                                             </span>
                                         ))}
@@ -89,145 +115,118 @@ const CV: React.FC = () => {
                         </div>
                     </section>
 
-                    {/* LANGUAGES */}
+                    {/* EDUCATION PROTOCOL */}
                     <section>
-                        <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
-                           <i className="fas fa-language text-blue-500"></i> Languages
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2">
+                           <span className="w-4 h-[1px] bg-blue-500"></span> Education
                         </h2>
-                        <ul className="space-y-3">
-                            <li className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-slate-700">English</span>
-                                <div className="flex gap-1">
-                                    {[1,2,3,4,5].map(i => <div key={i} className={`w-1.5 h-1.5 rounded-full ${i <= 4 ? 'bg-blue-500' : 'bg-slate-300'}`}></div>)}
-                                </div>
-                            </li>
-                            <li className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-slate-700">Nepali</span>
-                                <div className="flex gap-1">
-                                    {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>)}
-                                </div>
-                            </li>
-                            <li className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-slate-700">Hindi</span>
-                                <div className="flex gap-1">
-                                    {[1,2,3,4,5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>)}
-                                </div>
-                            </li>
-                        </ul>
+                        <div className="p-5 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+                            <h3 className="text-xs font-black text-gray-900 dark:text-white uppercase">BSc. CSIT</h3>
+                            <p className="text-[10px] text-gray-500 font-bold mt-1">Tribhuvan University</p>
+                            <p className="text-[10px] text-blue-600 font-black mt-2">2020 — 2024</p>
+                        </div>
                     </section>
 
-                    {/* EDUCATION */}
+                    {/* LANGUAGES */}
                     <section>
-                        <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6 border-b border-slate-200 pb-2 flex items-center gap-2">
-                           <i className="fas fa-graduation-cap text-blue-500"></i> Education
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-400 mb-8 flex items-center gap-2">
+                           <span className="w-4 h-[1px] bg-blue-500"></span> Localized
                         </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <h3 className="text-xs font-black text-slate-800">BSc. Computer Science</h3>
-                                <p className="text-[10px] text-slate-500 font-bold uppercase">Tribhuvan University</p>
-                                <p className="text-[10px] text-blue-600 font-bold">2020 — 2024</p>
-                            </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            {['English', 'Nepali', 'Hindi'].map(lang => (
+                                <div key={lang} className="p-3 rounded-xl bg-gray-100 dark:bg-white/5 text-[10px] font-bold text-gray-700 dark:text-gray-300 text-center border border-gray-200 dark:border-white/5 uppercase">
+                                    {lang}
+                                </div>
+                            ))}
                         </div>
                     </section>
                 </aside>
 
-                {/* RIGHT MAIN CONTENT - COL 8 */}
-                <main className="lg:col-span-8 p-10 md:p-14 space-y-16 print:col-span-8 print:p-8">
+                {/* MAIN CONTENT - Deployment Log */}
+                <main className="lg:col-span-8 bg-white dark:bg-[#0c0c0e] p-8 md:p-16 space-y-20 print:col-span-8 print:p-8">
                     
-                    {/* PROFESSIONAL SUMMARY */}
+                    {/* MISSION STATEMENT */}
                     <section>
-                        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-3">
-                            <span className="w-8 h-[2px] bg-blue-600"></span> Executive Summary
+                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-8 flex items-center gap-3">
+                            Mission Statement <span className="flex-1 h-px bg-gray-100 dark:bg-white/5"></span>
                         </h2>
-                        <p className="text-slate-600 leading-relaxed text-sm md:text-base text-justify font-medium">
-                            Strategic and technical Full Stack Developer with over 2 years of proven experience in designing, building, and maintaining sophisticated web ecosystems. Expert in bridging the technical gap between complex backend architectures and high-fidelity frontend interfaces. Dedicated to performance optimization, clean code principles, and creating accessible digital experiences that drive user conversion and business growth.
+                        <p className="text-xl md:text-2xl font-medium text-gray-800 dark:text-gray-200 leading-snug">
+                            Strategic Full Stack Engineer with 2+ years of experience building <span className="text-blue-600 dark:text-blue-400 font-black underline decoration-2 decoration-blue-500/30 underline-offset-4">scalable digital products</span>. 
+                            Focused on high-performance architectures, clean code modularity, and pixel-perfect UI execution.
                         </p>
                     </section>
 
-                    {/* CORE EXPERIENCE / PROJECTS */}
-                    <section>
-                        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900 mb-10 flex items-center gap-3">
-                            <span className="w-8 h-[2px] bg-blue-600"></span> Signature Projects
+                    {/* PROJECT LOGS */}
+                    <section className="space-y-12">
+                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-10 flex items-center gap-3">
+                            Signature Deployments <span className="flex-1 h-px bg-gray-100 dark:bg-white/5"></span>
                         </h2>
                         
-                        <div className="space-y-12">
+                        <div className="space-y-16">
                             {/* Project 1 */}
-                            <div className="relative pl-8 border-l-2 border-slate-100">
-                                <div className="absolute top-0 -left-[9px] w-4 h-4 bg-white border-2 border-blue-600 rounded-full"></div>
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="text-xl font-black text-slate-900 leading-none mb-1">E-Commerce Intelligence Suite</h3>
-                                        <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Lead Architect • MERN Stack</p>
-                                    </div>
-                                    <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 rounded-full uppercase">Production Ready</span>
+                            <div className="group relative">
+                                <div className="absolute -left-8 md:-left-12 top-1 h-full w-[2px] bg-gray-100 dark:bg-white/5 hidden md:block"></div>
+                                <div className="absolute -left-[35px] md:-left-[51px] top-1 w-6 h-6 rounded-full bg-white dark:bg-mac-gray border-4 border-blue-600 hidden md:flex items-center justify-center">
+                                     <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
                                 </div>
-                                <ul className="space-y-3 text-slate-600 text-sm">
-                                    <li className="flex items-start gap-2">
-                                        <i className="fas fa-caret-right text-blue-500 mt-1"></i>
-                                        Developed a multi-tenant dashboard featuring real-time analytics with D3.js and Recharts, processing 10k+ data points per second.
+
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="space-y-1">
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">E-Commerce Intelligence Platform</h3>
+                                        <p className="text-xs font-mono text-gray-500 uppercase tracking-widest font-bold">Stack: React • Node.js • MongoDB</p>
+                                    </div>
+                                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">2023 — Present</div>
+                                </div>
+                                <ul className="space-y-4 text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed">
+                                    <li className="flex gap-3">
+                                        <span className="text-blue-500 font-mono font-bold">$</span>
+                                        Built a real-time inventory synchronization engine handling 15,000+ SKUs across multiple vendors using WebSockets.
                                     </li>
-                                    <li className="flex items-start gap-2">
-                                        <i className="fas fa-caret-right text-blue-500 mt-1"></i>
-                                        Implemented a highly secure authentication layer with JWT and OAuth2, reducing unauthorized access attempts by 99%.
+                                    <li className="flex gap-3">
+                                        <span className="text-blue-500 font-mono font-bold">$</span>
+                                        Optimized server-side rendering for a 40% improvement in first-contentful paint (FCP) across mobile devices.
                                     </li>
                                 </ul>
                             </div>
 
                             {/* Project 2 */}
-                            <div className="relative pl-8 border-l-2 border-slate-100">
-                                <div className="absolute top-0 -left-[9px] w-4 h-4 bg-white border-2 border-blue-600 rounded-full"></div>
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="text-xl font-black text-slate-900 leading-none mb-1">AI Content Engine (SaaS)</h3>
-                                        <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Full Stack Developer • Next.js & OpenAI</p>
-                                    </div>
-                                    <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 rounded-full uppercase">MVP Launch</span>
+                            <div className="group relative">
+                                <div className="absolute -left-8 md:-left-12 top-1 h-full w-[2px] bg-gray-100 dark:bg-white/5 hidden md:block"></div>
+                                <div className="absolute -left-[35px] md:-left-[51px] top-1 w-6 h-6 rounded-full bg-white dark:bg-mac-gray border-4 border-gray-200 dark:border-white/10 hidden md:flex items-center justify-center group-hover:border-blue-500 transition-colors">
+                                     <div className="w-1 h-1 bg-gray-300 dark:bg-gray-700 group-hover:bg-blue-500 transition-colors rounded-full"></div>
                                 </div>
-                                <ul className="space-y-3 text-slate-600 text-sm">
-                                    <li className="flex items-start gap-2">
-                                        <i className="fas fa-caret-right text-blue-500 mt-1"></i>
-                                        Architected a serverless content generation platform utilizing Next.js API routes and OpenAI's GPT-4, achieving sub-2s response times.
-                                    </li>
-                                    <li className="flex items-start gap-2">
-                                        <i className="fas fa-caret-right text-blue-500 mt-1"></i>
-                                        Integrated Stripe Billing API for automated recurring payments and tiered subscription management.
-                                    </li>
-                                </ul>
-                            </div>
 
-                             {/* Project 3 */}
-                             <div className="relative pl-8 border-l-2 border-slate-100">
-                                <div className="absolute top-0 -left-[9px] w-4 h-4 bg-white border-2 border-blue-600 rounded-full"></div>
-                                <div className="flex justify-between items-start mb-3">
-                                    <div>
-                                        <h3 className="text-xl font-black text-slate-900 leading-none mb-1">Omni-Channel Task Manager</h3>
-                                        <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Mobile Lead • Flutter & Firebase</p>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="space-y-1">
+                                        <h3 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">AI Content Distribution Engine</h3>
+                                        <p className="text-xs font-mono text-gray-500 uppercase tracking-widest font-bold">Stack: Next.js • OpenAI • Firebase</p>
                                     </div>
-                                    <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-3 py-1 rounded-full uppercase">App Store Live</span>
+                                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">2022 — 2023</div>
                                 </div>
-                                <ul className="space-y-3 text-slate-600 text-sm">
-                                    <li className="flex items-start gap-2">
-                                        <i className="fas fa-caret-right text-blue-500 mt-1"></i>
-                                        Built a high-performance cross-platform mobile application with offline-first synchronization using Cloud Firestore.
+                                <ul className="space-y-4 text-gray-600 dark:text-gray-400 text-sm md:text-base leading-relaxed">
+                                    <li className="flex gap-3">
+                                        <span className="text-blue-500 font-mono font-bold">$</span>
+                                        Integrated advanced GPT-4 prompting pipelines to automate marketing copy generation for 200+ active SaaS users.
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </section>
 
-                    {/* VOLUNTEER & COMMUNITY */}
-                    <section>
-                        <h2 className="text-lg font-black uppercase tracking-widest text-slate-900 mb-6 flex items-center gap-3">
-                            <span className="w-8 h-[2px] bg-blue-600"></span> Community Impact
-                        </h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <h3 className="text-xs font-black text-slate-800">Open Source</h3>
-                                <p className="text-[10px] text-slate-500 mt-1">Active contributor to UI libraries and developer tooling on GitHub.</p>
+                    {/* TECHNICAL PHILOSOPHY */}
+                    <section className="pt-10 border-t border-gray-100 dark:border-white/5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase mb-4 tracking-tighter">Code Philosophy</h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed italic">
+                                    "I believe in building software that is as maintainable as it is performant. Every line of code should serve the user experience while respecting the system's resource limits."
+                                </p>
                             </div>
-                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                <h3 className="text-xs font-black text-slate-800">Tech Mentorship</h3>
-                                <p className="text-[10px] text-slate-500 mt-1">Helping student developers navigate the MERN stack ecosystem.</p>
+                            <div className="flex items-center justify-end print:hidden">
+                                <div className="w-24 h-24 rounded-full border-4 border-blue-500/20 flex items-center justify-center p-2 relative">
+                                    <div className="absolute inset-0 border-t-4 border-blue-500 rounded-full animate-spin-slow"></div>
+                                    <i className="fas fa-terminal text-2xl text-blue-500"></i>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -235,49 +234,27 @@ const CV: React.FC = () => {
             </div>
 
             {/* CV FOOTER */}
-            <footer className="bg-slate-50 border-t border-gray-100 p-8 text-center print:bg-white print:p-4">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                   Certified Digital Signature — Valid {new Date().getFullYear()} — Bhupesh Raj Bhatt
+            <footer className="bg-gray-50 dark:bg-white/5 border-t border-gray-200 dark:border-white/10 p-10 text-center">
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.4em]">
+                   System Verification Hash: 0x{Math.random().toString(16).slice(2, 10).toUpperCase()} — BHUPESH RAJ BHATT — v.2.5.0
                 </p>
             </footer>
          </div>
       </div>
 
-      {/* PRINT-SPECIFIC OVERRIDES */}
       <style>{`
         @media print {
-          body {
-            background: white !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .print\\:hidden {
-            display: none !important;
-          }
-          @page {
-            margin: 0.5cm;
-            size: A4;
-          }
-          h1, h2, h3, p, span, li {
-            color: #000 !important;
-          }
-          .text-blue-400, .text-blue-500, .text-blue-600 {
-            color: #2563eb !important; /* Force a dark printable blue */
-          }
-          .bg-slate-900 {
-            background-color: #0f172a !important;
-            -webkit-print-color-adjust: exact;
-          }
-          .bg-slate-50 {
-            background-color: #f8fafc !important;
-            -webkit-print-color-adjust: exact;
-          }
-          header {
-            color: white !important;
-          }
-          header * {
-            color: white !important;
-          }
+          body { background: white !important; }
+          .print\\:hidden { display: none !important; }
+          .glass-strong { background: white !important; border: none !important; box-shadow: none !important; }
+          h1, h2, h3, p, span { color: black !important; }
+          @page { margin: 1cm; size: A4; }
+          header { background: white !important; border-bottom: 2px solid black !important; color: black !important; }
+          .bg-slate-950 { background: white !important; }
+          .text-blue-400, .text-blue-500, .text-blue-600 { color: #2563eb !important; }
+          .rounded-\\[2\\.5rem\\] { rounded: 0 !important; }
+          aside, main { background: white !important; }
+          .print\\:border-b-2 { border-bottom-width: 2px !important; }
         }
       `}</style>
     </div>

@@ -37,20 +37,20 @@ const Footer: React.FC = () => {
             {/* Social Icons with Branding Colors */}
             <div className="flex gap-4">
               <a href="https://github.com/bbhatt-git" target="_blank" 
-                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-xl hover:-translate-y-1">
-                <i className="fab fa-github text-xl"></i>
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-xl hover:-translate-y-1 group">
+                <i className="fab fa-github text-xl group-hover:rotate-12 transition-transform"></i>
               </a>
               <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" 
-                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#0077b5] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
-                <i className="fab fa-linkedin text-xl"></i>
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#0077b5] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1 group">
+                <i className="fab fa-linkedin text-xl group-hover:rotate-12 transition-transform"></i>
               </a>
               <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" 
-                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#1877F2] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
-                 <i className="fab fa-facebook text-xl"></i>
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#1877F2] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1 group">
+                 <i className="fab fa-facebook text-xl group-hover:rotate-12 transition-transform"></i>
               </a>
               <a href="https://www.instagram.com/_bbhatt" target="_blank" 
-                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-xl hover:shadow-pink-500/20 hover:-translate-y-1">
-                <i className="fab fa-instagram text-xl"></i>
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-xl hover:shadow-pink-500/20 hover:-translate-y-1 group">
+                <i className="fab fa-instagram text-xl group-hover:rotate-12 transition-transform"></i>
               </a>
             </div>
           </div>
@@ -65,9 +65,9 @@ const Footer: React.FC = () => {
                     href={`#${link.toLowerCase() === 'work' ? 'work' : link.toLowerCase()}`} 
                     className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-block group"
                   >
-                    <span className="relative py-1">
+                    <span className="relative py-1 flex items-center gap-2">
+                      <span className="w-0 group-hover:w-2 h-[2px] bg-blue-500 transition-all duration-300"></span>
                       {link}
-                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
                     </span>
                   </a>
                 </li>
@@ -80,7 +80,7 @@ const Footer: React.FC = () => {
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-900 dark:text-white mb-6">Connect</h4>
             <ul className="space-y-4 text-gray-500 dark:text-gray-400">
               <li className="flex items-center gap-3 group">
-                <i className="fas fa-envelope text-blue-500 group-hover:scale-110 transition-transform"></i>
+                <i className="fas fa-envelope text-blue-500 group-hover:rotate-12 transition-transform"></i>
                 <a href="mailto:hello@bbhatt.com.np" className="hover:text-black dark:hover:text-white transition-colors relative break-all">
                     <span className="relative py-1">
                       hello@bbhatt.com.np
@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="flex items-center gap-3 group">
-                <i className="fas fa-map-marker-alt text-blue-500 group-hover:scale-110 transition-transform"></i>
+                <i className="fas fa-map-marker-alt text-blue-500 group-hover:rotate-12 transition-transform"></i>
                 <span className="group-hover:text-black dark:group-hover:text-white transition-colors">Mahendranagar, Nepal</span>
               </li>
               <li className="pt-4">
@@ -114,8 +114,8 @@ const Footer: React.FC = () => {
           </div>
           
           <div className="order-1 md:order-2 w-full md:w-auto">
-             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight hover:shadow-lg transition-all hover:scale-105 inline-block">
-                Designed & Crafted by <span className="font-bold text-gray-900 dark:text-white ml-1">Bhupesh Raj Bhatt</span>
+             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight hover:shadow-lg transition-all hover:scale-105 inline-block group">
+                Designed & Crafted by <span className="font-bold text-gray-900 dark:text-white ml-1 group-hover:text-blue-600 transition-colors">Bhupesh Raj Bhatt</span>
              </div>
           </div>
         </div>

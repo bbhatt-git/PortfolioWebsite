@@ -69,6 +69,11 @@ const About: React.FC = () => {
 
   return (
     <section id="about" className="py-24 relative overflow-hidden">
+      
+      {/* SECTION BACKGROUND ACCENTS */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] animate-pulse-slow pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl animate-liquid pointer-events-none"></div>
+
       <div className="container mx-auto px-6 relative z-10">
         <Reveal variant="skew-up">
           <div className="mb-12 md:mb-16">
@@ -91,7 +96,7 @@ const About: React.FC = () => {
                        </div>
                        <div>
                           <h3 className="text-2xl font-bold">Who I Am</h3>
-                          <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Developer & Designer</p>
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Developer & Designer</p>
                        </div>
                    </div>
                    
@@ -125,11 +130,11 @@ const About: React.FC = () => {
            <Reveal variant="rotate-right" delay={200} className="lg:col-span-1 h-full">
             <div className="h-full glass rounded-[2rem] p-8 flex flex-col justify-center gap-6 relative overflow-hidden">
                {/* Background decoration */}
-               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl"></div>
+               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl animate-liquid"></div>
 
                {STATS.map((stat, idx) => (
-                  <div key={idx} className="relative z-10 p-4 rounded-2xl hover:bg-white/40 dark:hover:bg-white/5 transition-colors">
-                     <h4 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  <div key={idx} className="relative z-10 p-4 rounded-2xl hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
+                     <h4 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:scale-110 transition-transform origin-left">
                        {stat.value}
                      </h4>
                      <div className="flex items-center gap-2 mt-1">
@@ -153,10 +158,10 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Frontend & Mobile */}
             <Reveal variant="flip-up" delay={400} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10 group">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
-                            <i className="fas fa-laptop-code"></i>
+                        <span className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-md group-hover:rotate-12 transition-transform">
+                            <i className="fas fa-desktop text-xl"></i>
                         </span>
                         Frontend & Mobile
                     </h4>
@@ -166,10 +171,10 @@ const About: React.FC = () => {
 
             {/* Backend & DB */}
             <Reveal variant="flip-up" delay={500} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10 group">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm">
-                            <i className="fas fa-server"></i>
+                        <span className="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 shadow-md group-hover:rotate-12 transition-transform">
+                            <i className="fas fa-server text-xl"></i>
                         </span>
                         Backend & Data
                     </h4>
@@ -179,10 +184,10 @@ const About: React.FC = () => {
 
             {/* Design & Tools */}
             <Reveal variant="flip-up" delay={600} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10 group">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">
-                            <i className="fas fa-layer-group"></i>
+                        <span className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-md group-hover:rotate-12 transition-transform">
+                            <i className="fas fa-wand-magic-sparkles text-xl"></i>
                         </span>
                         Design & Tools
                     </h4>
@@ -192,7 +197,7 @@ const About: React.FC = () => {
         </div>
       </div>
 
-      {/* Tech Detail Overlay Modal */}
+      {/* Tech Detail Modal */}
       {selectedTech && (
         <div 
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-scale-in"
@@ -202,10 +207,8 @@ const About: React.FC = () => {
             className="w-full max-w-md bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
             onClick={e => e.stopPropagation()}
           >
-             {/* Decorative Background */}
              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-blue-500/10 to-purple-500/10 pointer-events-none"></div>
              
-             {/* Close Button */}
              <button 
                 onClick={closeModal}
                 className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors z-20 text-gray-500 dark:text-gray-300"
@@ -214,7 +217,7 @@ const About: React.FC = () => {
              </button>
 
              <div className="p-8 flex flex-col items-center text-center relative z-10">
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#252528] shadow-xl flex items-center justify-center text-4xl mb-6 border border-white/40 dark:border-white/5 ring-4 ring-white/20 dark:ring-black/20">
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#252528] shadow-xl flex items-center justify-center text-4xl mb-6 border border-white/40 dark:border-white/5 ring-4 ring-white/20 dark:ring-black/20 animate-float-medium">
                     <i className={`${selectedTech.icon} ${selectedTech.color}`}></i>
                 </div>
                 

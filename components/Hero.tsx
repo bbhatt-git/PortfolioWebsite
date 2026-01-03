@@ -62,8 +62,8 @@ const Hero: React.FC = () => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 25; 
-    const y = (e.clientY - top - height / 2) / 25;
+    const x = (e.clientX - left - width / 2) / 40; 
+    const y = (e.clientY - top - height / 2) / 40;
 
     setRotate({ x: -y, y: x });
   };
@@ -78,12 +78,12 @@ const Hero: React.FC = () => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="min-h-screen flex flex-col justify-center items-center text-center relative pt-20 overflow-hidden perspective-2000"
+      className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden perspective-2000 px-4"
     >
       
       {/* 3D Scene Wrapper */}
       <div 
-        className="relative preserve-3d transition-transform duration-500 ease-[cubic-bezier(0.03,0.98,0.52,0.99)] w-full max-w-5xl mx-auto flex flex-col items-center"
+        className="relative preserve-3d transition-transform duration-1000 ease-fluid w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
         style={{ 
           transform: isMobile ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
         }}
@@ -91,103 +91,118 @@ const Hero: React.FC = () => {
         
         {/* Deep 3D Space Elements */}
         <div className="absolute inset-0 pointer-events-none preserve-3d">
-            {/* HERO BLOB: Enhanced 3D Background Atmosphere */}
+            {/* CENTRAL CORE GLOW */}
             <div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] opacity-25 dark:opacity-15 mix-blend-screen pointer-events-none animate-pulse-slow"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[100px] opacity-25 dark:opacity-15 pointer-events-none animate-pulse-slow"
                 style={{ 
-                    transform: 'translateZ(-100px)',
+                    transform: 'translateZ(-200px)',
                     background: 'radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(147,51,234,0.3) 50%, transparent 70%)' 
                 }}
             ></div>
 
-            {/* React Icon - Foreground Deep Layer */}
-            <div className="absolute top-[5%] left-[5%] animate-float-slow" style={{ transform: 'translateZ(120px)' }}>
-                <div className="w-20 h-20 glass-strong rounded-[1.5rem] flex items-center justify-center shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/40 ring-1 ring-white/20">
-                    <i className="fab fa-react text-5xl text-[#61DAFB] animate-spin-slow"></i>
+            {/* FLOATING ICONS GRID - Deep Layer */}
+            <div className="absolute top-[10%] left-[8%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(120px)' }}>
+                <div className="w-16 h-16 glass-strong rounded-2xl flex items-center justify-center shadow-2xl border border-white/30 ring-1 ring-white/10">
+                    <i className="fab fa-react text-4xl text-[#61DAFB] animate-spin-slow"></i>
+                </div>
+            </div>
+
+            <div className="absolute top-[20%] right-[10%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(150px)' }}>
+                <div className="w-14 h-14 glass-strong rounded-xl flex items-center justify-center shadow-xl border border-white/20 ring-1 ring-white/10 bg-blue-500/5">
+                    <span className="font-bold text-blue-600 dark:text-blue-400 text-xl">TS</span>
+                </div>
+            </div>
+
+            <div className="absolute bottom-[25%] left-[5%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(180px)' }}>
+                <div className="w-20 h-20 glass-strong rounded-3xl flex items-center justify-center shadow-2xl border border-white/20 ring-1 ring-white/10 bg-green-500/5">
+                     <i className="fab fa-node-js text-4xl text-green-500"></i>
                 </div>
             </div>
             
-            {/* Code Icon - Foreground Layer */}
-            <div className="absolute bottom-[15%] right-[10%] animate-float-medium" style={{ transform: 'translateZ(150px)' }}>
-                <div className="w-24 h-24 glass-strong rounded-full flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/40 ring-1 ring-white/20">
-                     <i className="fas fa-code text-4xl text-blue-500 drop-shadow-md"></i>
+            <div className="absolute bottom-[15%] right-[5%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(140px)' }}>
+                <div className="w-16 h-16 glass-strong rounded-full flex items-center justify-center shadow-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/20 ring-1 ring-white/10">
+                     <i className="fas fa-code text-2xl text-blue-500 drop-shadow-md"></i>
                 </div>
             </div>
 
-             {/* Lightning Icon - Mid Layer */}
-             <div className="absolute top-[25%] right-[15%] animate-float-fast" style={{ transform: 'translateZ(80px)' }}>
-                <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center shadow-lg opacity-80 backdrop-blur-xl border border-white/30 ring-1 ring-white/10">
-                     <i className="fas fa-bolt text-3xl text-yellow-500 drop-shadow-sm"></i>
+            <div className="absolute top-[45%] right-[2%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(80px)' }}>
+                <div className="w-12 h-12 glass rounded-2xl flex items-center justify-center shadow-md border border-white/10 ring-1 ring-white/5 opacity-60">
+                     <i className="fab fa-figma text-xl text-pink-500"></i>
+                </div>
+            </div>
+
+            <div className="absolute top-[40%] left-[2%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(90px)' }}>
+                <div className="w-10 h-10 glass rounded-full flex items-center justify-center shadow-md border border-white/10 ring-1 ring-white/5 opacity-40">
+                     <i className="fab fa-git-alt text-lg text-orange-500"></i>
                 </div>
             </div>
         </div>
 
-        {/* Status Chip */}
-        <div style={{ transform: 'translateZ(60px)' }} className="mb-10">
+        {/* Content Section */}
+        <div className="relative z-10 flex flex-col items-center gap-4 md:gap-6">
+          
           <Reveal triggerOnMount>
-            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full glass-strong border border-white/60 dark:border-white/10 shadow-xl backdrop-blur-3xl ring-1 ring-white/30">
-              <span className="relative flex h-3 w-3">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-105 transition-transform cursor-default">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
               </span>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300">Available for Design & Dev</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300">Available for Work</span>
             </div>
           </Reveal>
-        </div>
-        
-        {/* Title Group */}
-        <div style={{ transform: 'translateZ(100px)' }} className="mb-8 relative z-10 w-full px-6">
-          <Reveal delay={100} triggerOnMount>
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white mb-2 drop-shadow-2xl">
-              Hello, I'm
-            </h1>
-            <h2 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 animate-gradient bg-[length:200%_auto] pb-6">
-               Bhupesh Bhatt
-            </h2>
-          </Reveal>
-        </div>
+          
+          <div style={{ transform: 'translateZ(60px)' }} className="px-4">
+            <Reveal delay={100} triggerOnMount>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
+                Hello, I'm
+              </h1>
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 animate-gradient bg-[length:200%_auto] filter drop-shadow-sm">
+                 Bhupesh Bhatt
+              </h2>
+            </Reveal>
+          </div>
 
-        {/* Animated Terminal Command Box */}
-        <div style={{ transform: 'translateZ(80px)' }} className="mb-12 h-10 flex items-center justify-center">
-           <Reveal delay={200} triggerOnMount>
-             <div className="text-lg md:text-xl font-mono text-gray-700 dark:text-gray-200 glass-strong px-8 py-3 rounded-2xl border border-white/40 shadow-xl ring-1 ring-white/20">
-                <span className="text-blue-600 font-bold mr-3">~</span>
-                <span className="text-gray-400 mr-2">$</span>
-                {text}
-                <span className="animate-pulse ml-1 inline-block w-2.5 h-6 bg-blue-600 align-middle"></span>
-             </div>
-           </Reveal>
-        </div>
+          <div style={{ transform: 'translateZ(40px)' }} className="h-8 flex items-center justify-center">
+             <Reveal delay={200} triggerOnMount>
+               <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl border border-white/30 shadow-md ring-1 ring-white/10 hover:border-blue-500/30 transition-colors">
+                  <span className="text-blue-600 font-bold mr-2">~</span>
+                  <span className="text-gray-400 mr-1">$</span>
+                  {text}
+                  <span className="animate-pulse ml-0.5 inline-block w-2 h-4 bg-blue-500 align-middle"></span>
+               </div>
+             </Reveal>
+          </div>
 
-        {/* Hero Bio Description */}
-        <div style={{ transform: 'translateZ(60px)' }} className="max-w-3xl mx-auto mb-16 px-8">
-          <Reveal delay={300} triggerOnMount>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed font-light">
-               I engineer high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">accessible architectures</span> with a relentless focus on aesthetics. 
-               Blending deep design intuition with technical mastery.
-            </p>
-          </Reveal>
-        </div>
+          <div style={{ transform: 'translateZ(30px)' }} className="max-w-2xl mx-auto px-6">
+            <Reveal delay={300} triggerOnMount>
+              <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
+                 Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">accessible architectures</span> with aesthetic precision. 
+                 Bridging design intuition with technical mastery.
+              </p>
+            </Reveal>
+          </div>
 
-        {/* CTA Interaction Layer */}
-        <div style={{ transform: 'translateZ(130px)' }}>
-          <Reveal delay={400} triggerOnMount>
-            <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
-              
-              <MagneticButton href="#work" variant="glass-primary" className="group px-10 py-5">
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                <span className="relative flex items-center gap-3 text-lg">
-                  Explore Selected Work 
-                  <i className="fas fa-arrow-right text-sm group-hover:translate-x-2 transition-transform duration-500"></i>
-                </span>
-              </MagneticButton>
+          <div style={{ transform: 'translateZ(100px)' }} className="mt-4 md:mt-6">
+            <Reveal delay={400} triggerOnMount>
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+                
+                <MagneticButton href="#work" variant="glass-primary" className="group px-8 py-3.5">
+                  <span className="relative flex items-center gap-2.5 text-base">
+                    Selected Work 
+                    <i className="fas fa-arrow-right text-xs group-hover:translate-x-1.5 transition-transform duration-500"></i>
+                  </span>
+                </MagneticButton>
 
-              <MagneticButton href="#contact" variant="glass-secondary" className="px-10 py-5 text-lg">
-                Start a Conversation
-              </MagneticButton>
+                <MagneticButton href="#contact" variant="glass-secondary" className="px-8 py-3.5 text-base">
+                   <span className="flex items-center gap-2.5">
+                    Let's Talk
+                    <i className="fas fa-paper-plane text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                   </span>
+                </MagneticButton>
 
-            </div>
-          </Reveal>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </div>
     </section>
