@@ -45,7 +45,8 @@ const Admin: React.FC = () => {
   const fetchMessages = async () => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
-    setMessages(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    // Ensure 'seen' field is handled correctly even if it's undefined in old docs
+    setMessages(snap.docs.map(doc => ({ id: doc.id, seen: false, ...doc.data() })));
   };
 
   const fetchProjects = async () => {
@@ -77,12 +78,15 @@ const Admin: React.FC = () => {
     setSelectedMessage(msg);
     setCurrentView('message-viewer');
     
+    // Immediate local update for seen status to clear notifications instantly
     if (!msg.seen) {
       setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, seen: true } : m));
       try {
-        await updateDoc(doc(db, "messages", msg.id), { seen: true });
+        const msgRef = doc(db, "messages", msg.id);
+        await updateDoc(msgRef, { seen: true });
+        console.log("Successfully marked as seen in DB");
       } catch (err) { 
-        console.error("Update seen failed", err); 
+        console.error("Update seen failed in DB", err); 
       }
     }
   };
@@ -336,7 +340,7 @@ const Admin: React.FC = () => {
                                           {!m.seen && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary border-2 border-white dark:border-black rounded-full shadow-lg"></span>}
                                       </div>
                                       <div>
-                                          <h4 className={`font-black text-[13px] transition-colors ${!m.seen ? 'text-primary' : 'text-slate-800 dark:text-slate-300'} group-hover:text-primary`}>{m.name}</h4>
+                                          <h4 className={`font-black text-[13px] transition-colors ${!m.seen ? 'text-primary font-black' : 'text-slate-800 dark:text-slate-300 font-medium'} group-hover:text-primary`}>{m.name}</h4>
                                           <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{m.email}</p>
                                       </div>
                                   </div>
@@ -422,6 +426,7 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
+              {/* VIEW: MESSAGE VIEWER */}
               {currentView === 'message-viewer' && selectedMessage && (
                   <div className="animate-fade-up flex justify-center pt-2">
                       <div className="w-full max-w-xl glass-strong rounded-2xl shadow-xl overflow-hidden flex flex-col relative animate-scale-in border border-white dark:border-white/5">

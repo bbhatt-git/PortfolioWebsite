@@ -240,12 +240,12 @@ const Projects: React.FC = () => {
                        <div className="mt-12 flex flex-col sm:flex-row gap-4 relative z-10">
                            {selectedProject.liveUrl && (
                               <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-center text-sm shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
-                                 <i className="fas fa-globe group-hover:rotate-12 transition-transform"></i> Live Preview
+                                 <i className="fas fa-external-link-alt group-hover:rotate-12 transition-transform"></i> Live Preview
                               </a>
                            )}
                            {selectedProject.codeUrl && (
                               <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-white/10 dark:bg-white/10 backdrop-blur-xl border border-white/20 dark:border-white/10 text-black dark:text-white font-black text-center text-sm hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
-                                 <i className="fab fa-github-alt text-lg group-hover:scale-110 transition-transform"></i> View Code
+                                 <i className="fas fa-code text-lg group-hover:scale-110 transition-transform"></i> View Code
                               </a>
                            )}
                        </div>

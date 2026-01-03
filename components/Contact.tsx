@@ -29,6 +29,7 @@ const Contact: React.FC = () => {
         name: formData.get("Name"),
         email: formData.get("Email"),
         message: formData.get("Message"),
+        seen: false, // Explicitly set seen to false
         timestamp: serverTimestamp()
       });
 
