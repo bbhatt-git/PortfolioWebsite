@@ -11,16 +11,16 @@ const Admin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Dashboard Navigation
-  const [activeTab, setActiveTab] = useState<'projects' | 'inbox'>('projects');
+  // Navigation
+  const [activeTab, setActiveTab] = useState<'projects' | 'messages'>('projects');
   
   // Data State
   const [messages, setMessages] = useState<any[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   
-  // Modal States
-  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+  // Overlay States
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   // Project Form State
@@ -80,7 +80,7 @@ const Admin: React.FC = () => {
   };
 
   const handleSaveProject = async () => {
-    if (!projectForm.title || techStackList.length === 0) return alert("Title and Tech required.");
+    if (!projectForm.title || techStackList.length === 0) return alert("Subject and Tech required.");
     const data = {
       ...projectForm,
       image: projectForm.imageUrl || 'https://via.placeholder.com/1200x800',
@@ -95,21 +95,20 @@ const Admin: React.FC = () => {
     setIsProjectModalOpen(false);
   };
 
-  // Glass Modal Wrapper with macOS Traffic Lights
-  const GlassModal = ({ title, onClose, children, maxWidth = "max-w-4xl" }: any) => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-fade-in">
-      <div className={`w-full ${maxWidth} bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-3xl rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden flex flex-col max-h-[90vh] animate-scale-in`}>
-        <div className="h-14 bg-white/40 dark:bg-black/20 border-b border-black/5 flex items-center px-6 shrink-0 relative">
+  const Overlay = ({ title, onClose, children, maxWidth = "max-w-4xl" }: any) => (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
+      <div className={`w-full ${maxWidth} glass-strong rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] border border-white/20 overflow-hidden flex flex-col max-h-[90vh] animate-scale-in`}>
+        <div className="h-14 bg-white/40 dark:bg-black/20 border-b border-black/5 flex items-center px-8 shrink-0 relative">
           <div className="flex gap-2">
             <div onClick={onClose} className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer hover:brightness-90"></div>
             <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
             <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
           </div>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{title}</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30">{title}</span>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto custom-scrollbar">{children}</div>
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-8 md:p-12">{children}</div>
       </div>
     </div>
   );
@@ -118,12 +117,12 @@ const Admin: React.FC = () => {
 
   if (!user) return (
     <div className="h-screen flex items-center justify-center bg-[#F2F2F7] dark:bg-[#050505] p-6 font-sans">
-      <div className="glass-strong p-12 rounded-[2.5rem] w-full max-w-sm shadow-2xl border border-white/20 text-center">
+      <div className="glass-strong p-12 rounded-[2.5rem] w-full max-w-sm shadow-2xl border border-white/20 text-center animate-scale-in">
         <div className="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-8 text-white font-black text-2xl">BR</div>
         <form onSubmit={handleLogin} className="space-y-4">
-          <input type="email" placeholder="Admin Email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none font-bold text-sm" />
+          <input type="email" placeholder="Admin Identity" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none font-bold text-sm" />
           <input type="password" placeholder="Passkey" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none font-bold text-sm" />
-          <button className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all">Authenticate</button>
+          <button className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-xs">Authenticate</button>
         </form>
         {error && <p className="text-red-500 text-[10px] mt-6 font-black uppercase tracking-widest">{error}</p>}
       </div>
@@ -134,196 +133,219 @@ const Admin: React.FC = () => {
     <div className="h-screen flex bg-[#F2F2F7] dark:bg-[#050505] text-[#1D1D1F] dark:text-[#F5F5F7] font-sans selection:bg-blue-500/20">
       
       {/* 1. MINIMAL SIDEBAR */}
-      <aside className="w-20 md:w-64 glass-strong border-r border-black/5 flex flex-col shrink-0 z-50">
+      <aside className="w-20 md:w-72 glass-strong border-r border-black/5 flex flex-col shrink-0 z-50 transition-all">
           <div className="p-8 pb-12 flex items-center gap-4">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg">BR</div>
-              <span className="hidden md:block font-bold text-lg tracking-tight">Admin Hub</span>
+              <span className="hidden md:block font-black text-xl tracking-tighter">Control Hub</span>
           </div>
           <nav className="flex-1 px-4 space-y-2">
               <button 
                 onClick={() => setActiveTab('projects')}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all ${activeTab === 'projects' ? 'bg-blue-600 text-white shadow-xl' : 'hover:bg-black/5 opacity-50 hover:opacity-100'}`}
+                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${activeTab === 'projects' ? 'bg-blue-600 text-white shadow-xl' : 'hover:bg-black/5 opacity-50 hover:opacity-100'}`}
               >
-                  <i className="fas fa-layer-group"></i>
-                  <span className="hidden md:block font-bold text-sm">Deployments</span>
+                  <i className="fas fa-layer-group text-lg"></i>
+                  <span className="hidden md:block font-bold text-sm">Projects</span>
               </button>
               <button 
-                onClick={() => setActiveTab('inbox')}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all ${activeTab === 'inbox' ? 'bg-blue-600 text-white shadow-xl' : 'hover:bg-black/5 opacity-50 hover:opacity-100'}`}
+                onClick={() => setActiveTab('messages')}
+                className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${activeTab === 'messages' ? 'bg-blue-600 text-white shadow-xl' : 'hover:bg-black/5 opacity-50 hover:opacity-100'}`}
               >
-                  <i className="fas fa-envelope"></i>
-                  <span className="hidden md:block font-bold text-sm">Messages</span>
+                  <i className="fas fa-envelope text-lg"></i>
+                  <span className="hidden md:block font-bold text-sm">Inbox</span>
+                  {messages.length > 0 && <span className="hidden md:flex w-5 h-5 rounded-full bg-red-500 text-[10px] items-center justify-center text-white">{messages.length}</span>}
               </button>
           </nav>
-          <button onClick={() => signOut(auth)} className="m-8 p-4 bg-red-500/10 text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Sign Out</button>
+          <div className="p-8">
+              <button onClick={() => signOut(auth)} className="w-full p-4 bg-black/5 dark:bg-white/5 text-gray-400 hover:text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all">Disconnect</button>
+          </div>
       </aside>
 
-      {/* 2. MAIN STAGE */}
-      <main className="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
-          
-          <div className="max-w-6xl mx-auto">
-              <div className="flex justify-between items-end mb-12">
+      {/* 2. MAIN WORKSPACE */}
+      <main className="flex-1 overflow-y-auto p-8 md:p-16 custom-scrollbar bg-noise">
+          <div className="max-w-7xl mx-auto animate-fade-up">
+              <header className="flex justify-between items-end mb-16">
                   <div>
-                      <h1 className="text-4xl font-black tracking-tight">{activeTab === 'projects' ? 'Your Projects' : 'Inbound Messages'}</h1>
-                      <p className="text-gray-500 mt-2 font-medium">Manage your production workspace.</p>
+                      <h1 className="text-5xl font-black tracking-tight mb-2">{activeTab === 'projects' ? 'Project Deployments' : 'Inbox Activity'}</h1>
+                      <div className="flex items-center gap-3">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <p className="text-gray-500 font-bold uppercase text-[10px] tracking-[0.2em]">Operational Management Interface</p>
+                      </div>
                   </div>
                   {activeTab === 'projects' && (
-                    <button onClick={() => openProjectModal()} className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-3">
-                        <i className="fas fa-plus"></i> New Project
+                    <button onClick={() => openProjectModal()} className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95 transition-all">
+                        <i className="fas fa-plus mr-3"></i> Add Deployment
                     </button>
                   )}
-              </div>
+              </header>
 
               {activeTab === 'projects' ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
                       {projects.map(proj => (
-                          <div key={proj.id} onClick={() => openProjectModal(proj)} className="group glass-strong p-4 rounded-3xl border border-black/5 cursor-pointer hover:-translate-y-2 transition-all duration-500">
-                              <div className="relative aspect-video rounded-2xl overflow-hidden mb-6">
-                                  <img src={proj.image} className="w-full h-full object-cover" />
-                                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <div key={proj.id} onClick={() => openProjectModal(proj)} className="group glass-strong p-4 rounded-[2.5rem] border border-black/5 cursor-pointer hover:-translate-y-2 transition-all duration-500 relative">
+                              <div className="relative aspect-video rounded-[2rem] overflow-hidden mb-6 border border-black/5">
+                                  <img src={proj.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                      <span className="px-6 py-2 rounded-full glass border border-white/40 text-xs font-black text-white uppercase tracking-widest">Update Spec</span>
+                                  </div>
                               </div>
-                              <h3 className="font-bold text-lg mb-1 truncate">{proj.title}</h3>
-                              <p className="text-[10px] font-black opacity-30 uppercase tracking-widest mb-6">{proj.stack}</p>
-                              <div className="flex justify-between">
-                                  <span className="text-[10px] font-black text-blue-600">EDIT DETAILS</span>
-                                  <button onClick={(e) => { e.stopPropagation(); if(confirm('Delete?')) deleteDoc(doc(db, "projects", proj.id)).then(fetchProjects); }} className="text-red-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity"><i className="fas fa-trash-alt"></i></button>
+                              <div className="px-4 pb-4">
+                                <h3 className="font-bold text-xl mb-1 truncate">{proj.title}</h3>
+                                <p className="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] mb-6">{proj.stack}</p>
+                                <div className="flex justify-between items-center">
+                                    <div className="flex gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-600 flex items-center justify-center text-xs"><i className="fas fa-edit"></i></div>
+                                        <button onClick={(e) => { e.stopPropagation(); if(confirm('Purge deployment?')) deleteDoc(doc(db, "projects", proj.id)).then(fetchProjects); }} className="w-8 h-8 rounded-lg bg-red-600/10 text-red-600 flex items-center justify-center text-xs hover:bg-red-600 hover:text-white transition-all"><i className="fas fa-trash-alt"></i></button>
+                                    </div>
+                                    <span className="text-[9px] font-black opacity-20 uppercase">ID: {proj.id.slice(0,8)}</span>
+                                </div>
                               </div>
                           </div>
                       ))}
                   </div>
               ) : (
-                  <div className="space-y-4">
-                      {messages.map(msg => (
-                          <div key={msg.id} onClick={() => setSelectedMessage(msg)} className="glass-strong p-6 rounded-2xl border border-black/5 flex items-center justify-between cursor-pointer hover:bg-white transition-all group">
-                              <div className="flex gap-6 items-center">
-                                  <div className="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-600 flex items-center justify-center text-lg font-black">{msg.name[0]}</div>
-                                  <div>
-                                      <h4 className="font-bold">{msg.name}</h4>
-                                      <p className="text-xs text-blue-600 font-medium">{msg.email}</p>
+                  <div className="glass-strong rounded-[2.5rem] border border-black/5 overflow-hidden">
+                      <div className="divide-y divide-black/5">
+                          {messages.map(msg => (
+                              <div key={msg.id} onClick={() => setSelectedMessage(msg)} className="p-8 flex items-center justify-between cursor-pointer hover:bg-white/50 dark:hover:bg-white/5 transition-all group">
+                                  <div className="flex gap-8 items-center">
+                                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 text-blue-600 flex items-center justify-center text-xl font-black">{msg.name[0]}</div>
+                                      <div>
+                                          <h4 className="font-bold text-lg">{msg.name}</h4>
+                                          <p className="text-xs text-blue-600 font-bold uppercase tracking-widest">{msg.email}</p>
+                                      </div>
+                                  </div>
+                                  <div className="flex items-center gap-12">
+                                      <div className="hidden lg:block">
+                                          <p className="text-xs text-gray-400 font-medium line-clamp-1 max-w-sm">{msg.message}</p>
+                                      </div>
+                                      <div className="text-right">
+                                          <p className="text-[10px] font-black opacity-30 uppercase tracking-widest mb-1">{msg.timestamp?.toDate().toLocaleDateString()}</p>
+                                          <i className="fas fa-arrow-right text-[10px] opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"></i>
+                                      </div>
                                   </div>
                               </div>
-                              <div className="text-right flex items-center gap-8">
-                                  <span className="text-[10px] font-black opacity-30">{msg.timestamp?.toDate().toLocaleDateString()}</span>
-                                  <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all"><i className="fas fa-chevron-right text-[10px]"></i></div>
-                              </div>
-                          </div>
-                      ))}
-                      {messages.length === 0 && <p className="text-center py-20 opacity-20 italic">No messages received yet.</p>}
+                          ))}
+                      </div>
+                      {messages.length === 0 && <div className="p-32 text-center opacity-10"><i className="fas fa-inbox text-8xl mb-4"></i><p className="font-black uppercase tracking-[0.5em]">No Signals Detected</p></div>}
                   </div>
               )}
           </div>
       </main>
 
-      {/* OVERLAY: PROJECT EDITOR MODAL */}
+      {/* OVERLAY: PROJECT MODAL */}
       {isProjectModalOpen && (
-        <GlassModal title={editingProject ? "Update Project" : "New Deployment"} onClose={() => setIsProjectModalOpen(false)}>
-            <div className="flex flex-col h-full">
-                {/* Header Inputs */}
-                <div className="p-10 border-b border-black/5 bg-gray-50/50 dark:bg-transparent">
-                    <div className="space-y-6">
-                        <div className="flex items-center gap-6 border-b border-black/5 pb-3">
-                            <span className="text-[10px] font-black opacity-30 uppercase w-20">Subject:</span>
-                            <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="flex-1 bg-transparent text-2xl font-black outline-none" placeholder="Project Title..." />
-                        </div>
-                        <div className="flex items-center gap-6 border-b border-black/5 pb-3">
-                            <span className="text-[10px] font-black opacity-30 uppercase w-20">CDN Link:</span>
-                            <input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="flex-1 bg-transparent text-sm font-medium outline-none" placeholder="Thumbnail Image URL..." />
-                        </div>
+        <Overlay title={editingProject ? "Deployment Specification" : "New Signal Compose"} onClose={() => setIsProjectModalOpen(false)}>
+            <div className="space-y-12 pb-12">
+                <section className="space-y-8">
+                    <div className="flex items-center gap-6 border-b border-black/5 pb-4">
+                        <span className="text-[10px] font-black opacity-20 uppercase w-24">Subject:</span>
+                        <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="flex-1 bg-transparent text-3xl font-black outline-none placeholder:opacity-10" placeholder="Project Name..." />
                     </div>
-                </div>
+                    <div className="flex items-center gap-6 border-b border-black/5 pb-4">
+                        <span className="text-[10px] font-black opacity-20 uppercase w-24">Visual Asset:</span>
+                        <input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="flex-1 bg-transparent text-sm font-bold text-blue-600 outline-none placeholder:opacity-20" placeholder="Image CDN URL..." />
+                    </div>
+                </section>
 
-                {/* Form Body */}
-                <div className="flex-1 p-10 space-y-12">
-                    
-                    {/* Interactive Tech Pills */}
-                    <div className="p-8 rounded-[2rem] bg-black/5 dark:bg-white/5 border border-black/5">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 flex items-center gap-2"><i className="fas fa-microchip text-blue-500"></i> Tech Stack</h4>
-                        <div className="flex flex-wrap gap-2 mb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    {/* Tech System */}
+                    <div className="space-y-6">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 flex items-center gap-3">
+                            <i className="fas fa-microchip"></i> Tech Arsenal
+                        </h4>
+                        <div className="flex flex-wrap gap-2 min-h-[40px] p-4 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5">
                             {techStackList.map(t => (
-                                <div key={t} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-[10px] font-black flex items-center gap-3">
-                                    {t} <button onClick={() => setTechStackList(techStackList.filter(i => i !== t))} className="hover:text-red-300 transition-colors"><i className="fas fa-times"></i></button>
+                                <div key={t} className="px-4 py-1.5 rounded-xl bg-blue-600 text-white text-[10px] font-black flex items-center gap-3 shadow-lg">
+                                    {t} <button onClick={() => setTechStackList(techStackList.filter(i => i !== t))} className="hover:text-red-300"><i className="fas fa-times"></i></button>
                                 </div>
                             ))}
                         </div>
-                        <div className="flex gap-2">
-                            <input 
-                              value={techInput} 
-                              onChange={e => setTechInput(e.target.value)} 
-                              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setTechStackList([...techStackList, techInput]), setTechInput(''))}
-                              className="flex-1 p-4 rounded-xl border border-black/5 bg-white text-sm outline-none" 
-                              placeholder="Add technology (Enter)..." 
-                            />
-                        </div>
+                        <input 
+                          value={techInput} 
+                          onChange={e => setTechInput(e.target.value)} 
+                          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setTechStackList([...techStackList, techInput]), setTechInput(''))}
+                          className="w-full p-4 rounded-2xl border border-black/5 bg-white dark:bg-black text-sm font-bold outline-none" 
+                          placeholder="Type tech & press Enter..." 
+                        />
                     </div>
 
-                    {/* Interactive Highlights */}
-                    <div className="p-8 rounded-[2rem] bg-black/5 dark:bg-white/5 border border-black/5">
-                        <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 flex items-center gap-2"><i className="fas fa-star text-yellow-500"></i> Performance Highlights</h4>
-                        <div className="space-y-3 mb-6">
-                            {highlightsList.map((h, i) => (
-                                <div key={i} className="p-4 rounded-xl bg-white dark:bg-black border border-black/5 flex justify-between items-center text-sm font-medium">
-                                    <span>{h}</span>
-                                    <button onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))} className="text-red-500"><i className="fas fa-trash-alt"></i></button>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <input 
-                              value={highlightInput} 
-                              onChange={e => setHighlightInput(e.target.value)} 
-                              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setHighlightsList([...highlightsList, highlightInput]), setHighlightInput(''))}
-                              className="flex-1 p-4 rounded-xl border border-black/5 bg-white text-sm outline-none" 
-                              placeholder="Add bullet point (Enter)..." 
-                            />
-                        </div>
-                    </div>
-
-                    {/* Standard Inputs */}
-                    <div className="grid grid-cols-2 gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase opacity-30">Live URL</label>
-                            <input value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full p-4 rounded-xl bg-black/5 border border-black/5 text-sm outline-none" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase opacity-30">Repo URL</label>
-                            <input value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full p-4 rounded-xl bg-black/5 border border-black/5 text-sm outline-none" />
-                        </div>
-                    </div>
-
+                    {/* Highlights System */}
                     <div className="space-y-6">
-                        <label className="text-[10px] font-black uppercase opacity-30">Description</label>
-                        <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full h-40 p-6 rounded-[2rem] bg-black/5 border border-black/5 text-base leading-relaxed outline-none" placeholder="Explain the project scope..." />
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600 flex items-center gap-3">
+                            <i className="fas fa-bolt"></i> Performance Highlights
+                        </h4>
+                        <div className="space-y-2 p-4 rounded-3xl bg-black/5 dark:bg-white/5 border border-black/5">
+                            {highlightsList.map((h, i) => (
+                                <div key={i} className="p-3 bg-white dark:bg-black rounded-xl border border-black/5 flex justify-between items-center text-xs font-bold">
+                                    <span className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {h}</span>
+                                    <button onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600"><i className="fas fa-trash-alt"></i></button>
+                                </div>
+                            ))}
+                        </div>
+                        <input 
+                          value={highlightInput} 
+                          onChange={e => setHighlightInput(e.target.value)} 
+                          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setHighlightsList([...highlightsList, highlightInput]), setHighlightInput(''))}
+                          className="w-full p-4 rounded-2xl border border-black/5 bg-white dark:bg-black text-sm font-bold outline-none" 
+                          placeholder="Add achievement & press Enter..." 
+                        />
                     </div>
                 </div>
 
-                <div className="p-8 border-t border-black/5 flex justify-end gap-4 shrink-0">
-                    <button onClick={() => setIsProjectModalOpen(false)} className="px-8 py-3 rounded-xl hover:bg-black/5 font-black text-[10px] uppercase">Cancel</button>
-                    <button onClick={handleSaveProject} className="px-12 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">Deploy Signal</button>
+                <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase opacity-20 tracking-widest">Production Link</label>
+                        <input value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full p-4 rounded-2xl bg-black/5 border border-black/5 text-sm font-bold outline-none" />
+                    </div>
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase opacity-20 tracking-widest">Source Repo</label>
+                        <input value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full p-4 rounded-2xl bg-black/5 border border-black/5 text-sm font-bold outline-none" />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase opacity-20 tracking-widest">Narrative Specification</label>
+                    <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full h-48 p-8 rounded-[2.5rem] bg-black/5 border border-black/5 text-lg leading-relaxed outline-none" placeholder="The story behind this deployment..." />
+                </div>
+
+                <div className="flex justify-end gap-4">
+                    <button onClick={() => setIsProjectModalOpen(false)} className="px-10 py-4 rounded-2xl hover:bg-black/5 font-black text-[10px] uppercase tracking-widest opacity-40">Discard Draft</button>
+                    <button onClick={handleSaveProject} className="px-16 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl hover:bg-blue-500 flex items-center gap-3 transition-all">
+                        <i className="fas fa-paper-plane"></i> Deploy Signal
+                    </button>
                 </div>
             </div>
-        </GlassModal>
+        </Overlay>
       )}
 
-      {/* OVERLAY: MESSAGE VIEWER MODAL */}
+      {/* OVERLAY: MESSAGE DETAIL */}
       {selectedMessage && (
-          <GlassModal title="Message Viewer" onClose={() => setSelectedMessage(null)} maxWidth="max-w-2xl">
-              <div className="p-10 md:p-14 space-y-10 animate-fade-up">
-                  <div className="border-b border-black/5 pb-10">
-                      <h2 className="text-4xl font-black tracking-tight mb-8">{selectedMessage.name}</h2>
-                      <div className="space-y-2 text-xs font-black uppercase tracking-widest opacity-40">
-                          <div>From: <span className="text-blue-600 lowercase">{selectedMessage.email}</span></div>
-                          <div>Received: {selectedMessage.timestamp?.toDate().toLocaleString()}</div>
+          <Overlay title="Transmission Logs" onClose={() => setSelectedMessage(null)} maxWidth="max-w-3xl">
+              <div className="space-y-12">
+                  <div className="border-b border-black/5 pb-12">
+                      <div className="flex items-center gap-8 mb-10">
+                          <div className="w-24 h-24 rounded-[2rem] bg-blue-600 text-white flex items-center justify-center text-4xl font-black shadow-2xl">{selectedMessage.name[0]}</div>
+                          <div>
+                              <h2 className="text-5xl font-black tracking-tighter mb-2">{selectedMessage.name}</h2>
+                              <p className="text-xl text-blue-600 font-bold lowercase">{selectedMessage.email}</p>
+                          </div>
+                      </div>
+                      <div className="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] opacity-30">
+                          <div className="flex items-center gap-2"><i className="fas fa-calendar"></i> {selectedMessage.timestamp?.toDate().toLocaleString()}</div>
+                          <div className="flex items-center gap-2"><i className="fas fa-shield-alt"></i> Secure Signal</div>
                       </div>
                   </div>
-                  <div className="text-xl leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-medium">
+                  
+                  <div className="text-2xl leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-medium">
                       {selectedMessage.message}
                   </div>
-                  <div className="pt-10 flex gap-4">
-                      <a href={`mailto:${selectedMessage.email}`} className="flex-1 py-5 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest text-center shadow-xl">Reply via Email</a>
-                      <button onClick={async () => { if(confirm('Delete?')) { await deleteDoc(doc(db, "messages", selectedMessage.id)); fetchMessages(); setSelectedMessage(null); } }} className="px-10 py-5 bg-red-500/10 text-red-500 rounded-2xl font-black text-xs uppercase tracking-widest">Delete</button>
+                  
+                  <div className="pt-12 flex gap-4">
+                      <a href={`mailto:${selectedMessage.email}`} className="flex-1 py-6 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] text-center shadow-2xl hover:bg-blue-500 transition-all">Establish Reply</a>
+                      <button onClick={async () => { if(confirm('Purge transmission?')) { await deleteDoc(doc(db, "messages", selectedMessage.id)); fetchMessages(); setSelectedMessage(null); } }} className="px-12 py-6 bg-red-500/10 text-red-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Purge</button>
                   </div>
               </div>
-          </GlassModal>
+          </Overlay>
       )}
 
     </div>
