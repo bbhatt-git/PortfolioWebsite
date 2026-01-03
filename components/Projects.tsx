@@ -135,8 +135,11 @@ const Projects: React.FC = () => {
     fetchProjects();
   }, []);
 
-  const navigateToProject = (id: string) => {
-    window.location.hash = `#/projects/${id}`;
+  // Updated navigation to use slug format
+  const navigateToProject = (project: Project) => {
+    // Convert title to slug: "My Cool Project" -> "my-cool-project"
+    const slug = project.title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+    window.location.hash = `#/project/${slug}`;
   };
 
   return (
@@ -165,7 +168,7 @@ const Projects: React.FC = () => {
                 variant={index % 2 === 0 ? "rotate-left" : "rotate-right"} 
                 className="h-full"
               >
-                <ProjectCard project={project} onClick={() => navigateToProject(project.id)} />
+                <ProjectCard project={project} onClick={() => navigateToProject(project)} />
               </Reveal>
             ))}
           </div>

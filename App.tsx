@@ -82,11 +82,13 @@ const App: React.FC = () => {
     return <CV />;
   }
 
-  if (currentRoute.startsWith('#/projects/')) {
+  // Changed route check to singular 'project' and passes the slug
+  if (currentRoute.startsWith('#/project/')) {
+    // Format: #/project/my-cool-project-name
     const parts = currentRoute.split('/');
-    const projectId = parts[2];
-    if (projectId) {
-      return <ProjectPage id={projectId} />;
+    const projectSlug = parts.slice(2).join('/'); // Handles slashes if any (though usually slug has none)
+    if (projectSlug) {
+      return <ProjectPage slug={projectSlug} />;
     }
   }
 

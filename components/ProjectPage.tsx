@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Project } from '../types';
 import Layout from './Layout';
@@ -49,7 +49,11 @@ const getTechIcon = (tech: string) => {
   return { icon: 'fas fa-cube', color: 'text-blue-500' };
 };
 
-const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
+// Utility to create slug from title
+const createSlug = (title: string) => title.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+
+// Component now accepts slug instead of ID
+const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
@@ -57,18 +61,30 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     const fetchProject = async () => {
-      if (!id) {
+      if (!slug) {
         setLoading(false);
         return;
       }
       setLoading(true);
       try {
-        const docRef = doc(db, "projects", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = { id: docSnap.id, ...docSnap.data() } as Project;
-          setProject(data);
-          document.title = `${data.title} — Portfolio`;
+        // Since we are using slugs based on titles and don't have a 'slug' field in DB,
+        // we fetch projects and filter. For a portfolio with < 100 items, this is fine.
+        // Ideally, add a 'slug' field to Firestore documents for direct querying.
+        const q = query(collection(db, "projects"));
+        const querySnapshot = await getDocs(q);
+        
+        let foundProject: Project | null = null;
+        
+        querySnapshot.forEach((doc) => {
+           const data = doc.data() as Project;
+           if (createSlug(data.title) === slug) {
+             foundProject = { id: doc.id, ...data };
+           }
+        });
+
+        if (foundProject) {
+          setProject(foundProject);
+          document.title = `${foundProject.title} — Portfolio`;
         }
       } catch (err) {
         console.error("Error fetching project:", err);
@@ -83,7 +99,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     return () => {
       document.title = "Bhupesh Bhatt | Senior Full Stack Developer & UI/UX Designer";
     };
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     if (isContactModalOpen) {
@@ -120,6 +136,16 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
 
   const openContactModal = () => {
     setIsContactModalOpen(true);
+  };
+
+  // Helper to extract domain from URL for the browser bar
+  const getDomain = (url?: string) => {
+      if (!url) return 'localhost:3000';
+      try {
+          return new URL(url).hostname;
+      } catch {
+          return 'project-preview.com';
+      }
   };
 
   if (loading) {
@@ -172,18 +198,51 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
         <header className="container mx-auto px-6 pt-12 pb-24 md:pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             
-            {/* Left View */}
+            {/* Left View - REDESIGNED: Sleek Browser Window Aesthetic */}
             <Reveal variant="rotate-left" triggerOnMount>
-              <div className="relative">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none"></div>
-                <div className="relative glass-strong rounded-[2.5rem] p-2 md:p-3 overflow-hidden border border-white/60 dark:border-white/10 shadow-[0_48px_96px_-24px_rgba(0,0,0,0.12)]">
-                  <div className="rounded-[1.8rem] overflow-hidden bg-gray-100 dark:bg-black/20 aspect-[16/10]">
-                    <img 
-                        src={project.image} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover object-top transition-transform duration-1000 hover:scale-105" 
-                    />
-                  </div>
+              <div className="relative group perspective-1000">
+                {/* Ambient Glow behind */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[2rem] blur-3xl -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-700"></div>
+                
+                {/* Browser Frame */}
+                <div className="relative rounded-xl bg-[#F0F0F3] dark:bg-[#121212] overflow-hidden shadow-2xl border border-white/40 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 transform transition-transform duration-700 group-hover:rotate-x-2 group-hover:scale-[1.01]">
+                   
+                   {/* Browser Toolbar */}
+                   <div className="bg-white/80 dark:bg-[#1C1C1E]/90 backdrop-blur-md px-4 py-3 flex items-center gap-4 border-b border-black/5 dark:border-white/5 z-20 relative">
+                       {/* Traffic Lights */}
+                       <div className="flex gap-2 shrink-0">
+                         <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F57] border border-[#E0443E]/50"></div>
+                         <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]/50"></div>
+                         <div className="w-2.5 h-2.5 rounded-full bg-[#28C840] border border-[#1AAB29]/50"></div>
+                       </div>
+                       
+                       {/* URL Bar Simulation */}
+                       <div className="flex-1 bg-gray-100 dark:bg-[#2C2C2E] rounded-md h-7 flex items-center justify-center overflow-hidden relative shadow-inner">
+                          <div className="flex items-center gap-2 opacity-60">
+                             <i className="fas fa-lock text-[8px] text-gray-500"></i>
+                             <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono tracking-tight select-none">
+                                {getDomain(project.liveUrl)}
+                             </span>
+                          </div>
+                          {/* Progress bar hint */}
+                          <div className="absolute bottom-0 left-0 h-[1px] bg-blue-500 w-full opacity-0 group-hover:opacity-50 transition-opacity duration-1000"></div>
+                       </div>
+
+                       <div className="w-8 shrink-0 flex justify-end opacity-30">
+                          <i className="fas fa-rotate-right text-xs"></i>
+                       </div>
+                   </div>
+
+                   {/* Viewport/Image */}
+                   <div className="aspect-[16/10] overflow-hidden relative bg-gray-100 dark:bg-black/40 group-hover:cursor-n-resize">
+                      <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover object-top transition-transform duration-[1.5s] ease-in-out group-hover:translate-y-[-10%]" 
+                      />
+                      {/* Screen Gloss/Reflection */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none z-10"></div>
+                   </div>
                 </div>
               </div>
             </Reveal>
