@@ -6,10 +6,11 @@ import { db } from "../firebase";
 
 interface ContactProps {
   onSuccess?: () => void;
+  onClose?: () => void;
   isModal?: boolean;
 }
 
-const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
+const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }) => {
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
@@ -56,7 +57,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
   };
 
   return (
-    <section id="contact" className={`${isModal ? 'py-4' : 'py-24'} relative overflow-hidden`}>
+    <section id="contact" className={`${isModal ? 'py-0' : 'py-24'} relative overflow-hidden`}>
       {/* Ambient Background Glow for Liquid Effect - Hidden in Modal */}
       {!isModal && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -83,19 +84,25 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
 
         <Reveal delay={isModal ? 0 : 200} variant="zoom-in" className={isModal ? 'w-full max-w-2xl' : 'w-full'}>
           {/* macOS Mail Window - Liquid Glass Style */}
-          <div className="group relative backdrop-blur-3xl bg-white/40 dark:bg-[#1c1c1e]/40 rounded-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20 transition-transform duration-500 hover:scale-[1.005]">
+          <div className={`group relative backdrop-blur-3xl bg-white/60 dark:bg-[#1c1c1e]/60 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20 transition-transform duration-500 ${isModal ? 'md:rounded-2xl rounded-3xl' : 'rounded-2xl hover:scale-[1.005]'}`}>
             
             {/* Reflective Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none opacity-50"></div>
 
-            {/* Title Bar */}
-            <div className="bg-white/50 dark:bg-[#2c2c2e]/50 backdrop-blur-md h-12 flex items-center px-4 md:px-5 justify-between border-b border-black/5 dark:border-white/10 relative z-20">
-               <div className="flex gap-2">
-                 <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] shadow-sm"></div>
+            {/* Title Bar - Visible ONLY on Desktop/Tablet when Modal */}
+            <div className={`bg-white/50 dark:bg-[#2c2c2e]/50 backdrop-blur-md h-10 flex items-center px-4 md:px-5 justify-between border-b border-black/5 dark:border-white/10 relative z-20 ${isModal ? 'hidden md:flex' : 'flex'}`}>
+               <div className="flex gap-2 group/controls">
+                 <div 
+                    onClick={onClose} 
+                    className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] shadow-sm cursor-pointer flex items-center justify-center text-[8px] text-black/40 opacity-100 hover:opacity-80 transition-opacity"
+                    title="Close"
+                 >
+                    <i className="fas fa-times opacity-0 group-hover/controls:opacity-100 transition-opacity"></i>
+                 </div>
                  <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
                  <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
                </div>
-               <div className="flex items-center gap-2 opacity-50">
+               <div className="flex items-center gap-2 opacity-50 absolute left-1/2 -translate-x-1/2">
                   <i className="fas fa-paper-plane text-xs"></i>
                   <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">New Message</span>
                </div>
@@ -104,11 +111,25 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                </div>
             </div>
 
+            {/* Mobile Header (Simple & Aesthetic) - Only visible on Mobile when Modal */}
+            {isModal && (
+                <div className="md:hidden pt-8 pb-4 px-6 text-center border-b border-black/5 dark:border-white/5 relative z-20">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Write Message</h3>
+                    <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Direct Line</p>
+                    <button 
+                        onClick={onClose}
+                        className="absolute top-6 right-6 w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+                    >
+                        <i className="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            )}
+
             {/* Compose Area */}
             <div className="relative z-20">
               <form onSubmit={handleSubmit}>
                 {/* To Field */}
-                <div className="flex flex-col sm:flex-row sm:items-center border-b border-black/5 dark:border-white/5 px-4 md:px-6 py-3 md:py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5 gap-2 sm:gap-0">
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5 gap-2 sm:gap-0">
                   <span className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16">To:</span>
                   <div className="px-3 py-1 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 rounded-md text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center gap-2 w-fit">
                     <span className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] shrink-0">BP</span>
@@ -117,7 +138,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                 </div>
 
                 {/* Name Field */}
-                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-4 md:px-6 py-3 md:py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
+                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
                   <label htmlFor="Name" className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16 shrink-0">Name:</label>
                   <input 
                     name="Name" 
@@ -130,7 +151,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                 </div>
 
                 {/* Email Field */}
-                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-4 md:px-6 py-3 md:py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
+                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
                   <label htmlFor="Email" className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16 shrink-0">Email:</label>
                   <input 
                     name="Email" 
@@ -143,11 +164,11 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                 </div>
 
                 {/* Message Body */}
-                <div className="p-4 md:p-6">
+                <div className="p-6">
                   <textarea 
                     name="Message" 
                     id="Message" 
-                    rows={8} 
+                    rows={isModal ? 6 : 8}
                     required 
                     placeholder="Hi Bhupesh, I'd like to discuss a potential collaboration..."
                     className="w-full bg-transparent outline-none text-base text-gray-800 dark:text-gray-200 placeholder-gray-400 resize-none font-sans leading-relaxed"
@@ -155,7 +176,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                 </div>
 
                 {/* Toolbar / Send */}
-                <div className="bg-white/30 dark:bg-[#2c2c2e]/30 backdrop-blur-md px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-t border-black/5 dark:border-white/5 gap-4">
+                <div className="bg-white/30 dark:bg-[#2c2c2e]/30 backdrop-blur-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-t border-black/5 dark:border-white/5 gap-4">
                   <div className="flex gap-5 text-gray-400 self-start sm:self-auto">
                     <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-font"></i></button>
                     <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-paperclip"></i></button>
@@ -165,7 +186,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                   <button 
                     type="submit" 
                     disabled={status === 'submitting'}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 font-medium text-sm"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 font-bold text-sm tracking-wide"
                     title="Send Message"
                   >
                     {status === 'submitting' ? (
@@ -174,7 +195,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, isModal = false }) => {
                        </>
                     ) : (
                        <>
-                         <i className="fas fa-paper-plane"></i> Send Message
+                         <i className="fas fa-paper-plane"></i> Send
                        </>
                     )}
                   </button>

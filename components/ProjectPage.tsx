@@ -58,6 +58,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -67,9 +68,6 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
       }
       setLoading(true);
       try {
-        // Since we are using slugs based on titles and don't have a 'slug' field in DB,
-        // we fetch projects and filter. For a portfolio with < 100 items, this is fine.
-        // Ideally, add a 'slug' field to Firestore documents for direct querying.
         const q = query(collection(db, "projects"));
         const querySnapshot = await getDocs(q);
         
@@ -102,40 +100,30 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   }, [slug]);
 
   useEffect(() => {
-    if (isContactModalOpen) {
+    if (isContactModalOpen || isShareOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
     return () => { document.body.style.overflow = 'auto'; }
-  }, [isContactModalOpen]);
+  }, [isContactModalOpen, isShareOpen]);
 
   const handleBack = () => {
     window.location.hash = '#work';
   };
 
-  const handleShare = async () => {
-    if (!project) return;
-    const shareData = {
-      title: project.title,
-      text: project.desc,
-      url: window.location.href,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        setToast({ show: true, message: 'Link copied to clipboard!', type: 'success' });
-      }
-    } catch (err) {
-      console.error('Error sharing:', err);
-    }
-  };
-
   const openContactModal = () => {
     setIsContactModalOpen(true);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setToast({ show: true, message: 'Link copied to clipboard!', type: 'success' });
+      setIsShareOpen(false);
+    } catch (err) {
+      console.error('Failed to copy', err);
+    }
   };
 
   // Helper to extract domain from URL for the browser bar
@@ -170,6 +158,8 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
   }
 
   const techItems = project.stack ? project.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean) : [];
+  const currentUrl = window.location.href;
+  const shareText = `Check out this project: ${project.title} by Bhupesh Bhatt`;
 
   return (
     <Layout>
@@ -198,7 +188,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
         <header className="container mx-auto px-6 pt-12 pb-24 md:pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             
-            {/* Left View - REDESIGNED: Sleek Browser Window Aesthetic */}
+            {/* Left View - Sleek Browser Window Aesthetic */}
             <Reveal variant="rotate-left" triggerOnMount>
               <div className="relative group perspective-1000">
                 {/* Ambient Glow behind */}
@@ -259,7 +249,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                       {project.title}
                     </h1>
                     <button 
-                      onClick={handleShare}
+                      onClick={() => setIsShareOpen(true)}
                       className="w-12 h-12 rounded-2xl glass-strong border border-black/5 dark:border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-all shadow-sm"
                       title="Share Project"
                     >
@@ -401,19 +391,88 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
 
         <Footer />
 
+        {/* CUSTOM SHARE MODAL */}
+        {isShareOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-scale-in" onClick={() => setIsShareOpen(false)}>
+              <div 
+                 className="w-full max-w-md bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-3xl rounded-3xl shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20"
+                 onClick={e => e.stopPropagation()}
+              >
+                  <div className="p-8 text-center border-b border-black/5 dark:border-white/5 relative">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white">Share Project</h3>
+                      <button onClick={() => setIsShareOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-black/10 dark:hover:bg-white/20">
+                          <i className="fas fa-times text-sm"></i>
+                      </button>
+                  </div>
+                  
+                  <div className="p-8 grid grid-cols-3 gap-6">
+                      <button onClick={handleCopyLink} className="flex flex-col items-center gap-3 group">
+                          <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm">
+                              <i className="fas fa-link"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500">Copy Link</span>
+                      </button>
+                      
+                      <a 
+                          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(currentUrl)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex flex-col items-center gap-3 group"
+                      >
+                          <div className="w-14 h-14 rounded-2xl bg-black dark:bg-white flex items-center justify-center text-xl text-white dark:text-black group-hover:scale-110 transition-transform shadow-sm">
+                              <i className="fab fa-x-twitter"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500">X</span>
+                      </a>
+
+                      <a 
+                          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex flex-col items-center gap-3 group"
+                      >
+                          <div className="w-14 h-14 rounded-2xl bg-[#0077b5] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                              <i className="fab fa-linkedin-in"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500">LinkedIn</span>
+                      </a>
+
+                       <a 
+                          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex flex-col items-center gap-3 group"
+                      >
+                          <div className="w-14 h-14 rounded-2xl bg-[#1877F2] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                              <i className="fab fa-facebook-f"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500">Facebook</span>
+                      </a>
+
+                      <a 
+                          href={`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="flex flex-col items-center gap-3 group"
+                      >
+                          <div className="w-14 h-14 rounded-2xl bg-[#25D366] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm">
+                              <i className="fab fa-whatsapp"></i>
+                          </div>
+                          <span className="text-xs font-bold text-gray-500">WhatsApp</span>
+                      </a>
+                  </div>
+              </div>
+          </div>
+        )}
+
         {/* Full Page Contact Modal */}
         {isContactModalOpen && (
-          <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl overflow-y-auto animate-fade-in">
-            <button 
-              onClick={() => setIsContactModalOpen(false)}
-              className="fixed top-6 right-6 z-[110] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-800 dark:text-white hover:rotate-90 transition-all duration-300 shadow-lg hover:shadow-2xl"
-              title="Close Modal"
-            >
-              <i className="fas fa-times text-xl"></i>
-            </button>
+          <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl overflow-y-auto animate-fade-in flex flex-col">
+            {/* Desktop: Close button handled inside Contact component's window chrome */}
+            {/* Mobile: Close button handled inside Contact component's mobile header */}
             
-            <div className="min-h-screen flex items-center justify-center p-4">
-              <Contact onSuccess={() => setIsContactModalOpen(false)} isModal={true} />
+            <div className="flex-1 flex items-center justify-center p-0 md:p-4">
+              <Contact onSuccess={() => setIsContactModalOpen(false)} onClose={() => setIsContactModalOpen(false)} isModal={true} />
             </div>
           </div>
         )}
