@@ -21,6 +21,7 @@ const Admin: React.FC = () => {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{isOpen: boolean, projectId: string | null}>({ isOpen: false, projectId: null });
   
   // New Project Form State
   const [projectForm, setProjectForm] = useState({
@@ -122,16 +123,25 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation(); 
-    if (window.confirm("Are you sure you want to delete this project?")) {
+  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteConfirm({ isOpen: true, projectId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (deleteConfirm.projectId) {
       try {
-        await deleteDoc(doc(db, "projects", id));
-        setProjects(prev => prev.filter(p => p.id !== id));
+        await deleteDoc(doc(db, "projects", deleteConfirm.projectId));
+        setProjects(prev => prev.filter(p => p.id !== deleteConfirm.projectId));
       } catch (err) {
         alert("Failed to delete project.");
       }
     }
+    setDeleteConfirm({ isOpen: false, projectId: null });
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, projectId: null });
   };
 
   const handleEditProject = (proj: Project, e: React.MouseEvent) => {
@@ -144,7 +154,7 @@ const Admin: React.FC = () => {
       codeUrl: proj.codeUrl || '',
       imageUrl: proj.image,
     });
-    setTechStackList(proj.stack.split(' • '));
+    setTechStackList(proj.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean));
     setIsProjectModalOpen(true);
   };
 
@@ -284,7 +294,7 @@ const Admin: React.FC = () => {
         <AmbientBackground />
         
         {/* GLASS SIDEBAR */}
-        <aside className="w-20 lg:w-72 glass-strong border-r border-white/20 dark:border-white/5 flex flex-col flex-shrink-0 z-20 transition-all duration-300">
+        <aside className="w-16 md:w-20 lg:w-72 glass-strong border-r border-white/20 dark:border-white/5 flex flex-col flex-shrink-0 z-20 transition-all duration-300">
             <div className="h-24 flex items-center justify-center lg:justify-start lg:px-8">
                 <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="font-mono font-bold text-sm text-white">BR</span>
@@ -295,14 +305,15 @@ const Admin: React.FC = () => {
                 </div>
             </div>
 
-            <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+            <nav className="flex-1 p-2 md:p-4 space-y-2 overflow-y-auto">
                 <button 
                   onClick={() => setActiveTab('inbox')}
-                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
+                  className={`w-full flex items-center gap-4 px-3 md:px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 justify-center lg:justify-start ${
                     activeTab === 'inbox' 
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
                       : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-white/5'
                   }`}
+                  title="Inbox"
                 >
                   <i className="fas fa-inbox w-5 text-center text-lg lg:text-base"></i>
                   <span className="hidden lg:block">Inbox</span>
@@ -317,11 +328,12 @@ const Admin: React.FC = () => {
 
                 <button 
                   onClick={() => setActiveTab('projects')}
-                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
+                  className={`w-full flex items-center gap-4 px-3 md:px-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-300 justify-center lg:justify-start ${
                     activeTab === 'projects' 
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
                       : 'text-gray-600 dark:text-gray-400 hover:bg-white/40 dark:hover:bg-white/5'
                   }`}
+                  title="Projects"
                 >
                   <i className="fas fa-layer-group w-5 text-center text-lg lg:text-base"></i>
                   <span className="hidden lg:block">Projects</span>
@@ -335,10 +347,11 @@ const Admin: React.FC = () => {
                 </button>
             </nav>
 
-            <div className="p-6">
+            <div className="p-2 md:p-6">
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20"
+                  className="w-full flex items-center gap-3 px-3 md:px-4 py-3 rounded-2xl text-sm font-bold text-red-500 hover:bg-red-500/10 transition-colors border border-transparent hover:border-red-500/20 justify-center lg:justify-start"
+                  title="Log Out"
                 >
                    <i className="fas fa-sign-out-alt w-5 text-center"></i>
                    <span className="hidden lg:block">Log Out</span>
@@ -349,16 +362,16 @@ const Admin: React.FC = () => {
         {/* MAIN CONTENT */}
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
             {/* Header */}
-            <header className="h-24 flex items-center justify-between px-8 md:px-12">
+            <header className="h-20 md:h-24 flex items-center justify-between px-6 md:px-12">
                 <div>
-                    <h2 className="text-3xl font-bold capitalize bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
+                    <h2 className="text-2xl md:text-3xl font-bold capitalize bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-500 dark:from-white dark:to-gray-400">
                         {activeTab}
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Overview of your {activeTab}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium hidden md:block">Overview of your {activeTab}</p>
                 </div>
             </header>
 
-            <div className="flex-1 overflow-y-auto px-6 md:px-12 pb-12 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-4 md:px-12 pb-12 custom-scrollbar">
                 
                 {activeTab === 'inbox' && (
                     <div className="max-w-6xl mx-auto animate-fade-up">
@@ -376,10 +389,10 @@ const Admin: React.FC = () => {
                                  <div 
                                    key={msg.id}
                                    onClick={() => setSelectedMessage(msg)}
-                                   className="p-6 hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer transition-colors flex flex-col md:flex-row gap-4 md:items-center group"
+                                   className="p-4 md:p-6 hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer transition-colors flex flex-col md:flex-row gap-4 md:items-center group"
                                  >
                                     <div className="flex items-center gap-4 md:w-1/3">
-                                       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
+                                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
                                           {msg.name ? msg.name.charAt(0).toUpperCase() : '?'}
                                        </div>
                                        <div className="min-w-0">
@@ -403,20 +416,20 @@ const Admin: React.FC = () => {
 
                 {activeTab === 'projects' && (
                     <div className="max-w-[1600px] mx-auto animate-fade-up">
-                        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                           <div className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400">
-                             <i className="fas fa-info-circle text-lg"></i>
-                             <p className="text-sm font-bold tracking-tight">Drag and drop projects to change their display order on the website.</p>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                           <div className="flex items-center gap-3 px-4 md:px-5 py-2.5 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 w-full md:w-auto">
+                             <i className="fas fa-info-circle text-lg shrink-0"></i>
+                             <p className="text-xs md:text-sm font-bold tracking-tight">Drag and drop projects to reorder.</p>
                            </div>
                            <button 
                              onClick={() => setIsProjectModalOpen(true)}
-                             className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-lg flex items-center gap-2 whitespace-nowrap"
+                             className="w-full md:w-auto bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl text-sm font-bold hover:scale-105 transition-transform shadow-lg flex items-center justify-center gap-2 whitespace-nowrap"
                            >
                              <i className="fas fa-plus"></i> New Project
                            </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 pb-10">
                            {projects.map((proj, index) => (
                               <div 
                                 key={proj.id} 
@@ -426,27 +439,27 @@ const Admin: React.FC = () => {
                                 onDragEnd={handleDragEnd}
                                 className={`glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 group flex flex-col relative border border-white/40 dark:border-white/5 cursor-grab active:cursor-grabbing will-change-transform ${draggedIndex === index ? 'opacity-40 scale-95 border-blue-500/50' : 'opacity-100 scale-100'}`}
                               >
-                                 <div className="h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden pointer-events-none">
+                                 <div className="h-48 md:h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden pointer-events-none">
                                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
                                      <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                      
                                      <div className="absolute top-4 right-4 z-20 flex gap-2 pointer-events-auto">
                                          <button 
                                               onClick={(e) => handleEditProject(proj, e)}
-                                              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-blue-500 transition-colors border border-white/30"
+                                              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-blue-500 transition-colors border border-white/30"
                                          >
-                                              <i className="fas fa-edit text-sm"></i>
+                                              <i className="fas fa-edit text-xs"></i>
                                          </button>
                                          <button 
-                                              onClick={(e) => handleDeleteProject(proj.id, e)}
-                                              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
+                                              onClick={(e) => handleDeleteClick(proj.id, e)}
+                                              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
                                          >
-                                              <i className="fas fa-trash-alt text-sm"></i>
+                                              <i className="fas fa-trash-alt text-xs"></i>
                                          </button>
                                      </div>
 
                                      <div className="absolute bottom-4 left-4 z-20">
-                                         <h3 className="font-bold text-xl text-white mb-1 drop-shadow-md tracking-tight">{proj.title}</h3>
+                                         <h3 className="font-bold text-lg md:text-xl text-white mb-1 drop-shadow-md tracking-tight">{proj.title}</h3>
                                          <div className="flex items-center gap-2">
                                            <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">RANK {index + 1}</span>
                                            <i className="fas fa-grip-lines text-white/50 text-xs"></i>
@@ -454,17 +467,17 @@ const Admin: React.FC = () => {
                                      </div>
                                  </div>
                                  
-                                 <div className="p-6 flex-1 flex flex-col pointer-events-none">
+                                 <div className="p-5 md:p-6 flex-1 flex flex-col pointer-events-none">
                                     <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{proj.desc}</p>
                                     
                                     <div className="flex gap-2 pointer-events-auto">
                                        {proj.liveUrl && (
-                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-[11px] py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black uppercase tracking-wider hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-[10px] md:text-[11px] py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black uppercase tracking-wider hover:bg-blue-500/20 transition-colors border border-blue-500/20">
                                            Live Demo
                                          </a>
                                        )}
                                        {proj.codeUrl && (
-                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-[11px] py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-black uppercase tracking-wider hover:bg-gray-500/20 transition-colors border border-gray-500/20">
+                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-[10px] md:text-[11px] py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-black uppercase tracking-wider hover:bg-gray-500/20 transition-colors border border-gray-500/20">
                                            Source
                                          </a>
                                        )}
@@ -478,37 +491,69 @@ const Admin: React.FC = () => {
             </div>
         </main>
 
+        {/* --- DELETE CONFIRMATION MODAL --- */}
+        {deleteConfirm.isOpen && (
+             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in">
+                <div className="glass-strong w-full max-w-sm rounded-3xl shadow-2xl p-8 text-center border border-white/20">
+                    <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-500/20 text-red-500 flex items-center justify-center text-2xl mx-auto mb-6">
+                        <i className="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Project?</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                        Are you sure you want to delete this project? This action cannot be undone.
+                    </p>
+                    <div className="flex gap-3">
+                        <button 
+                            onClick={cancelDelete}
+                            className="flex-1 px-4 py-3 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white font-bold text-sm hover:bg-gray-200 dark:hover:bg-white/20 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={confirmDelete}
+                            className="flex-1 px-4 py-3 rounded-xl bg-red-500 text-white font-bold text-sm hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+             </div>
+        )}
+
         {/* --- MESSAGE DETAIL MODAL --- */}
         {selectedMessage && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-6 animate-scale-in">
                 <div className="glass-strong w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
-                   <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
-                       <h3 className="font-bold text-xl">Message Detail</h3>
-                       <button onClick={() => setSelectedMessage(null)} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+                   <div className="px-6 md:px-8 py-5 md:py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30 backdrop-blur-md sticky top-0 z-10">
+                       <h3 className="font-bold text-lg md:text-xl text-gray-900 dark:text-white">Message Detail</h3>
+                       <button onClick={() => setSelectedMessage(null)} className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
                           <i className="fas fa-times text-sm"></i>
                        </button>
                    </div>
-                   <div className="p-8 overflow-y-auto">
-                       <div className="flex items-center gap-5 mb-8">
-                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
+                   
+                   <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
+                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 mb-8">
+                           <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shrink-0">
                                {selectedMessage.name ? selectedMessage.name.charAt(0).toUpperCase() : '?'}
                            </div>
-                           <div>
-                               <h4 className="font-bold text-2xl tracking-tight">{selectedMessage.name}</h4>
-                               <p className="text-blue-600 dark:text-blue-400 font-medium">{selectedMessage.email}</p>
+                           <div className="min-w-0">
+                               <h4 className="font-bold text-xl md:text-2xl tracking-tight text-gray-900 dark:text-white truncate">{selectedMessage.name}</h4>
+                               <p className="text-blue-600 dark:text-blue-400 font-medium truncate">{selectedMessage.email}</p>
                                <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide font-black">{selectedMessage.timestamp?.toDate ? selectedMessage.timestamp.toDate().toLocaleString() : ''}</p>
                            </div>
                        </div>
-                       <div className="bg-white/50 dark:bg-black/20 p-6 rounded-2xl border border-white/20 dark:border-white/5 text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-medium">
+                       
+                       <div className="bg-white/50 dark:bg-black/20 p-5 md:p-6 rounded-2xl border border-white/20 dark:border-white/5 text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap font-medium shadow-inner">
                            {selectedMessage.message}
                        </div>
                    </div>
-                   <div className="p-6 border-t border-gray-200/50 dark:border-white/10 flex justify-end bg-white/30 dark:bg-black/30">
+                   
+                   <div className="p-5 md:p-6 border-t border-gray-200/50 dark:border-white/10 flex justify-end bg-white/30 dark:bg-black/30 backdrop-blur-md sticky bottom-0 z-10">
                         <a 
                           href={`mailto:${selectedMessage.email}`}
-                          className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center gap-2"
+                          className="w-full sm:w-auto px-6 md:px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm"
                         >
-                           <i className="fas fa-reply"></i> Reply
+                           <i className="fas fa-reply"></i> Reply via Email
                         </a>
                    </div>
                 </div>
@@ -519,21 +564,21 @@ const Admin: React.FC = () => {
         {isProjectModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in">
                 <div className="glass-strong w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-white/20">
-                   <div className="px-8 py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30">
-                       <h3 className="font-bold text-xl">{editingProject ? 'Edit Project' : 'New Project'}</h3>
-                       <button onClick={closeProjectModal} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
+                   <div className="px-6 md:px-8 py-5 md:py-6 border-b border-gray-200/50 dark:border-white/10 flex justify-between items-center bg-white/30 dark:bg-black/30 backdrop-blur-md sticky top-0 z-10">
+                       <h3 className="font-bold text-lg md:text-xl text-gray-900 dark:text-white">{editingProject ? 'Edit Project' : 'New Project'}</h3>
+                       <button onClick={closeProjectModal} className="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors">
                           <i className="fas fa-times text-sm"></i>
                        </button>
                    </div>
-                   <div className="p-8 overflow-y-auto">
+                   <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar">
                       <form onSubmit={handleSaveProject} className="space-y-5">
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Title</label>
-                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
+                            <input type="text" value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" required />
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Description</label>
-                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-28 resize-none" required />
+                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors h-28 resize-none text-gray-900 dark:text-white" required />
                         </div>
                         
                         <div className="space-y-1">
@@ -545,7 +590,7 @@ const Admin: React.FC = () => {
                                     onChange={e => setTechInput(e.target.value)} 
                                     onKeyDown={handleAddTech}
                                     placeholder="e.g. React" 
-                                    className="flex-1 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" 
+                                    className="flex-1 bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" 
                                     disabled={techStackList.length >= 15}
                                 />
                                 <button 
@@ -583,7 +628,7 @@ const Admin: React.FC = () => {
                               type="url" 
                               value={projectForm.imageUrl} 
                               onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} 
-                              className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" 
+                              className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" 
                               placeholder="https://example.com/image.png"
                               required 
                             />
@@ -592,15 +637,15 @@ const Admin: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Live URL</label>
-                                <input type="url" value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" required />
+                                <input type="url" value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" required />
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 ml-1">Code URL</label>
-                                <input type="url" value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors" />
+                                <input type="url" value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full bg-white/50 dark:bg-black/20 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors text-gray-900 dark:text-white" />
                             </div>
                         </div>
-                        <div className="pt-4 flex justify-end gap-3">
-                            <button type="button" onClick={closeProjectModal} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors">Cancel</button>
+                        <div className="pt-4 flex justify-end gap-3 sticky bottom-0 z-10">
+                            <button type="button" onClick={closeProjectModal} className="px-6 py-3 rounded-xl text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-700 dark:text-gray-300">Cancel</button>
                             <button type="submit" className="px-8 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">{editingProject ? 'Save Changes' : 'Publish Project'}</button>
                         </div>
                       </form>

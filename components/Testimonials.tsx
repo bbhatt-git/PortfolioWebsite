@@ -6,7 +6,7 @@ const Testimonials: React.FC = () => {
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
-        <Reveal>
+        <Reveal variant="skew-up">
           <div className="mb-20">
             <h2 className="text-4xl font-bold mb-4 tracking-tight text-black dark:text-white">What Clients Say</h2>
             <div className="h-1 w-20 bg-blue-500 rounded-full"></div>
@@ -15,7 +15,7 @@ const Testimonials: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {TESTIMONIALS.map((testi, index) => (
-            <Reveal key={testi.id} delay={index * 150}>
+            <Reveal key={testi.id} delay={index * 150} variant="rotate-left">
               <div className="h-full flex flex-col p-8 rounded-[2rem] glass-strong border border-white/40 dark:border-white/5 hover:border-blue-500/30 transition-all duration-300 group hover:-translate-y-2">
                 
                 {/* Large Quote Icon */}

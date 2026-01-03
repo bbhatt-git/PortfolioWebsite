@@ -48,7 +48,7 @@ const About: React.FC = () => {
   return (
     <section id="about" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
-        <Reveal>
+        <Reveal variant="skew-up">
           <div className="mb-12 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">About Me.</h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-xl">
@@ -60,7 +60,7 @@ const About: React.FC = () => {
         {/* Top Row: Bio + Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           {/* Biography */}
-          <Reveal className="lg:col-span-2 h-full">
+          <Reveal variant="rotate-left" className="lg:col-span-2 h-full">
             <div className="h-full glass-strong rounded-[2rem] p-8 md:p-10 relative overflow-hidden group flex flex-col justify-center">
                <div className="relative z-10">
                    <div className="flex items-center gap-4 mb-6">
@@ -100,7 +100,7 @@ const About: React.FC = () => {
           </Reveal>
 
           {/* Stats */}
-           <Reveal delay={200} className="lg:col-span-1 h-full">
+           <Reveal variant="rotate-right" delay={200} className="lg:col-span-1 h-full">
             <div className="h-full glass rounded-[2rem] p-8 flex flex-col justify-center gap-6 relative overflow-hidden">
                {/* Background decoration */}
                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl"></div>
@@ -121,7 +121,7 @@ const About: React.FC = () => {
         </div>
 
         {/* Technical Arsenal Section */}
-        <Reveal delay={300}>
+        <Reveal variant="3d" delay={300}>
             <div className="text-center mb-10">
                 <h3 className="text-3xl font-bold mb-3 tracking-tight">My Technical Arsenal</h3>
                 <p className="text-gray-500 dark:text-gray-400">A comprehensive toolkit of modern technologies.</p>
@@ -130,7 +130,7 @@ const About: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Frontend & Mobile */}
-            <Reveal delay={400} className="h-full">
+            <Reveal variant="flip-up" delay={400} className="h-full">
                 <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
                         <span className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
@@ -143,7 +143,7 @@ const About: React.FC = () => {
             </Reveal>
 
             {/* Backend & DB */}
-            <Reveal delay={500} className="h-full">
+            <Reveal variant="flip-up" delay={500} className="h-full">
                 <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
                         <span className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm">
@@ -156,7 +156,7 @@ const About: React.FC = () => {
             </Reveal>
 
             {/* Design & Tools */}
-            <Reveal delay={600} className="h-full">
+            <Reveal variant="flip-up" delay={600} className="h-full">
                 <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10">
                     <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
                         <span className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">

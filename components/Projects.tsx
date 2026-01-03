@@ -36,7 +36,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
   return (
     <div 
       ref={cardRef}
-      className="group relative rounded-[2.5rem] transition-all duration-500 ease-out-expo transform-gpu preserve-3d h-full perspective-1000 cursor-pointer"
+      className="group relative rounded-[2rem] transition-all duration-500 ease-out-expo transform-gpu preserve-3d h-full perspective-1000 cursor-pointer"
       style={{ transform: isTouch ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) scale3d(1, 1, 1)` }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -45,7 +45,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     >
       {/* Glare Effect */}
       <div 
-        className="absolute inset-0 rounded-[2.5rem] z-50 pointer-events-none mix-blend-overlay transition-opacity duration-300"
+        className="absolute inset-0 rounded-[2rem] z-50 pointer-events-none mix-blend-overlay transition-opacity duration-300"
         style={{
           background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.4) 0%, transparent 80%)`,
           opacity: glare.opacity * 0.6,
@@ -53,34 +53,39 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       ></div>
 
       {/* Main Card Container */}
-      <div className="bg-white/40 dark:bg-[#161618]/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-2xl ring-1 ring-white/20 dark:ring-white/5 relative z-10 flex flex-col h-full transition-transform duration-300 preserve-3d"
+      <div className="bg-white/60 dark:bg-[#161618]/80 backdrop-blur-3xl rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-white/20 dark:ring-white/5 relative z-10 flex flex-col h-full transition-transform duration-300 preserve-3d group-hover:shadow-2xl"
            style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)' }}>
         
         {/* Image Section with Overlay */}
-        <div className="relative w-full aspect-[4/3] overflow-hidden group-hover:shadow-inner shrink-0 bg-gray-100 dark:bg-black/20">
-          <img src={project.image} alt={project.title} className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-105" />
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-black/20">
+          <img 
+             src={project.image} 
+             alt={project.title} 
+             className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-105" 
+          />
           
-          {/* Glass Overlay on Image (visible on hover) */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] flex items-center justify-center">
-             <div className="px-6 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-white font-bold text-sm transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 shadow-xl">
-               View Case Study
+          {/* Gradient Overlay at Bottom of Image for smooth transition */}
+          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white/10 to-transparent dark:from-[#161618]/50"></div>
+
+          {/* Glass Overlay on Image (visible on hover) - View Details */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] flex items-center justify-center">
+             <div className="px-6 py-3 rounded-full bg-white/20 border border-white/30 backdrop-blur-md text-white font-bold text-sm transform scale-90 opacity-0 translate-y-4 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-xl flex items-center gap-2">
+               <span>View Details</span> <i className="fas fa-arrow-right text-xs"></i>
              </div>
           </div>
         </div>
 
         {/* Content Section */}
         <div className="p-6 md:p-8 flex flex-col flex-1 relative">
-           {/* Decorative Gradient Blob */}
-           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-
-           <div className="flex justify-between items-start mb-4 relative z-10">
+           
+           <div className="flex justify-between items-start mb-3 relative z-10">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {project.title}
               </h3>
               
               {project.codeUrl && (
                   <button onClick={(e) => { e.stopPropagation(); window.open(project.codeUrl, '_blank'); }}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-white/50 dark:bg-white/5 border border-white/20 dark:border-white/5 text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110 hover:bg-white dark:hover:bg-white/20 shadow-sm"
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-gray-500 transition-all hover:scale-110 shadow-sm"
                     title="View Source Code"
                   >
                     <i className="fab fa-github text-lg"></i>
@@ -92,15 +97,15 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
              {project.desc}
            </p>
 
-           {/* Tech Stack - Modern Glass Pills */}
-           <div className="flex flex-wrap gap-2 mt-auto relative z-10">
+           {/* Tech Stack - Modern Clean Pills */}
+           <div className="flex flex-wrap gap-2 mt-auto relative z-10 border-t border-gray-100 dark:border-white/5 pt-4">
              {project.stack.split(/[•,]/).slice(0, 3).map((tech, i) => (
-                <span key={i} className="text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 bg-white/40 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-white/40 dark:border-white/10 shadow-sm backdrop-blur-sm">
+                <span key={i} className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1.5 rounded-md border border-gray-200 dark:border-white/5">
                    {tech.trim()}
                 </span>
              ))}
              {project.stack.split(/[•,]/).length > 3 && (
-                <span className="text-[11px] font-bold text-gray-400 px-2 py-1.5 flex items-center">+more</span>
+                <span className="text-[10px] font-bold text-gray-400 px-2 py-1.5 flex items-center">+more</span>
              )}
            </div>
         </div>
@@ -148,7 +153,7 @@ const Projects: React.FC = () => {
   return (
     <section id="work" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6 relative z-10">
-        <Reveal>
+        <Reveal variant="skew-up">
           <div className="flex flex-col items-center mb-16 text-center">
              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Selected Work.</h2>
              <div className="h-1 w-20 bg-blue-600 rounded-full mb-4"></div>
@@ -165,7 +170,7 @@ const Projects: React.FC = () => {
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
             {projects.map((project, index) => (
-              <Reveal key={project.id} delay={index * 100} className="h-full">
+              <Reveal key={project.id} delay={index * 100} variant="flip-up" className="h-full">
                 <ProjectCard project={project} onClick={() => openModal(project)} />
               </Reveal>
             ))}

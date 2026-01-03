@@ -56,14 +56,14 @@ const Contact: React.FC = () => {
       )}
 
       <div className="container mx-auto px-4 max-w-4xl relative z-10">
-        <Reveal>
+        <Reveal variant="skew-up">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4 tracking-tight">Let's start a project</h2>
             <p className="text-gray-500 dark:text-gray-400">Open for freelance opportunities and collaborations.</p>
           </div>
         </Reveal>
 
-        <Reveal delay={200}>
+        <Reveal delay={200} variant="zoom-in">
           {/* macOS Mail Window - Liquid Glass Style */}
           <div className="group relative backdrop-blur-3xl bg-white/40 dark:bg-[#1c1c1e]/40 rounded-2xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20 transition-transform duration-500 hover:scale-[1.005]">
             
@@ -167,7 +167,7 @@ const Contact: React.FC = () => {
         </Reveal>
         
         {/* Social Links Row */}
-        <Reveal delay={300}>
+        <Reveal delay={300} variant="3d">
           <div className="flex justify-center gap-6 md:gap-10 mt-16 flex-wrap">
             <a href="https://github.com/bbhatt-git" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
