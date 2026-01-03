@@ -42,6 +42,10 @@ const Footer: React.FC = () => {
                  className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#0077b5] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
                 <i className="fab fa-linkedin text-xl"></i>
               </a>
+              <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" 
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#1877F2] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
+                 <i className="fab fa-facebook text-xl"></i>
+              </a>
               <a href="https://www.instagram.com/_bbhatt" target="_blank" 
                  className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-xl hover:shadow-pink-500/20 hover:-translate-y-1">
                 <i className="fab fa-instagram text-xl"></i>
@@ -84,7 +88,7 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-3 group">
                 <i className="fas fa-map-marker-alt text-blue-500 group-hover:scale-110 transition-transform"></i>
-                <span className="group-hover:text-black dark:group-hover:text-white transition-colors">Kathmandu, Nepal</span>
+                <span className="group-hover:text-black dark:group-hover:text-white transition-colors">Mahendranagar, Nepal</span>
               </li>
               <li className="pt-4">
                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-blue-500/30 transition-colors group">

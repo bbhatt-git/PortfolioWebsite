@@ -196,13 +196,6 @@ const Contact: React.FC = () => {
                </div>
                <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Instagram</span>
             </a>
-
-            <a href="mailto:hello@bbhatt.com.np" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-blue-500 transition-colors">
-               <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
-                 <i className="fas fa-envelope"></i>
-               </div>
-               <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Email</span>
-            </a>
           </div>
         </Reveal>
       </div>
