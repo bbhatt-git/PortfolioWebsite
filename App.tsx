@@ -91,7 +91,10 @@ const App: React.FC = () => {
 
   // Check for /project/slug
   if (currentPath.startsWith('/project/')) {
-    const slug = currentPath.split('/project/')[1];
+    const rawSlug = currentPath.split('/project/')[1];
+    // Robustly handle trailing slashes (common on refresh) and query params
+    const slug = rawSlug ? rawSlug.split('?')[0].replace(/\/$/, '') : '';
+    
     if (slug) {
       return <ProjectPage slug={slug} />;
     }
