@@ -12,9 +12,13 @@ export default {
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
-        primary: '#007AFF',
-        'primary-dark': '#0A84FF',
-        dark: '#050505',
+        primary: {
+          DEFAULT: '#0066FF',
+          hover: '#0052CC',
+          subtle: 'rgba(0, 102, 255, 0.1)',
+        },
+        midnight: '#020203',
+        snow: '#FBFBFD',
         'mac-gray': '#1D1D1F',
       },
       transitionTimingFunction: {

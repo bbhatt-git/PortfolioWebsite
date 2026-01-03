@@ -66,10 +66,14 @@
               mono: ['"JetBrains Mono"', 'monospace'],
             },
             colors: {
-              primary: '#007AFF',
-              'primary-dark': '#0A84FF',
-              dark: '#050505',
-              'mac-gray': '#1D1D1F',
+              primary: {
+                DEFAULT: '#2563EB', // Professional Blue
+                hover: '#1D4ED8',
+                subtle: 'rgba(37, 99, 235, 0.1)',
+              },
+              midnight: '#0A0A0B',
+              snow: '#F8FAFC',
+              'mac-gray': '#1E293B',
             },
             transitionTimingFunction: {
               'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -78,8 +82,8 @@
             },
             animation: {
               'blob': 'blob 35s infinite alternate cubic-bezier(0.45, 0, 0.55, 1)',
-              'fade-up': 'fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'scale-in': 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               'float': 'float 10s ease-in-out infinite',
               'spin-slow': 'spin 15s linear infinite',
               'marquee': 'marquee 60s linear infinite',
@@ -88,19 +92,19 @@
             keyframes: {
               blob: {
                 '0%': { transform: 'translate3d(0, 0, 0) scale(1) rotate(0deg)', opacity: '0.4' },
-                '100%': { transform: 'translate3d(60px, -60px, 0) scale(1.15) rotate(10deg)', opacity: '0.6' },
+                '100%': { transform: 'translate3d(60px, -60px, 0) scale(1.1) rotate(5deg)', opacity: '0.6' },
               },
               fadeUp: {
-                '0%': { opacity: '0', transform: 'translate3d(0, 30px, 0)' },
+                '0%': { opacity: '0', transform: 'translate3d(0, 20px, 0)' },
                 '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
               },
               scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.96) translate3d(0, 10px, 0)' },
+                '0%': { opacity: '0', transform: 'scale(0.98) translate3d(0, 5px, 0)' },
                 '100%': { opacity: '1', transform: 'scale(1) translate3d(0, 0, 0)' },
               },
               float: {
                 '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
-                '50%': { transform: 'translate3d(0, -25px, 0)' },
+                '50%': { transform: 'translate3d(0, -15px, 0)' },
               },
               marquee: {
                 '0%': { transform: 'translate3d(0, 0, 0)' },
@@ -117,94 +121,64 @@
     </script>
 
     <style>
-      /* MacOS Aesthetic Global Styles */
       html, body {
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: #F2F2F7;
-        color: #1D1D1F;
+        background-color: #F8FAFC;
+        color: #0F172A;
         margin: 0;
         font-family: 'Outfit', sans-serif;
       }
 
-      /* Seamless Theme Transition */
       html {
-        transition: background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease;
+        transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease;
+      }
+
+      .dark body {
+        background-color: #0A0A0B;
+        color: #F1F5F9;
       }
 
       ::selection {
-        background: rgba(0, 122, 255, 0.3);
-        color: white;
+        background: rgba(37, 99, 235, 0.2);
+        color: inherit;
       }
 
-      /* Premium Scrollbar */
       ::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: rgba(120, 120, 120, 0.2);
+        background: rgba(148, 163, 184, 0.3);
         border-radius: 10px;
-        transition: background 0.3s ease;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: rgba(120, 120, 120, 0.4);
+        background: rgba(148, 163, 184, 0.5);
       }
 
-      /* Enhanced Glass Effect */
       .glass {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(24px) saturate(190%);
-        -webkit-backdrop-filter: blur(24px) saturate(190%);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-        will-change: transform, opacity;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
       }
       .dark .glass {
-        background: rgba(18, 18, 18, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       .glass-strong {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(48px) saturate(210%);
-        -webkit-backdrop-filter: blur(48px) saturate(210%);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
         border: 1px solid rgba(255, 255, 255, 0.5);
-        will-change: transform, opacity;
       }
       .dark .glass-strong {
-        background: rgba(25, 25, 25, 0.8);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      /* Subtle Noise */
-      .bg-noise {
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-        pointer-events: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        opacity: 0.4;
-      }
-      
-      .preserve-3d { transform-style: preserve-3d; backface-visibility: hidden; }
-      .perspective-2000 { perspective: 2000px; }
-      .perspective-1000 { perspective: 1000px; }
-
-      .will-change-transform { will-change: transform; }
-
-      /* Optimized animations for drag items */
-      .dragging {
-        opacity: 0.5;
-        scale: 0.95;
-        transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
     </style>
 <script type="importmap">
@@ -220,7 +194,7 @@
 }
 </script>
 </head>
-  <body class="bg-[#F2F2F7] text-[#1D1D1F] dark:bg-[#050505] dark:text-[#F5F5F7] transition-colors duration-700 ease-expo overflow-x-hidden antialiased selection:bg-blue-500/30">
+  <body class="bg-snow text-mac-gray dark:bg-midnight dark:text-[#F1F5F9] transition-colors duration-700 ease-expo overflow-x-hidden antialiased">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
