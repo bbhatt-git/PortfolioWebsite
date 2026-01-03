@@ -57,7 +57,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
   };
 
   return (
-    <section id="contact" className={`${isModal ? 'py-0' : 'py-24'} relative overflow-hidden`}>
+    <section id="contact" className={`${isModal ? 'py-0 w-full flex justify-center' : 'py-24'} relative overflow-hidden`}>
       {/* Ambient Background Glow for Liquid Effect - Hidden in Modal */}
       {!isModal && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -71,7 +71,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
         />
       )}
 
-      <div className={`container mx-auto px-4 max-w-4xl relative z-10 ${isModal ? 'flex justify-center items-center' : ''}`}>
+      <div className={`relative z-10 px-4 ${isModal ? 'w-full flex justify-center items-center' : 'container mx-auto max-w-4xl'}`}>
         
         {!isModal && (
             <Reveal variant="skew-up">
@@ -82,7 +82,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
             </Reveal>
         )}
 
-        <Reveal delay={isModal ? 0 : 200} variant="zoom-in" className={isModal ? 'w-full max-w-2xl' : 'w-full'}>
+        <Reveal delay={isModal ? 0 : 200} variant="zoom-in" className={isModal ? 'w-full max-w-5xl' : 'w-full'}>
           {/* macOS Mail Window - Liquid Glass Style */}
           <div className={`group relative backdrop-blur-3xl bg-white/60 dark:bg-[#1c1c1e]/60 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] border border-white/40 dark:border-white/10 overflow-hidden ring-1 ring-white/20 transition-transform duration-500 ${isModal ? 'md:rounded-2xl rounded-3xl' : 'rounded-2xl hover:scale-[1.005]'}`}>
             
@@ -90,24 +90,24 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none opacity-50"></div>
 
             {/* Title Bar - Visible ONLY on Desktop/Tablet when Modal */}
-            <div className={`bg-white/50 dark:bg-[#2c2c2e]/50 backdrop-blur-md h-10 flex items-center px-4 md:px-5 justify-between border-b border-black/5 dark:border-white/10 relative z-20 ${isModal ? 'hidden md:flex' : 'flex'}`}>
+            <div className={`bg-white/50 dark:bg-[#2c2c2e]/50 backdrop-blur-md h-12 flex items-center px-5 justify-between border-b border-black/5 dark:border-white/10 relative z-20 ${isModal ? 'hidden md:flex' : 'flex'}`}>
                <div className="flex gap-2 group/controls">
                  <div 
                     onClick={onClose} 
-                    className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] shadow-sm cursor-pointer flex items-center justify-center text-[8px] text-black/40 opacity-100 hover:opacity-80 transition-opacity"
+                    className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] border border-[#E0443E] shadow-sm cursor-pointer flex items-center justify-center text-[9px] text-black/40 opacity-100 hover:opacity-80 transition-opacity"
                     title="Close"
                  >
                     <i className="fas fa-times opacity-0 group-hover/controls:opacity-100 transition-opacity"></i>
                  </div>
-                 <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
-                 <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
+                 <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123] shadow-sm"></div>
+                 <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] border border-[#1AAB29] shadow-sm"></div>
                </div>
-               <div className="flex items-center gap-2 opacity-50 absolute left-1/2 -translate-x-1/2">
-                  <i className="fas fa-paper-plane text-xs"></i>
-                  <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">New Message</span>
+               <div className="flex items-center gap-3 opacity-60 absolute left-1/2 -translate-x-1/2">
+                  <i className="fas fa-paper-plane text-sm"></i>
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">New Message</span>
                </div>
-               <div className="w-12 flex justify-end opacity-50">
-                 <i className="fas fa-reply text-xs"></i>
+               <div className="w-12 flex justify-end opacity-40">
+                 <i className="fas fa-reply text-sm"></i>
                </div>
             </div>
 
@@ -129,55 +129,55 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
             <div className="relative z-20">
               <form onSubmit={handleSubmit}>
                 {/* To Field */}
-                <div className="flex flex-col sm:flex-row sm:items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5 gap-2 sm:gap-0">
-                  <span className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16">To:</span>
-                  <div className="px-3 py-1 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 rounded-md text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center gap-2 w-fit">
-                    <span className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] shrink-0">BP</span>
+                <div className="flex flex-col sm:flex-row sm:items-center border-b border-black/5 dark:border-white/5 px-6 md:px-8 py-5 transition-colors hover:bg-white/20 dark:hover:bg-white/5 gap-2 sm:gap-0">
+                  <span className="text-gray-500 dark:text-gray-400 text-sm font-bold w-20 tracking-wide">To:</span>
+                  <div className="px-3 py-1.5 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500/20 rounded-lg text-blue-600 dark:text-blue-400 text-sm font-medium flex items-center gap-2 w-fit">
+                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] shrink-0 font-bold shadow-sm">BP</span>
                     <span className="truncate">hello@bbhatt.com.np</span>
                   </div>
                 </div>
 
                 {/* Name Field */}
-                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
-                  <label htmlFor="Name" className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16 shrink-0">Name:</label>
+                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 md:px-8 py-5 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
+                  <label htmlFor="Name" className="text-gray-500 dark:text-gray-400 text-sm font-bold w-20 shrink-0 tracking-wide">Name:</label>
                   <input 
                     name="Name" 
                     id="Name" 
                     type="text" 
                     required 
                     placeholder="John Doe"
-                    className="flex-1 bg-transparent outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
+                    className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
                   />
                 </div>
 
                 {/* Email Field */}
-                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 py-4 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
-                  <label htmlFor="Email" className="text-gray-500 dark:text-gray-400 text-sm font-medium w-16 shrink-0">Email:</label>
+                <div className="flex items-center border-b border-black/5 dark:border-white/5 px-6 md:px-8 py-5 transition-colors hover:bg-white/20 dark:hover:bg-white/5">
+                  <label htmlFor="Email" className="text-gray-500 dark:text-gray-400 text-sm font-bold w-20 shrink-0 tracking-wide">Email:</label>
                   <input 
                     name="Email" 
                     id="Email" 
                     type="email" 
                     required 
                     placeholder="your.email@example.com"
-                    className="flex-1 bg-transparent outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
+                    className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
                   />
                 </div>
 
                 {/* Message Body */}
-                <div className="p-6">
+                <div className="p-6 md:p-8">
                   <textarea 
                     name="Message" 
                     id="Message" 
-                    rows={isModal ? 6 : 8}
+                    rows={isModal ? 8 : 8}
                     required 
                     placeholder="Hi Bhupesh, I'd like to discuss a potential collaboration..."
-                    className="w-full bg-transparent outline-none text-base text-gray-800 dark:text-gray-200 placeholder-gray-400 resize-none font-sans leading-relaxed"
+                    className="w-full bg-transparent outline-none text-base md:text-lg text-gray-800 dark:text-gray-200 placeholder-gray-400 resize-none font-sans leading-relaxed"
                   ></textarea>
                 </div>
 
                 {/* Toolbar / Send */}
-                <div className="bg-white/30 dark:bg-[#2c2c2e]/30 backdrop-blur-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-t border-black/5 dark:border-white/5 gap-4">
-                  <div className="flex gap-5 text-gray-400 self-start sm:self-auto">
+                <div className="bg-white/30 dark:bg-[#2c2c2e]/30 backdrop-blur-md px-6 md:px-8 py-5 flex flex-col sm:flex-row justify-between items-center border-t border-black/5 dark:border-white/5 gap-4">
+                  <div className="flex gap-6 text-gray-400 self-start sm:self-auto text-lg">
                     <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-font"></i></button>
                     <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-paperclip"></i></button>
                     <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="far fa-image"></i></button>
@@ -186,7 +186,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
                   <button 
                     type="submit" 
                     disabled={status === 'submitting'}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2 font-bold text-sm tracking-wide"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-10 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2.5 font-bold text-sm tracking-wide"
                     title="Send Message"
                   >
                     {status === 'submitting' ? (
@@ -195,7 +195,7 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
                        </>
                     ) : (
                        <>
-                         <i className="fas fa-paper-plane"></i> Send
+                         <i className="fas fa-paper-plane"></i> Send Message
                        </>
                     )}
                   </button>
