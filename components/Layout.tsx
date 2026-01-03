@@ -20,19 +20,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#F2F2F7] dark:bg-[#050505] transition-colors duration-700 ease-expo overflow-hidden">
         
         {/* Layer 1 - Deep / Slow */}
-        <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-normal"></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-normal"></div>
         
         {/* Layer 2 - Mid / Medium */}
-        <div className="absolute top-[10%] right-[-10%] w-[50vw] h-[50vw] bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-normal"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[50vw] h-[50vw] bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-normal"></div>
         
         {/* Layer 3 - Bottom / Fast */}
-        <div className="absolute bottom-[-20%] left-[20%] w-[50vw] h-[50vw] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-normal"></div>
+        <div className="absolute bottom-[-10%] left-[10%] w-[60vw] h-[60vw] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-normal"></div>
         
         {/* Layer 4 - Accent */}
-        <div className="absolute bottom-[30%] right-[30%] w-[25vw] h-[25vw] bg-pink-500/10 dark:bg-pink-600/10 rounded-full blur-[80px] animate-float-slow mix-blend-multiply dark:mix-blend-normal"></div>
+        <div className="absolute bottom-[30%] right-[20%] w-[30vw] h-[30vw] bg-pink-500/10 dark:bg-pink-600/10 rounded-full blur-[90px] animate-float-slow mix-blend-multiply dark:mix-blend-normal"></div>
 
         {/* Noise Overlay */}
-        <div className="absolute inset-0 bg-noise opacity-[0.4] mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-noise opacity-[0.35] mix-blend-overlay"></div>
       </div>
 
       <div className="relative z-10">

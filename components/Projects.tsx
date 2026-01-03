@@ -75,7 +75,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
         <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-black shrink-0 overflow-hidden border-b border-gray-100 dark:border-white/5 group-hover:shadow-inner">
           <img src={project.image} alt={project.title} className="w-full h-full object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-110" />
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-             <span className="px-5 py-2 rounded-full bg-white/20 text-white font-bold text-sm backdrop-blur-md border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">View Case Study</span>
+             <span className="px-5 py-2 rounded-full bg-white/20 text-white font-bold text-sm backdrop-blur-md border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">View Project</span>
           </div>
         </div>
 
@@ -193,53 +193,55 @@ const Projects: React.FC = () => {
            </div>
 
            {/* Hero Image Section */}
-           <div className="w-full h-[50vh] md:h-[65vh] relative overflow-hidden">
+           <div className="w-full h-[50vh] md:h-[65vh] relative overflow-hidden group">
                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F2F2F7] dark:to-[#050505] z-10"></div>
                <img 
                  src={selectedProject.image} 
                  alt={selectedProject.title} 
-                 className="w-full h-full object-cover object-top" 
+                 className="w-full h-full object-cover object-top transition-transform duration-[2s] ease-out-expo scale-105" 
                />
            </div>
 
            {/* Content Container */}
-           <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-20 md:-mt-32 pb-32">
+           <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-24 md:-mt-48 pb-32">
                <div className="max-w-4xl mx-auto">
                    
                    {/* Title Card */}
-                   <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up">
-                       <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight">{selectedProject.title}</h1>
-                       <div className="flex flex-wrap gap-2 mb-8">
+                   <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/20 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
+                       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                       
+                       <h1 className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-6 leading-tight relative z-10">{selectedProject.title}</h1>
+                       <div className="flex flex-wrap gap-2 mb-8 relative z-10">
                           {selectedProject.stack.split('•').map((tech, i) => (
-                             <span key={i} className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-200 text-xs font-bold uppercase tracking-wider">
+                             <span key={i} className="px-4 py-2 rounded-xl bg-white/50 dark:bg-white/10 border border-white/20 text-gray-700 dark:text-gray-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
                                 {tech.trim()}
                              </span>
                           ))}
                        </div>
-                       <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-light">
+                       <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-light relative z-10">
                           {selectedProject.desc}
                        </p>
                    </div>
 
                    {/* Grid Layout for Details */}
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-blue-500">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform duration-300">
                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i className="fas fa-mountain"></i></span>
+                              <span className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-lg"><i className="fas fa-mountain"></i></span>
                               The Challenge
                            </h3>
                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                              Creating a seamless user experience while managing complex data states was the primary challenge. We needed to ensure performance wasn't compromised on mobile devices.
+                              {selectedProject.caseStudy?.challenge || "Navigating complex user requirements while maintaining a clean, intuitive interface was the primary hurdle. Performance optimization on low-end devices was also critical."}
                            </p>
                        </div>
 
-                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-green-500">
+                       <div className="glass rounded-[2rem] p-8 md:p-10 border-t-4 border-t-green-500 hover:-translate-y-1 transition-transform duration-300">
                            <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                              <span className="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center text-lg"><i className="fas fa-lightbulb"></i></span>
+                              <span className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center text-lg"><i className="fas fa-lightbulb"></i></span>
                               The Solution
                            </h3>
                            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                              Implemented a custom caching layer and utilized Next.js server-side rendering to optimize load times. The UI was built with a mobile-first approach using Tailwind CSS.
+                              {selectedProject.caseStudy?.solution || "We implemented a modular architecture using modern frameworks. Advanced caching strategies and server-side rendering were utilized to ensure lightning-fast load times."}
                            </p>
                        </div>
                    </div>
@@ -247,13 +249,13 @@ const Projects: React.FC = () => {
                    {/* Links Section */}
                    <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
                        {selectedProject.liveUrl && (
-                          <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-lg shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1">
-                             <i className="fas fa-external-link-alt mr-2"></i> Live Preview
+                          <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-center text-lg shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                             <i className="fas fa-external-link-alt"></i> Live Preview
                           </a>
                        )}
                        {selectedProject.codeUrl && (
-                          <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-white dark:bg-white/10 text-black dark:text-white border border-gray-200 dark:border-white/10 font-bold text-center text-lg hover:bg-gray-50 dark:hover:bg-white/20 transition-all hover:-translate-y-1">
-                             <i className="fab fa-github mr-2"></i> View Code
+                          <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-5 rounded-2xl bg-white dark:bg-white/10 text-black dark:text-white border border-gray-200 dark:border-white/10 font-bold text-center text-lg hover:bg-gray-50 dark:hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                             <i className="fab fa-github"></i> View Code
                           </a>
                        )}
                    </div>

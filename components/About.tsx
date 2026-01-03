@@ -4,43 +4,41 @@ import { STATS } from '../constants';
 
 const About: React.FC = () => {
   
-  // Categorized Tech Stack with mock percentages for the "Arsenal" visual
   const frontendStack = [
-    { name: "React/Next.js", level: 95, icon: "fab fa-react" },
-    { name: "TypeScript", level: 90, icon: "fab fa-js" },
-    { name: "Tailwind CSS", level: 92, icon: "fab fa-css3-alt" },
-    { name: "Three.js", level: 75, icon: "fas fa-cube" },
+    { name: "React", icon: "fab fa-react", color: "text-blue-400" },
+    { name: "Next.js", icon: "fas fa-layer-group", color: "text-black dark:text-white" },
+    { name: "Tailwind CSS", icon: "fas fa-wind", color: "text-cyan-400" },
+    { name: "Bootstrap", icon: "fab fa-bootstrap", color: "text-purple-600" },
+    { name: "HTML", icon: "fab fa-html5", color: "text-orange-500" },
+    { name: "CSS", icon: "fab fa-css3-alt", color: "text-blue-500" },
+    { name: "JavaScript", icon: "fab fa-js", color: "text-yellow-400" },
+    { name: "Flutter", icon: "fas fa-mobile-alt", color: "text-blue-400" },
   ];
 
   const backendStack = [
-    { name: "Node.js", level: 88, icon: "fab fa-node" },
-    { name: "Python", level: 85, icon: "fab fa-python" },
-    { name: "PostgreSQL", level: 82, icon: "fas fa-database" },
-    { name: "MongoDB", level: 80, icon: "fas fa-leaf" },
+    { name: "Node JS", icon: "fab fa-node", color: "text-green-500" },
+    { name: "Python", icon: "fab fa-python", color: "text-yellow-300" },
+    { name: "PHP", icon: "fab fa-php", color: "text-indigo-400" },
+    { name: "C", icon: "fas fa-code", color: "text-blue-500" },
+    { name: "MySQL", icon: "fas fa-database", color: "text-orange-400" },
+    { name: "Firebase", icon: "fas fa-fire", color: "text-yellow-500" },
   ];
 
   const toolsStack = [
-    { name: "AI/ML Integration", level: 78, icon: "fas fa-brain" },
-    { name: "Blockchain/Web3", level: 70, icon: "fas fa-link" },
-    { name: "Cloud Platforms", level: 85, icon: "fas fa-cloud" },
-    { name: "DevOps", level: 75, icon: "fas fa-tools" },
+    { name: "Figma", icon: "fab fa-figma", color: "text-pink-500" },
+    { name: "Adobe Photoshop", icon: "fas fa-image", color: "text-blue-700" },
+    { name: "Wordpress", icon: "fab fa-wordpress", color: "text-blue-600" },
+    { name: "AI/ML", icon: "fas fa-brain", color: "text-purple-500" },
   ];
 
-  const renderSkillBar = (skill: { name: string; level: number; icon: string }, colorClass: string) => (
-    <div key={skill.name} className="mb-5 group">
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center gap-2.5">
-           <i className={`${skill.icon} text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors`}></i>
-           <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{skill.name}</span>
-        </div>
-        <span className="text-xs font-mono text-gray-400">{skill.level}%</span>
-      </div>
-      <div className="h-2 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
-        <div 
-          className={`h-full rounded-full transition-all duration-1000 ease-out-expo group-hover:brightness-110 ${colorClass}`}
-          style={{ width: `${skill.level}%` }}
-        ></div>
-      </div>
+  const renderTechPills = (techs: typeof frontendStack) => (
+    <div className="flex flex-wrap gap-2.5">
+       {techs.map((tech, i) => (
+         <div key={i} className="group flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/5 hover:bg-white/70 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 cursor-default shadow-sm">
+             <i className={`${tech.icon} ${tech.color} text-base group-hover:scale-110 transition-transform`}></i>
+             <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{tech.name}</span>
+         </div>
+       ))}
     </div>
   );
 
@@ -57,7 +55,7 @@ const About: React.FC = () => {
         </Reveal>
 
         {/* Top Row: Bio + Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           {/* Biography */}
           <Reveal className="lg:col-span-2 h-full">
             <div className="h-full glass-strong rounded-[2rem] p-8 md:p-10 relative overflow-hidden group flex flex-col justify-center">
@@ -121,49 +119,49 @@ const About: React.FC = () => {
 
         {/* Technical Arsenal Section */}
         <Reveal delay={300}>
-            <div className="text-center mb-10 mt-16">
-                <h3 className="text-3xl font-bold mb-2">My Technical Arsenal</h3>
+            <div className="text-center mb-10">
+                <h3 className="text-3xl font-bold mb-3 tracking-tight">My Technical Arsenal</h3>
                 <p className="text-gray-500 dark:text-gray-400">A comprehensive toolkit of modern technologies.</p>
             </div>
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* Frontend Card */}
+            {/* Frontend & Mobile */}
             <Reveal delay={400} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-300">
-                    <h4 className="text-xl font-bold mb-8 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                            <i className="fas fa-code"></i>
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
+                            <i className="fas fa-laptop-code"></i>
                         </span>
-                        Frontend
+                        Frontend & Mobile
                     </h4>
-                    {frontendStack.map(skill => renderSkillBar(skill, 'bg-blue-600'))}
+                    {renderTechPills(frontendStack)}
                 </div>
             </Reveal>
 
-            {/* Backend Card */}
+            {/* Backend & DB */}
             <Reveal delay={500} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-300">
-                    <h4 className="text-xl font-bold mb-8 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm">
                             <i className="fas fa-server"></i>
                         </span>
-                        Backend
+                        Backend & Data
                     </h4>
-                    {backendStack.map(skill => renderSkillBar(skill, 'bg-green-600'))}
+                    {renderTechPills(backendStack)}
                 </div>
             </Reveal>
 
-            {/* Modern Tech Card */}
+            {/* Design & Tools */}
             <Reveal delay={600} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-300">
-                    <h4 className="text-xl font-bold mb-8 flex items-center gap-3">
-                        <span className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                            <i className="fas fa-rocket"></i>
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+                        <span className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-sm">
+                            <i className="fas fa-layer-group"></i>
                         </span>
-                        Modern Tech
+                        Design & Tools
                     </h4>
-                    {toolsStack.map(skill => renderSkillBar(skill, 'bg-purple-600'))}
+                    {renderTechPills(toolsStack)}
                 </div>
             </Reveal>
         </div>

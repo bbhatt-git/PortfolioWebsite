@@ -23,7 +23,7 @@ export default {
         'out-circ': 'cubic-bezier(0.075, 0.82, 0.165, 1)',
       },
       animation: {
-        'blob': 'blob 20s infinite alternate cubic-bezier(0.45, 0, 0.55, 1)',
+        'blob': 'blob 25s infinite alternate cubic-bezier(0.45, 0, 0.55, 1)',
         'fade-up': 'fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -41,7 +41,7 @@ export default {
           '100%': { transform: 'translate3d(0, 0, 0) scale(1) rotate(0deg)' },
         },
         fadeUp: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 30px, 0)' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 40px, 0)' },
           '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
         },
         scaleIn: {
