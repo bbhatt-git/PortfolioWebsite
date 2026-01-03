@@ -20,8 +20,8 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '', va
         }
       },
       { 
-        threshold: 0.05, 
-        rootMargin: "0px 0px -20px 0px" 
+        threshold: 0.1, 
+        rootMargin: "0px 0px -50px 0px" 
       }
     );
 
@@ -36,17 +36,16 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '', va
     transitionDelay: `${delay}ms`,
   };
 
-  // 3D fold-up animation classes - softened for fluid feel
   const hiddenState = variant === '3d' 
-    ? 'opacity-0 translate-y-10 scale-[0.98] rotate-x-6' 
-    : 'opacity-0 translate-y-6';
+    ? 'opacity-0 translate-y-12 scale-95 rotate-x-12' 
+    : 'opacity-0 translate-y-8';
     
   const visibleState = 'opacity-100 translate-y-0 scale-100 rotate-x-0';
 
   return (
     <div
       ref={ref}
-      className={`transform-gpu transition-all duration-[1200ms] ease-expo perspective-1000 will-change-[transform,opacity] ${
+      className={`transform-gpu transition-all duration-1000 ease-out-expo perspective-1000 ${
         isVisible ? visibleState : hiddenState
       } ${className}`}
       style={style}
