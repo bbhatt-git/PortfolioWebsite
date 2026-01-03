@@ -18,8 +18,9 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     projects: () => 'Initiating warp drive to Projects Section...',
     contact: () => 'Transmission: hello@bbhatt.com.np | Signal: +977 9761184935',
     admin: () => {
-       // Hidden Admin Command
-       window.location.hash = "#/admin";
+       // Hidden Admin Command - Navigating to /admin path
+       window.history.pushState({}, '', '/admin');
+       window.dispatchEvent(new Event('pushstate'));
        onClose();
        return 'AUTHENTICATING ADMIN PROTOCOL...';
     },

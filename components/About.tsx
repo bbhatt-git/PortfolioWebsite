@@ -25,7 +25,7 @@ const About: React.FC = () => {
   ];
 
   const backendStack: TechItem[] = [
-    { name: "Node JS", icon: "fab fa-node", color: "text-green-500", desc: "JavaScript runtime built on Chrome's V8 JavaScript engine, perfect for building scalable network applications." },
+    { name: "Node JS", icon: "fab fa-node", color: "text-green-500", desc: "JavaScript runtime built on Chrome's v8 JavaScript engine, perfect for building scalable network applications." },
     { name: "Python", icon: "fab fa-python", color: "text-yellow-300", desc: "A high-level programming language known for its readability and massive ecosystem of libraries." },
     { name: "PHP", icon: "fab fa-php", color: "text-indigo-400", desc: "A popular general-purpose scripting language that is especially suited to web development." },
     { name: "MySQL", icon: "fas fa-database", color: "text-orange-400", desc: "An open-source relational database management system, reliable and widely used." },
@@ -50,6 +50,11 @@ const About: React.FC = () => {
   const closeModal = () => {
     setSelectedTech(null);
     document.body.style.overflow = 'auto';
+  };
+
+  const navigateToCV = () => {
+    window.history.pushState({}, '', '/cv');
+    window.dispatchEvent(new Event('pushstate'));
   };
 
   const renderTechPills = (techs: TechItem[]) => (
@@ -113,7 +118,7 @@ const About: React.FC = () => {
                           Open for new opportunities
                       </div>
                       <button 
-                         onClick={() => window.location.hash = '#/cv'}
+                         onClick={navigateToCV}
                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-80 transition-opacity"
                       >
                          <i className="fas fa-file-alt"></i> View CV

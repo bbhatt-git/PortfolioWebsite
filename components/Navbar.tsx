@@ -35,6 +35,9 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     
+    // Close mobile menu immediately
+    setIsMobileMenuOpen(false);
+    
     // Check if we are on a project page or other sub-route
     if (window.location.pathname !== '/') {
         window.history.pushState({}, '', '/');
@@ -66,8 +69,6 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             window.history.pushState(null, "", href);
         }
     }
-    
-    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -77,6 +78,10 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
     { name: 'Work', href: '#work' },
     { name: 'Contact', href: '#contact' },
   ];
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -217,11 +222,11 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
         </ul>
 
         <div className={`mt-12 flex gap-6 transform transition-all duration-500 delay-500 ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-           <a href="https://github.com/bbhatt-git" target="_blank" className="text-2xl text-gray-500 hover:text-black dark:hover:text-white"><i className="fab fa-github"></i></a>
-           <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="text-2xl text-gray-500 hover:text-[#0077b5]"><i className="fab fa-linkedin"></i></a>
-           <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" className="text-2xl text-gray-500 hover:text-blue-600"><i className="fab fa-facebook"></i></a>
-           <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" className="text-2xl text-gray-500 hover:text-pink-500"><i className="fab fa-instagram"></i></a>
-           <a href="mailto:hello@bbhatt.com.np" className="text-2xl text-gray-500 hover:text-blue-500"><i className="fas fa-envelope"></i></a>
+           <a href="https://github.com/bbhatt-git" target="_blank" onClick={closeMobileMenu} className="text-2xl text-gray-500 hover:text-black dark:hover:text-white transition-all"><i className="fab fa-github"></i></a>
+           <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" onClick={closeMobileMenu} className="text-2xl text-gray-500 hover:text-[#0077b5] transition-all"><i className="fab fa-linkedin"></i></a>
+           <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" onClick={closeMobileMenu} className="text-2xl text-gray-500 hover:text-blue-600 transition-all"><i className="fab fa-facebook"></i></a>
+           <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" onClick={closeMobileMenu} className="text-2xl text-gray-500 hover:text-pink-500 transition-all"><i className="fab fa-instagram"></i></a>
+           <a href="mailto:hello@bbhatt.com.np" onClick={closeMobileMenu} className="text-2xl text-gray-500 hover:text-blue-500 transition-all"><i className="fas fa-envelope"></i></a>
         </div>
       </div>
     </>
