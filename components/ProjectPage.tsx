@@ -255,9 +255,7 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-ultra leading-[0.9] drop-shadow-2xl">
                                 {project.title}
                             </h1>
-                            <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-medium max-w-2xl drop-shadow-md">
-                                {project.desc}
-                            </p>
+                            {/* Removed Description from Overlay */}
                         </div>
                     </Reveal>
                 </div>
@@ -265,8 +263,17 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
         </header>
 
         {/* PAGE CONTENT - Starts clearly AFTER the hero image */}
-        <div className="relative z-20 bg-[#F2F2F7] dark:bg-[#050505] pt-16 md:pt-24 border-t border-white/10">
+        <div className="relative z-20 bg-[#F2F2F7] dark:bg-[#050505] pt-12 md:pt-20 border-t border-white/10">
             
+            {/* NEW: Description Section in Main Content Area */}
+            <div className="container mx-auto px-6 mb-16">
+                <Reveal variant="fade" triggerOnMount delay={100}>
+                    <p className="text-xl md:text-3xl text-gray-700 dark:text-gray-200 leading-relaxed font-medium max-w-4xl">
+                        {project.desc}
+                    </p>
+                </Reveal>
+            </div>
+
             {/* QUICK ACTIONS BUTTONS */}
             <div className="container mx-auto px-6 mb-24">
                 <Reveal variant="zoom-in" triggerOnMount delay={200}>
