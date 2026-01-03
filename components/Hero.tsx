@@ -57,15 +57,25 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, typingSpeed]);
 
-  // Parallax Tilt Logic - Ultra-fast response for zero-lag feel
+  // Parallax Tilt Logic - Improved Calculation
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 35; 
-    const y = (e.clientY - top - height / 2) / 35;
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
 
-    setRotate({ x: -y, y: x });
+    // Calculate rotation based on distance from center
+    // Max rotation deg
+    const maxRotation = 15;
+    
+    const rotateX = ((mouseY - centerY) / (height / 2)) * -maxRotation; // Inverted for natural feel
+    const rotateY = ((mouseX - centerX) / (width / 2)) * maxRotation;
+
+    setRotate({ x: rotateX, y: rotateY });
   };
 
   const handleMouseLeave = () => {
@@ -81,9 +91,9 @@ const Hero: React.FC = () => {
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden perspective-2000 px-4"
     >
       
-      {/* 3D Scene Wrapper - Reduced duration and sharpened easing for ultra-snappy feel */}
+      {/* 3D Scene Wrapper - Smoother transition */}
       <div 
-        className="relative preserve-3d transition-transform duration-150 ease-[cubic-bezier(0.03,0.98,0.52,0.99)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
+        className="relative preserve-3d transition-transform duration-100 ease-out w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full will-change-transform"
         style={{ 
           transform: isMobile ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
         }}
@@ -101,25 +111,25 @@ const Hero: React.FC = () => {
             ></div>
 
             {/* FLOATING TECH ICONS */}
-            <div className="absolute top-[5%] left-[5%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(150px)' }}>
+            <div className="absolute top-[5%] left-[5%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(80px)' }}>
                 <div className="w-16 h-16 glass-strong rounded-2xl flex items-center justify-center shadow-2xl border border-white/30 ring-1 ring-white/10">
                     <i className="fab fa-react text-4xl text-[#61DAFB] animate-spin-slow"></i>
                 </div>
             </div>
 
-            <div className="absolute top-[15%] right-[5%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(180px)' }}>
+            <div className="absolute top-[15%] right-[5%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(100px)' }}>
                 <div className="w-14 h-14 glass-strong rounded-xl flex items-center justify-center shadow-xl border border-white/20 ring-1 ring-white/10 bg-blue-500/5">
                     <span className="font-bold text-blue-600 dark:text-blue-400 text-xl">TS</span>
                 </div>
             </div>
 
-            <div className="absolute bottom-[20%] left-[8%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(200px)' }}>
+            <div className="absolute bottom-[20%] left-[8%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(120px)' }}>
                 <div className="w-20 h-20 glass-strong rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-white/20 ring-1 ring-white/10 bg-green-500/5 animate-liquid">
                      <i className="fab fa-node-js text-4xl text-green-500"></i>
                 </div>
             </div>
             
-            <div className="absolute bottom-[10%] right-[10%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(160px)' }}>
+            <div className="absolute bottom-[10%] right-[10%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(90px)' }}>
                 <div className="w-16 h-16 glass-strong rounded-full flex items-center justify-center shadow-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/20 ring-1 ring-white/10">
                      <i className="fas fa-code text-2xl text-blue-500 drop-shadow-md"></i>
                 </div>
@@ -127,10 +137,10 @@ const Hero: React.FC = () => {
         </div>
 
         {/* Content Section */}
-        <div className="relative z-10 flex flex-col items-center gap-4 md:gap-6">
+        <div className="relative z-10 flex flex-col items-center gap-4 md:gap-6 preserve-3d">
           
           <Reveal triggerOnMount>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-105 transition-transform cursor-default">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-105 transition-transform cursor-default" style={{ transform: 'translateZ(50px)' }}>
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
@@ -139,7 +149,7 @@ const Hero: React.FC = () => {
             </div>
           </Reveal>
           
-          <div style={{ transform: 'translateZ(100px)' }} className="px-4">
+          <div style={{ transform: 'translateZ(60px)' }} className="px-4 preserve-3d">
             <Reveal delay={100} triggerOnMount>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
                 Hello, I'm
@@ -150,7 +160,7 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(60px)' }} className="h-8 flex items-center justify-center">
+          <div style={{ transform: 'translateZ(40px)' }} className="h-8 flex items-center justify-center preserve-3d">
              <Reveal delay={200} triggerOnMount>
                <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl border border-white/30 shadow-md ring-1 ring-white/10 hover:border-blue-500/30 transition-colors">
                   <span className="text-blue-600 font-bold mr-2">~</span>
@@ -161,7 +171,7 @@ const Hero: React.FC = () => {
              </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(40px)' }} className="max-w-2xl mx-auto px-6">
+          <div style={{ transform: 'translateZ(30px)' }} className="max-w-2xl mx-auto px-6 preserve-3d">
             <Reveal delay={300} triggerOnMount>
               <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
                  Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">accessible architectures</span> with aesthetic precision. 
@@ -170,7 +180,7 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(120px)' }} className="mt-4 md:mt-6">
+          <div style={{ transform: 'translateZ(70px)' }} className="mt-4 md:mt-6 preserve-3d">
             <Reveal delay={400} triggerOnMount>
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                 

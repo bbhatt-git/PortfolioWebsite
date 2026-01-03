@@ -347,8 +347,6 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
               </div>
             </section>
 
-            {/* NARRATIVE SECTION REMOVED */}
-
             {/* CALL TO ACTION */}
             <section className="py-32 md:py-48 text-center relative overflow-hidden">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] animate-liquid pointer-events-none"></div>
@@ -380,33 +378,30 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
 
         {/* ENHANCED SHARE MODAL */}
         {isShareOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xl p-4 animate-scale-in" onClick={() => setIsShareOpen(false)}>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-scale-in" onClick={() => setIsShareOpen(false)}>
               <div 
-                 className="w-full max-w-md bg-white/90 dark:bg-[#161618]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/40 dark:border-white/10 overflow-hidden relative"
+                 className="w-full max-w-lg bg-white dark:bg-[#111] rounded-[2rem] shadow-2xl overflow-hidden relative"
                  onClick={e => e.stopPropagation()}
               >
-                  {/* Decorative Elements inside Modal */}
-                  <div className="absolute -top-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-[60px] pointer-events-none"></div>
-                  <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-[60px] pointer-events-none"></div>
+                  {/* Close Button - Highly Visible */}
+                  <button 
+                    onClick={() => setIsShareOpen(false)} 
+                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-500 dark:hover:bg-white/20 transition-all z-20"
+                  >
+                      <i className="fas fa-times text-lg"></i>
+                  </button>
 
-                  <div className="p-8 text-center border-b border-black/5 dark:border-white/5 relative z-10">
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Share Project</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">Spread the word across your network</p>
-                      
-                      <button 
-                        onClick={() => setIsShareOpen(false)} 
-                        className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:bg-black/10 dark:hover:bg-white/20 transition-colors"
-                      >
-                          <i className="fas fa-times text-sm"></i>
-                      </button>
+                  <div className="p-8 pb-4">
+                      <h3 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight text-center mb-2">Share This Project</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center font-medium">Spread the innovation to your network</p>
                   </div>
                   
-                  <div className="p-8 grid grid-cols-3 gap-6 relative z-10">
+                  <div className="p-8 grid grid-cols-3 sm:grid-cols-3 gap-6">
                       <button onClick={handleCopyLink} className="flex flex-col items-center gap-3 group">
-                          <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm group-hover:bg-gray-100 dark:group-hover:bg-white/10">
+                          <div className="w-20 h-20 rounded-2xl bg-gray-50 dark:bg-[#1A1A1A] border-2 border-transparent group-hover:border-blue-500/30 flex items-center justify-center text-2xl text-gray-700 dark:text-gray-200 group-hover:scale-105 transition-all shadow-sm group-hover:bg-white dark:group-hover:bg-[#222]">
                               <i className="fas fa-link"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Copy Link</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">Copy Link</span>
                       </button>
                       
                       <a 
@@ -415,10 +410,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-16 h-16 rounded-2xl bg-black dark:bg-white flex items-center justify-center text-xl text-white dark:text-black group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg">
+                          <div className="w-20 h-20 rounded-2xl bg-black dark:bg-white flex items-center justify-center text-2xl text-white dark:text-black group-hover:scale-105 transition-all shadow-lg shadow-black/20 dark:shadow-white/20">
                               <i className="fab fa-x-twitter"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">X</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">X</span>
                       </a>
 
                       <a 
@@ -427,10 +422,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-16 h-16 rounded-2xl bg-[#0077b5] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-blue-500/30">
+                          <div className="w-20 h-20 rounded-2xl bg-[#0077b5] flex items-center justify-center text-2xl text-white group-hover:scale-105 transition-all shadow-lg shadow-blue-500/30">
                               <i className="fab fa-linkedin-in"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">LinkedIn</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">LinkedIn</span>
                       </a>
 
                        <a 
@@ -439,10 +434,10 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-16 h-16 rounded-2xl bg-[#1877F2] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-blue-500/30">
+                          <div className="w-20 h-20 rounded-2xl bg-[#1877F2] flex items-center justify-center text-2xl text-white group-hover:scale-105 transition-all shadow-lg shadow-blue-500/30">
                               <i className="fab fa-facebook-f"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">Facebook</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">Facebook</span>
                       </a>
 
                       <a 
@@ -451,18 +446,18 @@ const ProjectPage: React.FC<{ slug: string }> = ({ slug }) => {
                           rel="noopener noreferrer" 
                           className="flex flex-col items-center gap-3 group"
                       >
-                          <div className="w-16 h-16 rounded-2xl bg-[#25D366] flex items-center justify-center text-xl text-white group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-lg group-hover:shadow-green-500/30">
+                          <div className="w-20 h-20 rounded-2xl bg-[#25D366] flex items-center justify-center text-2xl text-white group-hover:scale-105 transition-all shadow-lg shadow-green-500/30">
                               <i className="fab fa-whatsapp"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">WhatsApp</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">WhatsApp</span>
                       </a>
 
                       {/* Native Share Button */}
                       <button onClick={handleNativeShare} className="flex flex-col items-center gap-3 group">
-                          <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 flex items-center justify-center text-xl text-gray-700 dark:text-gray-200 group-hover:scale-110 transition-transform shadow-sm group-hover:bg-gray-100 dark:group-hover:bg-white/10">
+                          <div className="w-20 h-20 rounded-2xl bg-gray-50 dark:bg-[#1A1A1A] border-2 border-transparent group-hover:border-gray-500/30 flex items-center justify-center text-2xl text-gray-700 dark:text-gray-200 group-hover:scale-105 transition-all shadow-sm group-hover:bg-white dark:group-hover:bg-[#222]">
                               <i className="fas fa-ellipsis-h"></i>
                           </div>
-                          <span className="text-xs font-bold text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">More</span>
+                          <span className="text-xs font-bold text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors">More</span>
                       </button>
                   </div>
               </div>
