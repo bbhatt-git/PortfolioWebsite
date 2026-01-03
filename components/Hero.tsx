@@ -91,6 +91,15 @@ const Hero: React.FC = () => {
         
         {/* Floating 3D Elements */}
         <div className="absolute inset-0 pointer-events-none preserve-3d">
+            {/* HERO BLOB: Deep 3D Background Blob that moves with the tilt */}
+            <div 
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[100px] opacity-20 dark:opacity-10 mix-blend-screen pointer-events-none"
+                style={{ 
+                    transform: 'translateZ(-60px)',
+                    background: 'radial-gradient(circle, rgba(59,130,246,0.6) 0%, rgba(147,51,234,0.4) 50%, transparent 70%)' 
+                }}
+            ></div>
+
             {/* React Icon */}
             <div className="absolute top-[10%] left-[10%] animate-float-slow" style={{ transform: 'translateZ(60px)' }}>
                 <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center shadow-2xl opacity-80 backdrop-blur-xl border border-white/30">
