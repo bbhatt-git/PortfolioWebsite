@@ -20,13 +20,17 @@ const Services: React.FC = () => {
     <section id="services" className="py-24 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[128px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-full h-[500px] bg-gradient-to-t from-white/80 via-transparent to-transparent dark:from-black/80 pointer-events-none z-0"></div>
 
       <div className="container mx-auto px-6 relative z-10">
         <Reveal variant="skew-up">
-          <div className="mb-16 md:mb-20 text-center max-w-3xl mx-auto">
+          <div className="mb-16 md:mb-24 text-center max-w-3xl mx-auto">
+             <div className="inline-block px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
+                My Expertise
+             </div>
              <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                 Services.
+                 World-Class Services.
                </span>
              </h2>
              <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -35,41 +39,44 @@ const Services: React.FC = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {SERVICES.map((service, index) => (
             <Reveal key={index} delay={index * 100} variant="zoom-in" className="h-full">
                 <div 
                   onClick={() => openModal(service)}
-                  className="group relative h-full rounded-[2.5rem] transition-all duration-500 hover:-translate-y-3 hover:cursor-pointer"
+                  className="group relative h-full rounded-[2.5rem] cursor-pointer"
                 >
-                    {/* Liquid Border/Glow Effect */}
-                    <div className="absolute -inset-[1px] bg-gradient-to-b from-white/40 to-transparent dark:from-white/10 rounded-[2.5rem] opacity-100 group-hover:opacity-0 transition-opacity duration-500"></div>
-                    <div className="absolute -inset-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-500"></div>
+                    {/* Hover Glow Gradient */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-[2.5rem] opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 will-change-[opacity]"></div>
                     
-                    {/* Main Card */}
-                    <div className="relative h-full bg-white/60 dark:bg-[#121212]/60 backdrop-blur-3xl rounded-[2.4rem] p-8 md:p-10 border border-white/20 dark:border-white/5 overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-500">
-                        {/* Hover Liquid Blob */}
-                        <div className="absolute -right-20 -top-20 w-60 h-60 bg-blue-500/20 rounded-full blur-[80px] group-hover:scale-150 transition-transform duration-700 ease-out-expo pointer-events-none"></div>
+                    {/* Card Content */}
+                    <div className="relative h-full bg-white/70 dark:bg-[#121212]/70 backdrop-blur-2xl rounded-[2.4rem] p-8 md:p-10 border border-white/40 dark:border-white/10 overflow-hidden shadow-xl transition-transform duration-500 group-hover:-translate-y-1">
                         
-                        {/* Icon */}
-                        <div className="relative w-16 h-16 mb-8 group-hover:scale-110 transition-transform duration-500">
-                            <div className="absolute inset-0 bg-blue-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-                            <div className="relative w-full h-full bg-white/80 dark:bg-white/10 backdrop-blur-md rounded-2xl border border-white/40 dark:border-white/10 flex items-center justify-center text-2xl shadow-lg">
-                                <i className={`fas ${service.icon} text-gray-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-br group-hover:from-blue-600 group-hover:to-purple-600 transition-all`}></i>
+                        {/* Noise Texture */}
+                        <div className="absolute inset-0 bg-noise opacity-10 mix-blend-overlay"></div>
+                        
+                        {/* Inner Light Reflection (Top Left) */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 opacity-50 pointer-events-none rounded-[2.4rem]"></div>
+
+                        {/* Animated Icon Container */}
+                        <div className="relative w-16 h-16 mb-8 group-hover:scale-110 transition-transform duration-500 ease-out-expo">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                            <div className="relative w-full h-full bg-white/80 dark:bg-[#1E1E20] backdrop-blur-md rounded-2xl border border-white/60 dark:border-white/10 flex items-center justify-center text-2xl shadow-lg ring-1 ring-white/20">
+                                <i className={`fas ${service.icon} text-gray-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-br group-hover:from-blue-500 group-hover:to-purple-500 transition-all`}></i>
                             </div>
                         </div>
 
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{service.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm mb-6 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
+                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 relative z-10">{service.title}</h3>
+                        
+                        <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm mb-8 relative z-10">
                             {service.desc}
                         </p>
                         
-                        <div className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 mt-auto">
-                           <span className="relative">
-                             View Details
-                             <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-blue-600 dark:bg-blue-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-                           </span>
-                           <i className="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform duration-300"></i>
+                        <div className="flex items-center justify-between mt-auto relative z-10 pt-6 border-t border-black/5 dark:border-white/5">
+                           <span className="text-xs font-bold uppercase tracking-wider text-gray-400 group-hover:text-blue-500 transition-colors">Know More</span>
+                           <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 group-hover:scale-110">
+                               <i className="fas fa-arrow-right text-xs transform group-hover:-rotate-45 transition-transform duration-300"></i>
+                           </div>
                         </div>
                     </div>
                 </div>
@@ -82,40 +89,46 @@ const Services: React.FC = () => {
       {selectedService && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-scale-in" onClick={closeModal}>
            <div 
-             className="w-full max-w-2xl bg-white/90 dark:bg-[#161618]/90 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
+             className="w-full max-w-2xl bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
              onClick={e => e.stopPropagation()}
            >
               {/* Header Decoration */}
-              <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-blue-600/20 to-purple-600/20 pointer-events-none"></div>
-              <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-blue-500/30 rounded-full blur-[60px]"></div>
+              <div className="absolute top-0 left-0 w-full h-40 bg-gradient-to-br from-blue-600/20 to-purple-600/20 pointer-events-none"></div>
+              <div className="absolute top-[-50px] right-[-50px] w-60 h-60 bg-blue-500/20 rounded-full blur-[80px]"></div>
 
               {/* Close Button */}
               <button 
                 onClick={closeModal}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/20 transition-colors z-20 text-black dark:text-white"
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white dark:hover:bg-red-500 transition-colors z-20 text-black dark:text-white"
               >
                 <i className="fas fa-times"></i>
               </button>
 
-              <div className="p-8 md:p-10 relative z-10">
+              <div className="p-8 md:p-12 relative z-10">
                  {/* Icon */}
-                 <div className="w-20 h-20 rounded-3xl bg-white dark:bg-white/10 shadow-xl flex items-center justify-center text-3xl md:text-4xl text-blue-600 dark:text-blue-400 mb-6 border border-white/40 dark:border-white/10">
+                 <div className="w-20 h-20 rounded-3xl bg-white dark:bg-[#252528] shadow-2xl flex items-center justify-center text-3xl md:text-4xl text-blue-600 dark:text-blue-400 mb-8 border border-white/40 dark:border-white/10 ring-4 ring-white/20 dark:ring-black/20">
                     <i className={`fas ${selectedService.icon}`}></i>
                  </div>
 
-                 <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{selectedService.title}</h3>
+                 <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">{selectedService.title}</h3>
                  
-                 <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8 font-light">
-                   {selectedService.details || selectedService.desc}
-                 </p>
+                 <div className="bg-white/50 dark:bg-black/20 p-6 rounded-2xl border border-black/5 dark:border-white/5 mb-8">
+                     <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed font-light">
+                        {selectedService.details || selectedService.desc}
+                     </p>
+                 </div>
 
                  {selectedService.features && (
                    <div className="mb-10">
-                      <h4 className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Key Features</h4>
-                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-5 flex items-center gap-2">
+                        <span className="w-8 h-[1px] bg-gray-300 dark:bg-gray-700"></span> What's Included
+                      </h4>
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedService.features.map((feature, idx) => (
-                           <li key={idx} className="flex items-center gap-3 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5">
-                              <i className="fas fa-check-circle text-green-500"></i>
+                           <li key={idx} className="flex items-center gap-3 text-gray-700 dark:text-gray-200 p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-default">
+                              <div className="w-6 h-6 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
+                                <i className="fas fa-check text-xs"></i>
+                              </div>
                               <span className="font-medium text-sm">{feature}</span>
                            </li>
                         ))}
@@ -123,7 +136,7 @@ const Services: React.FC = () => {
                    </div>
                  )}
 
-                 <div className="flex gap-4">
+                 <div className="flex gap-4 pt-4 border-t border-black/5 dark:border-white/5">
                     <button 
                         onClick={() => {
                             closeModal();

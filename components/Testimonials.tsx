@@ -29,9 +29,17 @@ const Testimonials: React.FC = () => {
            <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
            <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
 
+           {/* 
+              The animation translates -50%. 
+              We need exactly TWO sets of data for this to be a seamless loop.
+              The width of the inner div (w-max) is calculated based on contents.
+              If Animation is 0% -> 0px.
+              If Animation is 100% -> -50% of width.
+              At -50%, the second set is exactly where the first set started.
+           */}
            <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
              {/* Original Set */}
-             <div className="flex gap-6 md:gap-8 px-4">
+             <div className="flex gap-6 md:gap-8 px-3 md:px-4">
                {TESTIMONIALS.map((testi) => (
                  <div key={testi.id} className="w-[300px] md:w-[400px] flex-shrink-0 group relative">
                     <div className="h-full flex flex-col p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
@@ -69,7 +77,7 @@ const Testimonials: React.FC = () => {
              </div>
 
              {/* Duplicate Set for Loop */}
-             <div className="flex gap-6 md:gap-8 px-4">
+             <div className="flex gap-6 md:gap-8 px-3 md:px-4">
                {TESTIMONIALS.map((testi) => (
                  <div key={`dup-${testi.id}`} className="w-[300px] md:w-[400px] flex-shrink-0 group relative">
                     <div className="h-full flex flex-col p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">

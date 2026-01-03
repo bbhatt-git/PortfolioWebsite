@@ -33,7 +33,7 @@ export default {
         'float-fast': 'float 4s ease-in-out infinite',
         'spin-slow': 'spin 15s linear infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
-        'marquee': 'marquee 40s linear infinite',
+        'marquee': 'marquee 60s linear infinite',
       },
       keyframes: {
         blob: {
@@ -72,7 +72,7 @@ export default {
         },
         marquee: {
           '0%': { transform: 'translate3d(0, 0, 0)' },
-          '100%': { transform: 'translate3d(-100%, 0, 0)' },
+          '100%': { transform: 'translate3d(-50%, 0, 0)' },
         }
       }
     }

@@ -101,6 +101,27 @@ export const TESTIMONIALS: Testimonial[] = [
     name: 'Sarah Jenkins',
     role: 'Project Manager',
     image: 'https://randomuser.me/api/portraits/women/29.jpg'
+  },
+  {
+    id: 7,
+    text: '"He doesn\'t just write code; he thinks about the business logic. The suggestions he made saved us months of development time."',
+    name: 'David Ross',
+    role: 'Startup Founder',
+    image: 'https://randomuser.me/api/portraits/men/11.jpg'
+  },
+  {
+    id: 8,
+    text: '"We needed a complex dashboard visualization. Bhupesh delivered a solution that was not only functional but beautiful to look at."',
+    name: 'Elena Rodriguez',
+    role: 'Data Analyst',
+    image: 'https://randomuser.me/api/portraits/women/65.jpg'
+  },
+  {
+    id: 9,
+    text: '"Reliable, skilled, and easy to work with. He integrated seamlessly with our existing team and boosted our velocity."',
+    name: 'James Wilson',
+    role: 'Engineering Lead',
+    image: 'https://randomuser.me/api/portraits/men/86.jpg'
   }
 ];
 
