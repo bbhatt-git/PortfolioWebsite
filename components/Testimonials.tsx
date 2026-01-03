@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Reveal from './Reveal';
 import { TESTIMONIALS } from '../constants';
 import { Testimonial } from '../types';
@@ -6,7 +6,6 @@ import { Testimonial } from '../types';
 const Testimonials: React.FC = () => {
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
 
   // Create a duplicated list for seamless looping (primarily for desktop marquee)
   const duplicatedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
@@ -14,43 +13,26 @@ const Testimonials: React.FC = () => {
   const openModal = (testimonial: Testimonial) => {
     setSelectedTestimonial(testimonial);
     document.body.style.overflow = 'hidden';
-    setIsPaused(true); // Pause auto-scroll when modal is open
   };
 
   const closeModal = () => {
     setSelectedTestimonial(null);
     document.body.style.overflow = 'auto';
-    setIsPaused(false);
   };
 
-  // Auto-scroll logic for mobile
-  useEffect(() => {
-    const scrollContainer = scrollRef.current;
-    if (!scrollContainer) return;
-
-    let animationId: number;
-
-    const scroll = () => {
-        // Only run auto-scroll logic on mobile devices (< 768px) where we use overflow-x-auto
-        // AND when not paused by user interaction
-        if (!isPaused && window.innerWidth < 768) { 
-             // Significantly increased speed to 3.5px per frame for much faster scrolling
-             scrollContainer.scrollLeft += 3.5; 
-
-             // Infinite scroll reset logic
-             // If we have scrolled past half the content (the first set of testimonials), reset to 0
-             // We use scrollWidth / 2 because the list is exactly duplicated
-             if (scrollContainer.scrollLeft >= (scrollContainer.scrollWidth / 2)) {
-                 scrollContainer.scrollLeft = 0;
-             }
-        }
-        animationId = requestAnimationFrame(scroll);
-    };
-
-    animationId = requestAnimationFrame(scroll);
-
-    return () => cancelAnimationFrame(animationId);
-  }, [isPaused]);
+  // Manual Scroll Handler for Mobile Arrows
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+        const container = scrollRef.current;
+        // Scroll by approximately one card width (85vw on mobile)
+        const scrollAmount = window.innerWidth * 0.85; 
+        
+        container.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+  };
 
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden">
@@ -75,20 +57,12 @@ const Testimonials: React.FC = () => {
         {/* 
             Container with Scroll Logic:
             - Desktop (md+): overflow-hidden (for Marquee)
-            - Mobile: overflow-x-auto (for Swipe) + JS Auto Scroll
-            - Removed snap-x/snap-mandatory to prevent fighting with JS auto-scroll
+            - Mobile: overflow-x-auto (for Swipe)
         */}
         <div 
           ref={scrollRef}
           className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 scroll-smooth touch-pan-x z-20"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} /* Hide scrollbar Firefox/IE */
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => {
-              // Delay before resuming to allow fling to settle
-              setTimeout(() => setIsPaused(false), 2000);
-          }}
         >
            {/* Fade edges - Left mask hidden on mobile to fix visual cut-off of the first card */}
            <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none hidden md:block"></div>
@@ -153,6 +127,24 @@ const Testimonials: React.FC = () => {
                  </div>
              ))}
            </div>
+        </div>
+
+        {/* Mobile Navigation Arrows */}
+        <div className="flex justify-center gap-4 mt-8 md:hidden relative z-20">
+            <button 
+                onClick={() => scroll('left')}
+                className="w-12 h-12 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/5 flex items-center justify-center text-gray-700 dark:text-white shadow-lg active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/20"
+                aria-label="Previous testimonial"
+            >
+                <i className="fas fa-arrow-left"></i>
+            </button>
+            <button 
+                onClick={() => scroll('right')}
+                className="w-12 h-12 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/5 flex items-center justify-center text-gray-700 dark:text-white shadow-lg active:scale-95 transition-transform hover:bg-gray-50 dark:hover:bg-white/20"
+                aria-label="Next testimonial"
+            >
+                <i className="fas fa-arrow-right"></i>
+            </button>
         </div>
       </div>
 
