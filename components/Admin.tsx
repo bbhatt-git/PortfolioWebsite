@@ -45,13 +45,12 @@ const Admin: React.FC = () => {
   const fetchMessages = async () => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
-    // Ensure we handle docs that might not have 'seen' field yet, default to false
     setMessages(snap.docs.map(doc => {
       const data = doc.data();
       return { 
         id: doc.id, 
         ...data,
-        seen: data.seen ?? false 
+        seen: data.seen === true // Force boolean logic
       };
     }));
   };
@@ -84,15 +83,19 @@ const Admin: React.FC = () => {
     }
   };
 
-  // Persistently update Firestore 'seen' field
   const updateMessageSeenStatus = async (msgId: string, status: boolean) => {
     try {
       const msgRef = doc(db, "messages", msgId);
+      // Persist to Firebase
       await updateDoc(msgRef, { seen: status });
-      // Update local state to reflect change immediately
+      // Update local state
       setMessages(prev => prev.map(m => m.id === msgId ? { ...m, seen: status } : m));
+      // Update selected message if open
+      if (selectedMessage && selectedMessage.id === msgId) {
+        setSelectedMessage(prev => ({ ...prev, seen: status }));
+      }
     } catch (err) {
-      console.error("Failed to update seen status in Firestore", err);
+      console.error("Critical: Firestore update failed. Check security rules.", err);
     }
   };
 
@@ -100,14 +103,14 @@ const Admin: React.FC = () => {
     setSelectedMessage(msg);
     setCurrentView('message-viewer');
     
-    // Auto-mark as seen when opened if it wasn't already
+    // Auto-mark as seen in DB on open
     if (!msg.seen) {
       await updateMessageSeenStatus(msg.id, true);
     }
   };
 
   const handleToggleSeen = async (e: React.MouseEvent, msgId: string, currentStatus: boolean) => {
-    e.stopPropagation(); // Prevent opening the message
+    e.stopPropagation();
     await updateMessageSeenStatus(msgId, !currentStatus);
   };
 
@@ -261,15 +264,15 @@ const Admin: React.FC = () => {
                              <div className="px-8 py-6 border-b border-black/5 bg-gray-50/50 dark:bg-white/5 flex justify-between items-center"><h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Signal Stream</h3></div>
                              <div className="flex-1 overflow-y-auto divide-y divide-black/5">
                                 {messages.slice(0, 8).map((m) => (
-                                    <div key={m.id} className="p-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer" onClick={() => openMessage(m)}>
+                                    <div key={m.id} className="p-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer group" onClick={() => openMessage(m)}>
                                         <div className="flex items-center gap-5 min-w-0">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border ${m.seen ? 'bg-gray-100 text-gray-400 border-black/5' : 'bg-blue-600 text-white border-blue-600'}`}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border transition-colors ${m.seen ? 'bg-gray-100 text-gray-400 border-black/5' : 'bg-blue-600 text-white border-blue-600'}`}>
                                               {m.name[0].toUpperCase()}
                                             </div>
                                             <div className="truncate">
                                                 <div className="flex items-center gap-2">
-                                                  <p className={`text-[14px] font-black truncate ${!m.seen ? 'text-blue-600' : ''}`}>{m.name}</p>
-                                                  <button onClick={(e) => handleToggleSeen(e, m.id, m.seen)} className="hover:text-blue-500 transition-colors">
+                                                  <p className={`text-[14px] font-black truncate transition-colors ${!m.seen ? 'text-blue-600' : ''}`}>{m.name}</p>
+                                                  <button onClick={(e) => handleToggleSeen(e, m.id, m.seen)} className={`w-6 h-6 flex items-center justify-center rounded hover:bg-black/5 dark:hover:bg-white/5 transition-all ${m.seen ? 'text-blue-500' : 'text-gray-300'}`}>
                                                     <i className={`fas ${m.seen ? 'fa-eye' : 'fa-eye-slash'} text-[10px]`}></i>
                                                   </button>
                                                 </div>
