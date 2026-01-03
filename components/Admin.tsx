@@ -83,6 +83,7 @@ const Admin: React.FC = () => {
   const openMessage = async (msg: any) => {
     setSelectedMessage(msg);
     setCurrentView('message-viewer');
+    if (!isMsgNew(msg)) return; // If it's already old/seen, no need to update
     if (!msg.seen) {
       await updateMessageSeenStatus(msg.id, true);
     }
@@ -154,7 +155,14 @@ const Admin: React.FC = () => {
     await batch.commit();
   };
 
-  const unseenCount = messages.filter(m => !m.seen).length;
+  const isMsgNew = (m: any) => {
+    if (!m.timestamp) return false;
+    const now = new Date();
+    const fortyEightHoursAgo = new Date(now.getTime() - (48 * 60 * 60 * 1000));
+    return m.timestamp.toDate() > fortyEightHoursAgo && !m.seen;
+  };
+
+  const newSubmissionsCount = messages.filter(m => isMsgNew(m)).length;
 
   if (loading) return (
     <div className="h-screen bg-[#f0f2f5] flex items-center justify-center">
@@ -196,13 +204,13 @@ const Admin: React.FC = () => {
       <aside className="w-64 bg-[#001529] flex flex-col shrink-0 z-50">
           <div className="p-8 pb-10 flex items-center gap-3">
               <div className="w-8 h-8 bg-[#1890ff] rounded flex items-center justify-center text-white font-bold">BR</div>
-              <h1 className="text-white font-bold text-lg tracking-tight">Bhupesh.Dev</h1>
+              <h1 className="text-white font-bold text-lg tracking-tight">Portfolio Dashboard</h1>
           </div>
           <nav className="flex-1">
               <SidebarItem icon="fa-th-large" label="Dashboard" view="dashboard" active={currentView === 'dashboard'} />
               <SidebarItem icon="fa-plus-square" label="New Project" view="new-project" active={currentView === 'new-project'} />
               <SidebarItem icon="fa-folder-open" label="Projects" view="projects-list" active={currentView === 'projects-list'} />
-              <SidebarItem icon="fa-envelope" label="Messages" view="messages" active={currentView === 'messages'} badge={unseenCount > 0 ? unseenCount : undefined} />
+              <SidebarItem icon="fa-envelope" label="Messages" view="messages" active={currentView === 'messages'} badge={newSubmissionsCount > 0 ? newSubmissionsCount : undefined} />
           </nav>
           <div className="p-6 border-t border-white/10">
               <button onClick={() => signOut(auth)} className="w-full flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-white transition-colors text-sm font-medium">
@@ -224,7 +232,7 @@ const Admin: React.FC = () => {
               <div className="flex items-center gap-6">
                   <div className="relative group cursor-pointer" onClick={() => setCurrentView('messages')}>
                     <i className="far fa-bell text-gray-400 text-lg hover:text-[#1890ff] transition-colors"></i>
-                    {unseenCount > 0 && <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">{unseenCount}</span>}
+                    {newSubmissionsCount > 0 && <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">{newSubmissionsCount}</span>}
                   </div>
                   <div className="flex items-center gap-3 border-l pl-6 border-gray-100">
                     <div className="text-right">
@@ -266,13 +274,13 @@ const Admin: React.FC = () => {
                           </div>
 
                           <div className="bg-white p-6 rounded shadow-sm border border-gray-100">
-                             <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Unread Signals</p>
+                             <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">New Submissions</p>
                              <div className="flex items-end justify-between">
-                                <p className={`text-3xl font-bold ${unseenCount > 0 ? 'text-red-500' : 'text-gray-800'}`}>{unseenCount}</p>
-                                {unseenCount > 0 && <span className="animate-pulse bg-red-100 text-red-500 text-[10px] px-2 py-1 rounded font-black">ACTION REQ</span>}
+                                <p className={`text-3xl font-bold ${newSubmissionsCount > 0 ? 'text-red-500' : 'text-gray-800'}`}>{newSubmissionsCount}</p>
+                                {newSubmissionsCount > 0 && <span className="animate-pulse bg-red-100 text-red-500 text-[10px] px-2 py-1 rounded font-black">ACTION REQ</span>}
                              </div>
                              <div className="mt-6 pt-4 border-t border-gray-50 flex items-center gap-2 text-xs text-gray-400">
-                                <i className="fas fa-exclamation-circle"></i> Verification required
+                                <i className="fas fa-clock"></i> Within last 48 hrs
                              </div>
                           </div>
                       </div>
@@ -307,20 +315,23 @@ const Admin: React.FC = () => {
                                 <h3 className="text-sm font-bold text-gray-600 uppercase tracking-widest">Inquiry Stream</h3>
                               </div>
                               <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
-                                 {messages.slice(0, 10).map(m => (
+                                 {messages.slice(0, 10).map(m => {
+                                   const isNew = isMsgNew(m);
+                                   return (
                                      <div key={m.id} onClick={() => openMessage(m)} className="p-5 flex items-center gap-4 hover:bg-gray-50 cursor-pointer">
-                                         <div className={`w-10 h-10 rounded flex items-center justify-center font-bold text-sm shrink-0 border transition-all ${!m.seen ? 'bg-[#1890ff] text-white border-[#1890ff] shadow-lg shadow-[#1890ff]/20' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
+                                         <div className={`w-10 h-10 rounded flex items-center justify-center font-bold text-sm shrink-0 border transition-all ${isNew ? 'bg-[#1890ff] text-white border-[#1890ff] shadow-lg shadow-[#1890ff]/20' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
                                             {m.name[0].toUpperCase()}
                                          </div>
                                          <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
-                                              <p className={`font-bold text-sm truncate ${!m.seen ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</p>
-                                              {!m.seen && <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>}
+                                              <p className={`font-bold text-sm truncate ${isNew ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</p>
+                                              {isNew && <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>}
                                             </div>
                                             <p className="text-[10px] text-gray-400 truncate mt-0.5">{m.timestamp?.toDate().toLocaleDateString()}</p>
                                          </div>
                                      </div>
-                                 ))}
+                                   );
+                                 })}
                                  {messages.length === 0 && <div className="p-20 text-center text-gray-300 italic text-sm">Silence in the stream.</div>}
                               </div>
                           </div>
@@ -470,31 +481,34 @@ const Admin: React.FC = () => {
                           </div>
                       </div>
                       <div className="divide-y divide-gray-50">
-                          {messages.map(m => (
-                              <div key={m.id} onClick={() => openMessage(m)} className="p-8 flex items-center justify-between hover:bg-gray-50/50 cursor-pointer transition-all group">
-                                  <div className="flex items-center gap-8">
-                                      <div className={`w-14 h-14 rounded-lg flex items-center justify-center font-bold text-xl border transition-all ${!m.seen ? 'bg-[#1890ff] text-white border-[#1890ff] shadow-lg shadow-[#1890ff]/20' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
-                                        {m.name[0].toUpperCase()}
-                                      </div>
-                                      <div>
-                                          <div className="flex items-center gap-3">
-                                            <h4 className={`font-bold text-lg tracking-tight ${!m.seen ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</h4>
-                                            <button onClick={(e) => handleToggleSeen(e, m.id, m.seen)} className={`w-8 h-8 rounded flex items-center justify-center transition-all ${m.seen ? 'text-[#1890ff] bg-blue-50' : 'text-gray-200 hover:text-blue-500'}`}>
-                                              <i className={`fas ${m.seen ? 'fa-eye' : 'fa-eye-slash'} text-xs`}></i>
-                                            </button>
-                                          </div>
-                                          <p className="text-sm text-gray-400 mt-1 font-medium">{m.email}</p>
-                                      </div>
-                                  </div>
-                                  <div className="text-right flex items-center gap-10">
-                                      <div className="hidden md:block">
-                                        <p className="text-[10px] font-bold text-gray-300 uppercase mb-1 tracking-widest">Timestamp</p>
-                                        <p className="text-xs text-gray-500 font-bold">{m.timestamp?.toDate().toLocaleString()}</p>
-                                      </div>
-                                      <i className="fas fa-chevron-right text-gray-200 group-hover:text-[#1890ff] transition-colors"></i>
-                                  </div>
-                              </div>
-                          ))}
+                          {messages.map(m => {
+                              const isNew = isMsgNew(m);
+                              return (
+                                <div key={m.id} onClick={() => openMessage(m)} className="p-8 flex items-center justify-between hover:bg-gray-50/50 cursor-pointer transition-all group">
+                                    <div className="flex items-center gap-8">
+                                        <div className={`w-14 h-14 rounded-lg flex items-center justify-center font-bold text-xl border transition-all ${isNew ? 'bg-[#1890ff] text-white border-[#1890ff] shadow-lg shadow-[#1890ff]/20' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>
+                                          {m.name[0].toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-3">
+                                              <h4 className={`font-bold text-lg tracking-tight ${isNew ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</h4>
+                                              <button onClick={(e) => handleToggleSeen(e, m.id, m.seen)} className={`w-8 h-8 rounded flex items-center justify-center transition-all ${m.seen ? 'text-[#1890ff] bg-blue-50' : 'text-gray-200 hover:text-blue-500'}`}>
+                                                <i className={`fas ${m.seen ? 'fa-eye' : 'fa-eye-slash'} text-xs`}></i>
+                                              </button>
+                                            </div>
+                                            <p className="text-sm text-gray-400 mt-1 font-medium">{m.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right flex items-center gap-10">
+                                        <div className="hidden md:block">
+                                          <p className="text-[10px] font-bold text-gray-300 uppercase mb-1 tracking-widest">Timestamp</p>
+                                          <p className="text-xs text-gray-500 font-bold">{m.timestamp?.toDate().toLocaleString()}</p>
+                                        </div>
+                                        <i className="fas fa-chevron-right text-gray-200 group-hover:text-[#1890ff] transition-colors"></i>
+                                    </div>
+                                </div>
+                              );
+                          })}
                           {messages.length === 0 && <div className="py-32 text-center text-gray-300 italic">Signal stream is silent.</div>}
                       </div>
                   </div>
@@ -513,7 +527,7 @@ const Admin: React.FC = () => {
                              <div className="flex items-center gap-6">
                                 <button onClick={(e) => handleToggleSeen(e, selectedMessage.id, selectedMessage.seen)} className={`text-[11px] font-bold flex items-center gap-2 tracking-widest ${selectedMessage.seen ? 'text-[#1890ff]' : 'text-gray-400'}`}>
                                   <i className={`fas ${selectedMessage.seen ? 'fa-eye' : 'fa-eye-slash'} text-sm`}></i>
-                                  {selectedMessage.seen ? 'SEEN' : 'UNSEEN'}
+                                  {isMsgNew(selectedMessage) ? 'NEW SUBMISSION' : (selectedMessage.seen ? 'SEEN' : 'OLD ARCHIVE')}
                                 </button>
                                 <i onClick={() => setCurrentView('messages')} className="fas fa-times text-gray-400 cursor-pointer hover:text-red-500 text-lg transition-colors"></i>
                              </div>
