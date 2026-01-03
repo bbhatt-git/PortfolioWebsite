@@ -1,21 +1,49 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
+  const footerRef = useRef<HTMLElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!footerRef.current) return;
+    const { left, top, width, height } = footerRef.current.getBoundingClientRect();
+    // Calculate normalized position from center for parallax
+    const x = (e.clientX - left - width / 2) / 40; 
+    const y = (e.clientY - top - height / 2) / 40;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+  };
 
   return (
-    <footer className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-20 pb-12 overflow-hidden">
-      {/* Decorative Orbs */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]"></div>
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px]"></div>
+    <footer 
+      ref={footerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative bg-white dark:bg-[#080808] border-t border-gray-200 dark:border-white/5 pt-20 pb-12 overflow-hidden perspective-1000"
+    >
+      {/* Decorative Orbs with 3D Parallax */}
+      <div 
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50"
+      ></div>
+      <div 
+        className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] transition-transform duration-500 ease-out will-change-transform"
+        style={{ transform: `translate3d(${mousePos.x * -2}px, ${mousePos.y * -2}px, 0)` }}
+      ></div>
+      <div 
+        className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px] transition-transform duration-500 ease-out will-change-transform"
+        style={{ transform: `translate3d(${mousePos.x * 2}px, ${mousePos.y * 2}px, 0)` }}
+      ></div>
 
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-20">
           {/* Brand Column */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-black dark:bg-white flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 rounded-xl bg-black dark:bg-white flex items-center justify-center shadow-lg transform transition-transform duration-500 hover:rotate-12">
                 <span className="font-mono font-bold text-white dark:text-black">BR</span>
               </div>
               <span className="text-2xl font-bold tracking-tighter text-gray-900 dark:text-white">Bhupesh Bhatt</span>
@@ -23,15 +51,20 @@ const Footer: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-400 max-w-sm text-lg leading-relaxed mb-8">
               Empowering brands through pixel-perfect design and scalable development solutions. Let's create something extraordinary together.
             </p>
+            
+            {/* Social Icons with Branding Colors */}
             <div className="flex gap-4">
-              <a href="https://github.com/bbhatt-git" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white transition-all hover:scale-110">
-                <i className="fab fa-github"></i>
+              <a href="https://github.com/bbhatt-git" target="_blank" 
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:shadow-xl hover:-translate-y-1">
+                <i className="fab fa-github text-xl"></i>
               </a>
-              <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-[#0077b5] transition-all hover:scale-110">
-                <i className="fab fa-linkedin"></i>
+              <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" 
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-[#0077b5] hover:text-white hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
+                <i className="fab fa-linkedin text-xl"></i>
               </a>
-              <a href="https://www.instagram.com/_bbhatt" target="_blank" className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 hover:text-pink-500 transition-all hover:scale-110">
-                <i className="fab fa-instagram"></i>
+              <a href="https://www.instagram.com/_bbhatt" target="_blank" 
+                 className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-gray-500 transition-all duration-300 hover:scale-110 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-xl hover:shadow-pink-500/20 hover:-translate-y-1">
+                <i className="fab fa-instagram text-xl"></i>
               </a>
             </div>
           </div>
@@ -44,11 +77,11 @@ const Footer: React.FC = () => {
                 <li key={link}>
                   <a 
                     href={`#${link.toLowerCase() === 'work' ? 'work' : link.toLowerCase()}`} 
-                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-block group"
+                    className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors inline-block group"
                   >
-                    <span className="relative">
+                    <span className="relative py-1">
                       {link}
-                      <span className="absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300 group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
                     </span>
                   </a>
                 </li>
@@ -60,16 +93,21 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-sm font-bold uppercase tracking-widest text-gray-900 dark:text-white mb-6">Connect</h4>
             <ul className="space-y-4 text-gray-500 dark:text-gray-400">
-              <li className="flex items-center gap-3">
-                <i className="fas fa-envelope text-blue-500 opacity-70"></i>
-                <a href="mailto:hello@bbhatt.com.np" className="hover:text-gray-900 dark:hover:text-white transition-colors">hello@bbhatt.com.np</a>
+              <li className="flex items-center gap-3 group">
+                <i className="fas fa-envelope text-blue-500 group-hover:scale-110 transition-transform"></i>
+                <a href="mailto:hello@bbhatt.com.np" className="hover:text-black dark:hover:text-white transition-colors relative">
+                    <span className="relative py-1">
+                      hello@bbhatt.com.np
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-center"></span>
+                    </span>
+                </a>
               </li>
-              <li className="flex items-center gap-3">
-                <i className="fas fa-map-marker-alt text-blue-500 opacity-70"></i>
-                <span>Kathmandu, Nepal</span>
+              <li className="flex items-center gap-3 group">
+                <i className="fas fa-map-marker-alt text-blue-500 group-hover:scale-110 transition-transform"></i>
+                <span className="group-hover:text-black dark:group-hover:text-white transition-colors">Kathmandu, Nepal</span>
               </li>
               <li className="pt-4">
-                 <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5">
+                 <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:border-blue-500/30 transition-colors group">
                    <p className="text-xs font-bold text-gray-400 uppercase tracking-tighter mb-1">Status</p>
                    <p className="text-sm font-bold text-green-500 flex items-center gap-2">
                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -81,14 +119,17 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Bottom Bar with 3D Effect */}
+        <div 
+           className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 transition-transform duration-300 ease-out will-change-transform"
+           style={{ transform: `translate3d(${mousePos.x * 0.5}px, ${mousePos.y * 0.5}px, 0)` }}
+        >
           <div className="text-sm text-gray-400 order-2 md:order-1">
              © {year} Bhupesh Raj Bhatt. All rights reserved.
           </div>
           
           <div className="order-1 md:order-2">
-             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight">
+             <div className="px-6 py-2 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 text-sm font-medium tracking-tight hover:shadow-lg transition-all hover:scale-105">
                 Designed & Crafted by <span className="font-bold text-gray-900 dark:text-white ml-1">Bhupesh Raj Bhatt</span>
              </div>
           </div>
