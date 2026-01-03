@@ -3,6 +3,9 @@ import Reveal from './Reveal';
 import { TESTIMONIALS } from '../constants';
 
 const Testimonials: React.FC = () => {
+  // Create a duplicated list for seamless looping
+  const duplicatedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS];
+
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden">
       {/* Background Ambience */}
@@ -30,18 +33,21 @@ const Testimonials: React.FC = () => {
            <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
 
            {/* 
-              The animation translates -50%. 
-              We need exactly TWO sets of data for this to be a seamless loop.
-              The width of the inner div (w-max) is calculated based on contents.
-              If Animation is 0% -> 0px.
-              If Animation is 100% -> -50% of width.
-              At -50%, the second set is exactly where the first set started.
+              FLAT LIST APPROACH:
+              Using a single flex container with margins on items ensures mathematically perfect looping.
+              Flex gap can cause sub-pixel offsets or calculation errors with percentage-based translation.
+              
+              Logic:
+              1. We duplicate the list (Set A + Set B).
+              2. Animation translates -50%.
+              3. At -50%, Set B is exactly where Set A started, creating a seamless jump back to 0.
            */}
            <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-             {/* Original Set */}
-             <div className="flex gap-6 md:gap-8 px-3 md:px-4">
-               {TESTIMONIALS.map((testi) => (
-                 <div key={testi.id} className="w-[300px] md:w-[400px] flex-shrink-0 group relative">
+             {duplicatedTestimonials.map((testi, index) => (
+                 <div 
+                    key={`${testi.id}-${index}`} 
+                    className="w-[300px] md:w-[400px] flex-shrink-0 mr-6 md:mr-8 group relative"
+                 >
                     <div className="h-full flex flex-col p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
                         {/* Glass Shine */}
                         <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50 pointer-events-none"></div>
@@ -73,43 +79,7 @@ const Testimonials: React.FC = () => {
                         </div>
                     </div>
                  </div>
-               ))}
-             </div>
-
-             {/* Duplicate Set for Loop */}
-             <div className="flex gap-6 md:gap-8 px-3 md:px-4">
-               {TESTIMONIALS.map((testi) => (
-                 <div key={`dup-${testi.id}`} className="w-[300px] md:w-[400px] flex-shrink-0 group relative">
-                    <div className="h-full flex flex-col p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
-                        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50 pointer-events-none"></div>
-                        
-                        <div className="absolute top-6 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                           <i className="fas fa-quote-right text-5xl text-black dark:text-white"></i>
-                        </div>
-
-                        <div className="flex gap-1 mb-6 text-yellow-400 text-xs relative z-10">
-                            {[1,2,3,4,5].map(i => <i key={i} className="fas fa-star drop-shadow-sm"></i>)}
-                        </div>
-
-                        <p className="text-base md:text-lg text-gray-800 dark:text-gray-200 leading-relaxed font-medium mb-8 flex-1 relative z-10 italic">
-                          "{testi.text}"
-                        </p>
-
-                        <div className="flex items-center gap-4 relative z-10 pt-6 border-t border-black/5 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
-                           <img 
-                            src={testi.image} 
-                            alt={testi.name} 
-                            className="w-12 h-12 rounded-full object-cover ring-2 ring-white/50 dark:ring-white/5"
-                          />
-                          <div>
-                             <h4 className="text-sm font-bold text-black dark:text-white">{testi.name}</h4>
-                             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{testi.role}</p>
-                          </div>
-                        </div>
-                    </div>
-                 </div>
-               ))}
-             </div>
+             ))}
            </div>
         </div>
       </div>
