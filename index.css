@@ -27,7 +27,7 @@ html {
 
 /* Premium Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -35,7 +35,7 @@ html {
 ::-webkit-scrollbar-thumb {
   background: rgba(120, 120, 120, 0.2);
   border-radius: 10px;
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -46,37 +46,37 @@ html {
   macOS Glass Effect optimizations
 */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.03);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.02);
   will-change: transform, opacity;
 }
 .dark .glass {
-  background: rgba(18, 18, 22, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  background: rgba(18, 18, 22, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .glass-strong {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(48px) saturate(210%);
-  -webkit-backdrop-filter: blur(48px) saturate(210%);
-  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.01),
-    0 10px 15px -3px rgba(0, 0, 0, 0.03);
+    0 10px 25px -5px rgba(0, 0, 0, 0.03),
+    0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 .dark .glass-strong {
-  background: rgba(26, 26, 32, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  background: rgba(20, 20, 24, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Noise Texture Optimized */
 .bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
   pointer-events: none;
   position: fixed;
   top: 0;
@@ -84,7 +84,7 @@ html {
   width: 100%;
   height: 100%;
   z-index: 1;
-  opacity: 0.15;
+  opacity: 0.12;
 }
 
 /* 3D Utilities Optimized */
@@ -92,21 +92,20 @@ html {
 .perspective-2000 { perspective: 2000px; }
 .perspective-1000 { perspective: 1000px; }
 
-/* Text Gradients */
-.text-gradient {
-  background: linear-gradient(135deg, #0066FF 0%, #5856D6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Modern Typography Utilities */
+.text-glow {
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.tracking-ultra {
+  letter-spacing: -0.05em;
 }
 
 /* Animations */
-.animate-gradient {
-  animation: gradient 10s linear infinite;
-  background-size: 200% 200%;
-}
-@keyframes gradient {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes liquid {
+  0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg) scale(1); }
+  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(180deg) scale(1.05); }
+  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(360deg) scale(1); }
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -116,14 +115,14 @@ html {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 120, 0.15);
+  background: rgba(120, 120, 120, 0.1);
   border-radius: 10px;
 }
 
 @media (max-width: 640px) {
   /* Optimize glass performance on mobile */
   .glass, .glass-strong {
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(8px) saturate(160%);
+    -webkit-backdrop-filter: blur(8px) saturate(160%);
   }
 }
