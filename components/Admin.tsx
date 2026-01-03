@@ -469,7 +469,8 @@ const Admin: React.FC = () => {
                            </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 pb-10">
+                        {/* REFINED PROJECT GRID */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-10 pb-12">
                            {projects.map((proj, index) => (
                               <div 
                                 key={proj.id} 
@@ -477,48 +478,86 @@ const Admin: React.FC = () => {
                                 onDragStart={() => handleDragStart(index)}
                                 onDragOver={(e) => handleDragOver(e, index)}
                                 onDragEnd={handleDragEnd}
-                                className={`glass rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 group flex flex-col relative border border-white/40 dark:border-white/5 cursor-grab active:cursor-grabbing will-change-transform ${draggedIndex === index ? 'opacity-40 scale-95 border-blue-500/50' : 'opacity-100 scale-100'}`}
+                                className={`group flex flex-col bg-white dark:bg-[#161618] rounded-[2rem] border border-gray-200/60 dark:border-white/5 transition-all duration-500 hover:shadow-2xl cursor-grab active:cursor-grabbing will-change-transform ${draggedIndex === index ? 'opacity-40 scale-95 border-blue-500/50' : 'opacity-100 scale-100 shadow-sm'}`}
                               >
-                                 <div className="h-48 md:h-56 bg-gray-100 dark:bg-black/50 relative overflow-hidden pointer-events-none">
-                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60"></div>
-                                     <img src={proj.image} alt={proj.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                 {/* Header with Rank & Image */}
+                                 <div className="relative h-56 md:h-64 rounded-t-[2rem] overflow-hidden pointer-events-none">
+                                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-10"></div>
+                                     <img 
+                                        src={proj.image} 
+                                        alt={proj.title} 
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                                     />
                                      
+                                     {/* Quick Actions Overlay */}
                                      <div className="absolute top-4 right-4 z-20 flex gap-2 pointer-events-auto">
                                          <button 
                                               onClick={(e) => handleEditProject(proj, e)}
-                                              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-blue-500 transition-colors border border-white/30"
+                                              className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/80 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 transition-all shadow-lg active:scale-90"
+                                              title="Edit"
                                          >
-                                              <i className="fas fa-edit text-xs"></i>
+                                              <i className="fas fa-edit text-sm"></i>
                                          </button>
                                          <button 
                                               onClick={(e) => handleDeleteClick(proj.id, e)}
-                                              className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-red-500 transition-colors border border-white/30"
+                                              className="w-10 h-10 rounded-full bg-white/90 dark:bg-black/80 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-500 hover:text-white dark:hover:bg-red-500 transition-all shadow-lg active:scale-90"
+                                              title="Delete"
                                          >
-                                              <i className="fas fa-trash-alt text-xs"></i>
+                                              <i className="fas fa-trash-alt text-sm"></i>
                                          </button>
                                      </div>
 
-                                     <div className="absolute bottom-4 left-4 z-20">
-                                         <h3 className="font-bold text-lg md:text-xl text-white mb-1 drop-shadow-md tracking-tight">{proj.title}</h3>
-                                         <div className="flex items-center gap-2">
-                                           <span className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-widest">RANK {index + 1}</span>
-                                           <i className="fas fa-grip-lines text-white/50 text-xs"></i>
+                                     {/* Rank Indicator */}
+                                     <div className="absolute top-4 left-4 z-20">
+                                         <div className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest border border-white/20">
+                                             Position {index + 1}
+                                         </div>
+                                     </div>
+
+                                     {/* Project Status Bubble */}
+                                     <div className="absolute bottom-4 right-4 z-20">
+                                         <div className="flex items-center gap-2 bg-white/90 dark:bg-black/90 px-3 py-1.5 rounded-full shadow-lg border border-white/20">
+                                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                             <span className="text-[10px] font-black uppercase tracking-wider text-gray-700 dark:text-gray-300">Active</span>
                                          </div>
                                      </div>
                                  </div>
                                  
-                                 <div className="p-5 md:p-6 flex-1 flex flex-col pointer-events-none">
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-6 flex-1 font-medium leading-relaxed">{proj.desc}</p>
+                                 {/* Body Content - CONSISTENT PADDING & ALIGNMENT */}
+                                 <div className="p-6 md:p-8 flex flex-col flex-1 pointer-events-none">
+                                    <div className="mb-4">
+                                        <h3 className="font-bold text-xl md:text-2xl text-gray-900 dark:text-white mb-1 group-hover:text-blue-600 transition-colors tracking-tight">{proj.title}</h3>
+                                        <div className="w-12 h-1 bg-blue-500/20 rounded-full"></div>
+                                    </div>
                                     
-                                    <div className="flex gap-2 pointer-events-auto">
+                                    <div className="min-h-[140px] mb-6">
+                                        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 line-clamp-4 font-medium leading-relaxed italic">
+                                            "{proj.desc}"
+                                        </p>
+                                    </div>
+
+                                    {/* Tech Preview */}
+                                    <div className="flex flex-wrap gap-2 mb-8 h-[60px] overflow-hidden">
+                                        {proj.stack.split(/[•,]/).slice(0, 4).map((tech, i) => (
+                                            <span key={i} className="px-3 py-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-lg text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">
+                                                {tech.trim()}
+                                            </span>
+                                        ))}
+                                        {proj.stack.split(/[•,]/).length > 4 && (
+                                            <span className="text-[10px] text-gray-400 font-bold self-center">+{proj.stack.split(/[•,]/).length - 4}</span>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Footer Links with Better Styling */}
+                                    <div className="mt-auto flex gap-3 pointer-events-auto">
                                        {proj.liveUrl && (
-                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-[10px] md:text-[11px] py-2.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg font-black uppercase tracking-wider hover:bg-blue-500/20 transition-colors border border-blue-500/20">
-                                           Live Demo
+                                         <a href={proj.liveUrl} target="_blank" className="flex-1 text-center text-[10px] py-3 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest hover:bg-blue-500 transition-all hover:scale-105 active:scale-95 shadow-md shadow-blue-500/10">
+                                           Preview
                                          </a>
                                        )}
                                        {proj.codeUrl && (
-                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-[10px] md:text-[11px] py-2.5 bg-gray-500/10 text-gray-700 dark:text-gray-300 rounded-lg font-black uppercase tracking-wider hover:bg-gray-500/20 transition-colors border border-gray-500/20">
-                                           Source
+                                         <a href={proj.codeUrl} target="_blank" className="flex-1 text-center text-[10px] py-3 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 rounded-xl font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/20 transition-all hover:scale-105 active:scale-95 border border-gray-200 dark:border-white/5">
+                                           Git Repo
                                          </a>
                                        )}
                                     </div>
