@@ -12,6 +12,7 @@ import CommandPalette from './components/CommandPalette';
 import Terminal from './components/Terminal';
 import Admin from './components/Admin';
 import CV from './components/CV';
+import ProjectPage from './components/ProjectPage';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -79,6 +80,11 @@ const App: React.FC = () => {
 
   if (currentRoute === '#/cv') {
     return <CV />;
+  }
+
+  if (currentRoute.startsWith('#/projects/')) {
+    const projectId = currentRoute.split('/')[2];
+    return <ProjectPage id={projectId} />;
   }
 
   return (

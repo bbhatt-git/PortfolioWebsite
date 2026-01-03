@@ -81,7 +81,7 @@ const Services: React.FC = () => {
         </div>
       </div>
 
-      {/* Service Detail Modal - Matches Testimonial Design */}
+      {/* Service Detail Modal */}
       {selectedService && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-scale-in" onClick={closeModal}>
            <div 
@@ -91,17 +91,17 @@ const Services: React.FC = () => {
               {/* Internal Refraction Light */}
               <div className="absolute -top-32 -left-32 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-              {/* Traffic Lights */}
-              <div className="absolute top-6 left-8 flex gap-1.5 z-20">
+              {/* Traffic Lights - Hidden on Mobile */}
+              <div className="absolute top-6 left-8 hidden md:flex gap-1.5 z-20">
                 <div onClick={closeModal} className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer"></div>
                 <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
                 <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
               </div>
 
-              {/* Close Button Mobile */}
+              {/* Close Button Mobile - Redesigned to be more prominent on mobile */}
               <button 
                 onClick={closeModal}
-                className="absolute top-4 right-4 md:hidden w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-black dark:text-white z-20"
+                className="absolute top-4 right-4 md:hidden w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-black dark:text-white z-20 backdrop-blur-md border border-white/20"
               >
                 <i className="fas fa-times"></i>
               </button>

@@ -111,7 +111,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 };
 
 const Projects: React.FC = () => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -136,14 +135,8 @@ const Projects: React.FC = () => {
     fetchProjects();
   }, []);
 
-  const openModal = (project: Project) => {
-    setSelectedProject(project);
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeModal = () => {
-    setSelectedProject(null);
-    document.body.style.overflow = 'auto';
+  const navigateToProject = (id: string) => {
+    window.location.hash = `#/projects/${id}`;
   };
 
   return (
@@ -172,7 +165,7 @@ const Projects: React.FC = () => {
                 variant={index % 2 === 0 ? "rotate-left" : "rotate-right"} 
                 className="h-full"
               >
-                <ProjectCard project={project} onClick={() => openModal(project)} />
+                <ProjectCard project={project} onClick={() => navigateToProject(project.id)} />
               </Reveal>
             ))}
           </div>
@@ -183,101 +176,6 @@ const Projects: React.FC = () => {
           </div>
         )}
       </div>
-
-      {selectedProject && (
-        <div className="fixed inset-0 z-[100] bg-[#F2F2F7] dark:bg-[#050505] overflow-y-auto animate-slide-up">
-           
-           <div className="fixed top-0 left-0 right-0 z-[110] flex justify-between items-center px-6 py-4 md:px-12 md:py-6 pointer-events-none">
-              <div className="pointer-events-auto">
-                 <button onClick={closeModal} className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-black/5 dark:border-white/10 flex items-center justify-center text-black dark:text-white shadow-xl hover:scale-110 transition-transform">
-                    <i className="fas fa-arrow-left"></i>
-                 </button>
-              </div>
-           </div>
-
-           <div className="w-full h-[40vh] md:h-[60vh] relative overflow-hidden group">
-               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F2F2F7] dark:to-[#050505] z-10"></div>
-               <img 
-                 src={selectedProject.image} 
-                 alt={selectedProject.title} 
-                 className="w-full h-full object-cover object-top transition-transform duration-[2s] ease-out-expo scale-105" 
-               />
-           </div>
-
-           <div className="container mx-auto px-6 md:px-12 relative z-20 -mt-20 md:-mt-32 pb-32">
-               <div className="max-w-4xl mx-auto">
-                   
-                   <div className="glass-strong rounded-[2.5rem] p-8 md:p-12 shadow-2xl mb-12 animate-fade-up border border-white/40 dark:border-white/10 backdrop-blur-3xl relative overflow-hidden">
-                       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-                       
-                       <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-black dark:text-white mb-6 leading-tight relative z-10 tracking-tighter">{selectedProject.title}</h1>
-                       
-                       <div className="flex flex-wrap gap-2 mb-8 relative z-10">
-                          {selectedProject.stack.split(/[•,]/).map((tech, i) => (
-                             <span key={i} className="px-3 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-gray-700 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest backdrop-blur-md">
-                                {tech.trim()}
-                             </span>
-                          ))}
-                       </div>
-                       
-                       <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed font-medium relative z-10 mb-10">
-                          {selectedProject.desc}
-                       </p>
-
-                       {selectedProject.highlights && selectedProject.highlights.length > 0 && (
-                           <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                               {selectedProject.highlights.map((highlight, idx) => (
-                                   <div key={idx} className="flex items-center gap-3 p-3 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/5">
-                                       <div className="w-6 h-6 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                           <i className="fas fa-check text-[10px]"></i>
-                                       </div>
-                                       <p className="text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-tight">{highlight}</p>
-                                   </div>
-                               ))}
-                           </div>
-                       )}
-
-                       <div className="mt-12 flex flex-col sm:flex-row gap-4 relative z-10">
-                           {selectedProject.liveUrl && (
-                              <a href={selectedProject.liveUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-center text-sm shadow-xl shadow-blue-500/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
-                                 <i className="fas fa-external-link-alt group-hover:rotate-12 transition-transform"></i> Live Preview
-                              </a>
-                           )}
-                           {selectedProject.codeUrl && (
-                              <a href={selectedProject.codeUrl} target="_blank" className="flex-1 py-4 rounded-2xl bg-white/10 dark:bg-white/10 backdrop-blur-xl border border-white/20 dark:border-white/10 text-black dark:text-white font-black text-center text-sm hover:bg-white/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group tracking-widest uppercase">
-                                 <i className="fas fa-code text-lg group-hover:scale-110 transition-transform"></i> View Code
-                              </a>
-                           )}
-                       </div>
-                   </div>
-
-                   <div className="mt-20 p-10 md:p-14 rounded-[2.5rem] bg-black text-center text-white relative overflow-hidden shadow-2xl">
-                        <div className="absolute inset-0 bg-noise opacity-10"></div>
-                        <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] animate-pulse"></div>
-                        
-                        <div className="relative z-10">
-                            <h3 className="text-3xl md:text-5xl font-black mb-6 tracking-tighter">Ready to build your vision?</h3>
-                            <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-xl mx-auto font-medium leading-relaxed">
-                                Let's transform your ideas into a high-performance digital reality.
-                            </p>
-                            <button 
-                                onClick={() => {
-                                    closeModal();
-                                    setTimeout(() => {
-                                      const contactSection = document.getElementById('contact');
-                                      if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
-                                    }, 100);
-                                }}
-                                className="px-10 py-4 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.2em] hover:scale-105 transition-transform shadow-2xl flex items-center gap-3 mx-auto"
-                            >
-                                Let's Talk <i className="fas fa-arrow-right text-[10px]"></i>
-                            </button>
-                        </div>
-                    </div>
-               </div>
-           </div>
-        </div>
-      )}
     </section>
   );
 };
