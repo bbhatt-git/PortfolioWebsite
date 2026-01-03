@@ -10,6 +10,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
     // Add mouse move listener for background interaction
     const handleMouseMove = (e: MouseEvent) => {
+        // Smoother, slightly delayed feel handled by CSS transition
         setMousePos({
             x: (e.clientX / window.innerWidth) * 2 - 1, // Normalized -1 to 1
             y: (e.clientY / window.innerHeight) * 2 - 1
@@ -39,42 +40,42 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         
         {/* Blob 1 - Top Left - Deep Blue */}
         <div 
-            className="absolute top-[-10%] left-[-10%] transition-transform duration-[1.5s] ease-out-circ will-change-transform"
-            style={{ transform: `translate3d(${mousePos.x * -20}px, ${mousePos.y * -20}px, 0)` }}
+            className="absolute top-[-20%] left-[-10%] transition-transform duration-[2s] ease-out-expo will-change-transform opacity-60 dark:opacity-40"
+            style={{ transform: `translate3d(${mousePos.x * -40}px, ${mousePos.y * -40}px, 0)` }}
         >
-            <div className="w-[60vw] h-[60vw] bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-[100px] animate-blob mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="w-[70vw] h-[70vw] bg-gradient-to-br from-blue-400/30 to-indigo-500/30 dark:from-blue-600/20 dark:to-indigo-800/20 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-screen"></div>
         </div>
         
         {/* Blob 2 - Top Right - Purple */}
         <div 
-            className="absolute top-[-10%] right-[-10%] transition-transform duration-[2s] ease-out-circ will-change-transform"
-            style={{ transform: `translate3d(${mousePos.x * 25}px, ${mousePos.y * 25}px, 0)` }}
+            className="absolute top-[-10%] right-[-20%] transition-transform duration-[2.5s] ease-out-expo will-change-transform opacity-60 dark:opacity-40"
+            style={{ transform: `translate3d(${mousePos.x * 50}px, ${mousePos.y * 50}px, 0)` }}
         >
-            <div className="w-[50vw] h-[50vw] bg-purple-500/20 dark:bg-purple-600/10 rounded-full blur-[120px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="w-[60vw] h-[60vw] bg-gradient-to-bl from-purple-400/30 to-pink-500/30 dark:from-purple-600/20 dark:to-pink-800/20 rounded-full blur-[140px] animate-blob-reverse animation-delay-2000 mix-blend-multiply dark:mix-blend-screen"></div>
         </div>
         
         {/* Blob 3 - Bottom Left - Indigo/Pink */}
         <div 
-            className="absolute bottom-[-20%] left-[-10%] transition-transform duration-[1.8s] ease-out-circ will-change-transform"
-            style={{ transform: `translate3d(${mousePos.x * -30}px, ${mousePos.y * 30}px, 0)` }}
+            className="absolute bottom-[-20%] left-[-10%] transition-transform duration-[2.2s] ease-out-expo will-change-transform opacity-50 dark:opacity-30"
+            style={{ transform: `translate3d(${mousePos.x * -60}px, ${mousePos.y * 60}px, 0)` }}
         >
-            <div className="w-[60vw] h-[60vw] bg-pink-500/20 dark:bg-indigo-600/10 rounded-full blur-[140px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="w-[60vw] h-[60vw] bg-gradient-to-tr from-indigo-400/30 to-teal-400/30 dark:from-indigo-600/20 dark:to-teal-600/20 rounded-full blur-[150px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-screen"></div>
         </div>
         
-        {/* Blob 4 - Center/Right - Cyan Accent */}
+        {/* Blob 4 - Center/Right - Cyan Accent - Moves Faster for depth */}
         <div 
-            className="absolute top-[40%] right-[10%] transition-transform duration-[2.5s] ease-out-circ will-change-transform"
-            style={{ transform: `translate3d(${mousePos.x * 40}px, ${mousePos.y * -20}px, 0)` }}
+            className="absolute top-[30%] right-[5%] transition-transform duration-[3s] ease-out-expo will-change-transform opacity-40 dark:opacity-25"
+            style={{ transform: `translate3d(${mousePos.x * 80}px, ${mousePos.y * -30}px, 0)` }}
         >
-            <div className="w-[40vw] h-[40vw] bg-cyan-400/20 dark:bg-cyan-500/10 rounded-full blur-[100px] animate-float-slow mix-blend-multiply dark:mix-blend-screen"></div>
+            <div className="w-[45vw] h-[45vw] bg-gradient-to-l from-cyan-300/30 to-blue-500/30 dark:from-cyan-500/20 dark:to-blue-700/20 rounded-full blur-[110px] animate-float-slow mix-blend-multiply dark:mix-blend-screen"></div>
         </div>
 
-        {/* Blob 5 - Center/Left - Extra Depth */}
+        {/* Blob 5 - Center/Left - Subtle Fill */}
         <div 
-            className="absolute top-[30%] left-[20%] transition-transform duration-[3s] ease-out-circ will-change-transform opacity-60"
-            style={{ transform: `translate3d(${mousePos.x * -15}px, ${mousePos.y * 15}px, 0)` }}
+            className="absolute top-[40%] left-[10%] transition-transform duration-[3.5s] ease-out-expo will-change-transform opacity-40 dark:opacity-20"
+            style={{ transform: `translate3d(${mousePos.x * -30}px, ${mousePos.y * 20}px, 0)` }}
         >
-             <div className="w-[30vw] h-[30vw] bg-indigo-400/20 dark:bg-blue-400/5 rounded-full blur-[80px] animate-blob animation-delay-2000"></div>
+             <div className="w-[35vw] h-[35vw] bg-gradient-to-r from-emerald-300/20 to-blue-500/20 dark:from-emerald-500/10 dark:to-blue-700/10 rounded-full blur-[90px] animate-blob-reverse animation-delay-2000"></div>
         </div>
 
         {/* Noise Overlay */}

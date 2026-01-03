@@ -23,7 +23,8 @@ export default {
         'out-circ': 'cubic-bezier(0.075, 0.82, 0.165, 1)',
       },
       animation: {
-        'blob': 'blob 25s infinite alternate cubic-bezier(0.45, 0, 0.55, 1)',
+        'blob': 'blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'blob-reverse': 'blobReverse 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
         'fade-up': 'fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -32,13 +33,22 @@ export default {
         'float-fast': 'float 4s ease-in-out infinite',
         'spin-slow': 'spin 15s linear infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
+        'marquee': 'marquee 40s linear infinite',
       },
       keyframes: {
         blob: {
-          '0%': { transform: 'translate3d(0, 0, 0) scale(1) rotate(0deg)' },
-          '33%': { transform: 'translate3d(30px, -50px, 0) scale(1.1) rotate(10deg)' },
-          '66%': { transform: 'translate3d(-20px, 20px, 0) scale(0.9) rotate(-10deg)' },
-          '100%': { transform: 'translate3d(0, 0, 0) scale(1) rotate(0deg)' },
+          '0%': { transform: 'translate(0px, 0px) scale(1)' },
+          '25%': { transform: 'translate(40px, -60px) scale(1.1)' },
+          '50%': { transform: 'translate(-30px, 30px) scale(0.9)' },
+          '75%': { transform: 'translate(20px, 50px) scale(1.05)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        },
+        blobReverse: {
+          '0%': { transform: 'translate(0px, 0px) scale(1)' },
+          '25%': { transform: 'translate(-40px, 60px) scale(0.9)' },
+          '50%': { transform: 'translate(30px, -30px) scale(1.1)' },
+          '75%': { transform: 'translate(-20px, -50px) scale(0.95)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1)' },
         },
         fadeUp: {
           '0%': { opacity: '0', transform: 'translate3d(0, 40px, 0)' },
@@ -59,6 +69,10 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-1200px 0' },
           '100%': { backgroundPosition: '1200px 0' }
+        },
+        marquee: {
+          '0%': { transform: 'translate3d(0, 0, 0)' },
+          '100%': { transform: 'translate3d(-100%, 0, 0)' },
         }
       }
     }
