@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
@@ -11,26 +11,23 @@ const Admin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // macOS Desktop State
-  const [openWindows, setOpenWindows] = useState<string[]>(['inbox']); // Which windows are active
-  const [focusedWindow, setFocusedWindow] = useState<string>('inbox');
-  
-  // Data State
+  // Windows Management
+  const [windows, setWindows] = useState<{ id: string; type: 'inbox' | 'projects' | 'message' | 'compose'; data?: any; zIndex: number }[]>([]);
+  const [activeWindow, setActiveWindow] = useState<string | null>(null);
+  const [nextZIndex, setNextZIndex] = useState(10);
+
+  // Data
   const [messages, setMessages] = useState<any[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
-  
-  // Project Editor (Compose Window) State
-  const [isComposeOpen, setIsComposeOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+
+  // Project Form State (Compose)
   const [projectForm, setProjectForm] = useState({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
   const [caseStudyForm, setCaseStudyForm] = useState({ challenge: '', solution: '', results: '' });
-  
-  // Tag/List Systems State
   const [techInput, setTechInput] = useState('');
   const [techStackList, setTechStackList] = useState<string[]>([]);
   const [highlightInput, setHighlightInput] = useState('');
   const [highlightsList, setHighlightsList] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -47,9 +44,7 @@ const Admin: React.FC = () => {
   const fetchMessages = async () => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "desc"));
     const snap = await getDocs(q);
-    const msgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setMessages(msgs);
-    if (msgs.length > 0) setSelectedMessage(msgs[0]);
+    setMessages(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
   };
 
   const fetchProjects = async () => {
@@ -60,111 +55,89 @@ const Admin: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      setError('Invalid system credentials.');
+    } catch (err) { setError('Access Denied'); }
+  };
+
+  const openWindow = (type: 'inbox' | 'projects' | 'message' | 'compose', data?: any) => {
+    const id = `${type}-${data?.id || 'new'}-${Date.now()}`;
+    // Check if inbox or projects window already exists
+    if (type === 'inbox' || type === 'projects') {
+        const existing = windows.find(w => w.type === type);
+        if (existing) {
+            setActiveWindow(existing.id);
+            return;
+        }
+    }
+    
+    setWindows(prev => [...prev, { id, type, data, zIndex: nextZIndex }]);
+    setActiveWindow(id);
+    setNextZIndex(prev => prev + 1);
+
+    if (type === 'compose') {
+        if (data) {
+            setEditingId(data.id);
+            setProjectForm({ title: data.title, desc: data.desc, liveUrl: data.liveUrl || '', codeUrl: data.codeUrl || '', imageUrl: data.image });
+            setCaseStudyForm({ challenge: data.caseStudy?.challenge || '', solution: data.caseStudy?.solution || '', results: data.caseStudy?.results || '' });
+            setTechStackList(data.stack.split(/[•,]/).map((s: string) => s.trim()).filter(Boolean));
+            setHighlightsList(data.highlights || []);
+        } else {
+            setEditingId(null);
+            setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
+            setCaseStudyForm({ challenge: '', solution: '', results: '' });
+            setTechStackList([]);
+            setHighlightsList([]);
+        }
     }
   };
 
-  const toggleWindow = (id: string) => {
-    if (openWindows.includes(id)) {
-      setOpenWindows(openWindows.filter(w => w !== id));
-    } else {
-      setOpenWindows([...openWindows, id]);
-      setFocusedWindow(id);
-    }
+  const closeWindow = (id: string) => {
+    setWindows(prev => prev.filter(w => w.id !== id));
+    if (activeWindow === id) setActiveWindow(null);
   };
 
-  const openCompose = (proj?: Project) => {
-    if (proj) {
-      setEditingProject(proj);
-      setProjectForm({ title: proj.title, desc: proj.desc, liveUrl: proj.liveUrl || '', codeUrl: proj.codeUrl || '', imageUrl: proj.image });
-      setCaseStudyForm({ challenge: proj.caseStudy?.challenge || '', solution: proj.caseStudy?.solution || '', results: proj.caseStudy?.results || '' });
-      setTechStackList(proj.stack.split(/[•,]/).map(s => s.trim()).filter(Boolean));
-      setHighlightsList(proj.highlights || []);
-    } else {
-      setEditingProject(null);
-      setProjectForm({ title: '', desc: '', liveUrl: '', codeUrl: '', imageUrl: '' });
-      setCaseStudyForm({ challenge: '', solution: '', results: '' });
-      setTechStackList([]);
-      setHighlightsList([]);
-    }
-    setIsComposeOpen(true);
-  };
-
-  const addTech = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const val = techInput.trim();
-    if (val && !techStackList.includes(val)) {
-      setTechStackList([...techStackList, val]);
-      setTechInput('');
-    }
-  };
-
-  const addHighlight = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const val = highlightInput.trim();
-    if (val) {
-      setHighlightsList([...highlightsList, val]);
-      setHighlightInput('');
-    }
-  };
-
-  const handleSaveProject = async () => {
-    if (!projectForm.title || techStackList.length === 0) return alert("Title and Tech Stack are mandatory.");
+  const handleSaveProject = async (windowId: string) => {
+    if (!projectForm.title || techStackList.length === 0) return alert("Subject and Tech required.");
     const data = {
       ...projectForm,
       image: projectForm.imageUrl || 'https://via.placeholder.com/1200x800',
       stack: techStackList.join(' • '),
       highlights: highlightsList,
       caseStudy: caseStudyForm,
-      order: editingProject ? editingProject.order : projects.length
+      order: editingId ? projects.find(p => p.id === editingId)?.order : projects.length
     };
-    try {
-      if (editingProject) await updateDoc(doc(db, "projects", editingProject.id), data);
-      else await addDoc(collection(db, "projects"), { ...data, createdAt: serverTimestamp() });
-      fetchProjects();
-      setIsComposeOpen(false);
-    } catch (err) { alert("Failed to deploy project."); }
+    if (editingId) await updateDoc(doc(db, "projects", editingId), data);
+    else await addDoc(collection(db, "projects"), { ...data, createdAt: serverTimestamp() });
+    fetchProjects();
+    closeWindow(windowId);
   };
 
-  const WindowFrame = ({ id, title, children, className = "" }: any) => (
-    <div 
-      onClick={() => setFocusedWindow(id)}
-      className={`absolute glass-strong rounded-2xl shadow-2xl border border-white/20 flex flex-col transition-all duration-300 animate-scale-in ${
-        focusedWindow === id ? 'z-40 scale-100 opacity-100' : 'z-30 scale-[0.98] opacity-80'
-      } ${className}`}
-    >
-      <div className="h-10 bg-white/40 dark:bg-black/20 backdrop-blur-md flex items-center px-4 shrink-0 border-b border-black/5 dark:border-white/5 cursor-default">
-        <div className="flex gap-1.5">
-          <div onClick={() => toggleWindow(id)} className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer hover:brightness-90"></div>
-          <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-          <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
-        </div>
-        <div className="flex-1 text-center">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">{title}</span>
-        </div>
-        <div className="w-12"></div>
+  const WindowHeader = ({ id, title }: { id: string, title: string }) => (
+    <div className="h-10 bg-white/60 dark:bg-black/40 border-b border-black/5 flex items-center px-4 shrink-0 relative group">
+      <div className="flex gap-2 relative z-10">
+        <div onClick={(e) => { e.stopPropagation(); closeWindow(id); }} className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer hover:brightness-90"></div>
+        <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+        <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
       </div>
-      <div className="flex-1 overflow-hidden flex flex-col">{children}</div>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">{title}</span>
+      </div>
     </div>
   );
 
-  if (loading) return <div className="h-screen bg-black flex items-center justify-center text-blue-500"><i className="fas fa-circle-notch fa-spin text-4xl"></i></div>;
+  if (loading) return <div className="h-screen bg-[#F2F2F7] flex items-center justify-center text-blue-600"><i className="fas fa-spinner fa-spin text-3xl"></i></div>;
 
   if (!user) return (
-    <div className="h-screen flex items-center justify-center bg-[#F2F2F7] dark:bg-[#050505] p-6 font-sans">
-      <div className="glass-strong p-10 rounded-[2.5rem] w-full max-w-sm shadow-2xl border border-white/20 text-center animate-scale-in">
-        <div className="w-20 h-20 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-xl mb-8 text-white font-black text-2xl">BR</div>
-        <h1 className="text-xl font-bold mb-8">Administrator Access</h1>
+    <div className="h-screen flex items-center justify-center bg-[#F2F2F7] dark:bg-[#050505] p-6">
+      <div className="glass-strong p-10 rounded-[2rem] w-full max-w-xs shadow-2xl border border-white/20 text-center animate-scale-in">
+        <div className="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-8 text-white font-black text-xl">BR</div>
         <form onSubmit={handleLogin} className="space-y-4">
-          <input type="email" placeholder="System ID" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none focus:ring-2 ring-blue-500/20 text-sm font-bold" />
-          <input type="password" placeholder="Passkey" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none focus:ring-2 ring-blue-500/20 text-sm font-bold" />
-          <button className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all">Authorize Session</button>
+          <input type="email" placeholder="System ID" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none text-sm font-bold" />
+          <input type="password" placeholder="Passkey" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 outline-none text-sm font-bold" />
+          <button className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all">Authorize</button>
         </form>
-        {error && <p className="text-red-500 text-xs mt-6 font-bold uppercase tracking-widest">{error}</p>}
+        {error && <p className="text-red-500 text-[10px] mt-4 font-black uppercase tracking-widest">{error}</p>}
       </div>
     </div>
   );
@@ -172,256 +145,154 @@ const Admin: React.FC = () => {
   return (
     <div className="h-screen w-full relative bg-[#F2F2F7] dark:bg-[#050505] overflow-hidden flex flex-col font-sans select-none">
       
-      {/* 1. TOP MENU BAR */}
-      <div className="h-7 w-full bg-white/30 dark:bg-black/20 backdrop-blur-xl border-b border-black/5 flex items-center px-4 justify-between text-[11px] font-bold z-[100]">
-          <div className="flex items-center gap-5">
-              <i className="fab fa-apple text-sm"></i>
-              <span className="font-black">Portfolio OS</span>
-              <span className="opacity-40 hover:opacity-100 cursor-default">File</span>
-              <span className="opacity-40 hover:opacity-100 cursor-default">Edit</span>
-              <span className="opacity-40 hover:opacity-100 cursor-default">View</span>
-              <span className="opacity-40 hover:opacity-100 cursor-default">Go</span>
-              <span className="opacity-40 hover:opacity-100 cursor-default">Window</span>
-          </div>
-          <div className="flex items-center gap-5">
-              <span className="opacity-60">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-              <i className="fas fa-wifi opacity-60"></i>
-              <i className="fas fa-search opacity-60"></i>
-              <button onClick={() => signOut(auth)} className="text-red-500 hover:opacity-80 transition-opacity">Disconnect</button>
-          </div>
+      {/* 1. STATUS BAR */}
+      <div className="h-7 w-full bg-white/20 dark:bg-black/20 backdrop-blur-xl flex items-center px-4 justify-between border-b border-black/5 text-[11px] font-bold z-[1000]">
+        <div className="flex items-center gap-5">
+          <i className="fab fa-apple text-sm"></i>
+          <span className="font-black">Portfolio OS</span>
+          <span className="opacity-40">System</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="opacity-60">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          <button onClick={() => signOut(auth)} className="text-red-500">Log Out</button>
+        </div>
       </div>
 
       {/* 2. DESKTOP WORKSPACE */}
-      <main className="flex-1 relative overflow-hidden p-6">
-          
-          {/* WINDOW: INBOX (Mail App) */}
-          {openWindows.includes('inbox') && (
-            <WindowFrame id="inbox" title="Mail — Inbox" className="w-full max-w-4xl h-[70vh] left-1/2 top-[10%] -translate-x-1/2">
-                <div className="flex h-full">
-                    {/* List Pane */}
-                    <div className="w-80 border-r border-black/5 dark:border-white/5 bg-white/40 dark:bg-black/20 shrink-0 overflow-y-auto custom-scrollbar">
+      <main className="flex-1 relative overflow-hidden p-6 bg-[url('https://www.apple.com/v/macos/sequoia/a/images/overview/hero/wallpaper__e63kpsk0s7m6_large_2x.jpg')] bg-cover bg-center">
+        
+        {windows.map((win) => (
+          <div 
+            key={win.id}
+            onClick={() => setActiveWindow(win.id)}
+            style={{ zIndex: win.zIndex }}
+            className={`absolute flex flex-col rounded-2xl shadow-2xl border border-white/20 overflow-hidden glass-strong transition-all duration-300 animate-scale-in ${
+              win.type === 'inbox' ? 'w-[400px] h-[500px] left-10 top-10' :
+              win.type === 'projects' ? 'w-[500px] h-[400px] left-20 top-20' :
+              win.type === 'message' ? 'w-[600px] h-[70vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' :
+              'w-[800px] h-[85vh] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+            } ${activeWindow === win.id ? 'opacity-100 scale-100' : 'opacity-80 scale-[0.98]'}`}
+          >
+            <WindowHeader id={win.id} title={win.type === 'message' ? `Mail — ${win.data.name}` : win.type === 'compose' ? 'Compose — Project' : win.type} />
+            
+            <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-[#1C1C1E]">
+                {win.type === 'inbox' && (
+                    <div className="divide-y divide-black/5">
                         {messages.map(msg => (
-                            <div key={msg.id} onClick={() => setSelectedMessage(msg)} className={`p-5 border-b border-black/5 cursor-pointer transition-colors ${selectedMessage?.id === msg.id ? 'bg-blue-600/10' : 'hover:bg-white/50'}`}>
+                            <div key={msg.id} onClick={() => openWindow('message', msg)} className="p-4 hover:bg-blue-600/5 cursor-pointer transition-colors">
                                 <div className="flex justify-between items-center mb-1">
-                                    <span className="font-bold text-sm truncate pr-2">{msg.name}</span>
+                                    <span className="font-bold text-sm">{msg.name}</span>
                                     <span className="text-[9px] opacity-40">{msg.timestamp?.toDate().toLocaleDateString()}</span>
                                 </div>
-                                <p className="text-[11px] text-blue-600 dark:text-blue-400 font-bold mb-1">{msg.email}</p>
-                                <p className="text-[11px] opacity-60 line-clamp-2 leading-relaxed">{msg.message}</p>
+                                <p className="text-[11px] opacity-60 truncate">{msg.message}</p>
                             </div>
                         ))}
                     </div>
-                    {/* Content Pane */}
-                    <div className="flex-1 bg-white dark:bg-[#121212] flex flex-col overflow-y-auto custom-scrollbar p-10">
-                        {selectedMessage ? (
-                            <div className="animate-fade-up">
-                                <div className="border-b border-black/5 pb-8 mb-8">
-                                    <h2 className="text-4xl font-black tracking-tighter mb-6">{selectedMessage.name}</h2>
-                                    <div className="space-y-1.5 text-xs">
-                                        <div className="flex gap-4"><span className="opacity-40 w-14 font-black uppercase text-[9px]">From:</span> <span className="font-bold text-blue-600">{selectedMessage.email}</span></div>
-                                        <div className="flex gap-4"><span className="opacity-40 w-14 font-black uppercase text-[9px]">To:</span> <span className="opacity-40">Admin &lt;bhupesh@bbhatt.com.np&gt;</span></div>
-                                        <div className="flex gap-4"><span className="opacity-40 w-14 font-black uppercase text-[9px]">Date:</span> <span className="opacity-40">{selectedMessage.timestamp?.toDate().toLocaleString()}</span></div>
-                                    </div>
-                                </div>
-                                <div className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                                    {selectedMessage.message}
+                )}
+
+                {win.type === 'projects' && (
+                    <div className="p-4 grid grid-cols-2 gap-4">
+                        {projects.map(proj => (
+                            <div key={proj.id} onClick={() => openWindow('compose', proj)} className="p-2 bg-black/5 dark:bg-white/5 rounded-xl border border-black/5 cursor-pointer hover:bg-black/10 transition-all">
+                                <img src={proj.image} className="w-full aspect-video rounded-lg object-cover mb-2" />
+                                <h4 className="font-bold text-xs truncate">{proj.title}</h4>
+                                <div className="flex justify-between mt-2">
+                                    <button onClick={(e) => { e.stopPropagation(); if(confirm('Erase?')) deleteDoc(doc(db, "projects", proj.id)).then(fetchProjects); }} className="text-red-500 text-[10px] uppercase font-black">Delete</button>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center opacity-10">
-                                <i className="fas fa-envelope-open-text text-9xl"></i>
-                                <span className="mt-4 font-bold">No message selected</span>
-                            </div>
-                        )}
+                        ))}
                     </div>
-                </div>
-            </WindowFrame>
-          )}
+                )}
 
-          {/* WINDOW: PROJECTS (Finder Style) */}
-          {openWindows.includes('projects') && (
-            <WindowFrame id="projects" title="Finder — Deployments" className="w-full max-w-5xl h-[75vh] left-1/2 top-[12%] -translate-x-1/2 translate-y-4">
-                <div className="bg-white/40 dark:bg-black/20 p-4 border-b border-black/5 flex justify-between items-center shrink-0">
-                    <div className="flex gap-4">
-                        <i className="fas fa-chevron-left opacity-30"></i>
-                        <i className="fas fa-chevron-right opacity-30"></i>
-                        <span className="text-[11px] font-bold opacity-60">All Projects</span>
+                {win.type === 'message' && (
+                    <div className="p-10 space-y-8 animate-fade-up">
+                        <div className="border-b border-black/5 pb-8">
+                            <h2 className="text-4xl font-black mb-6">{win.data.name}</h2>
+                            <div className="space-y-2 text-xs opacity-50 font-bold uppercase tracking-widest">
+                                <div>From: <span className="text-blue-600 lowercase">{win.data.email}</span></div>
+                                <div>Date: {win.data.timestamp?.toDate().toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                            {win.data.message}
+                        </div>
+                        <div className="pt-10 flex justify-end">
+                            <a href={`mailto:${win.data.email}`} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-xl">Reply</a>
+                        </div>
                     </div>
-                    <button onClick={() => openCompose()} className="px-5 py-2 bg-blue-600 text-white rounded-lg font-bold text-xs shadow-xl flex items-center gap-2 hover:bg-blue-500"><i className="fas fa-plus"></i> New deployment</button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 custom-scrollbar">
-                    {projects.map(proj => (
-                        <div key={proj.id} onClick={() => openCompose(proj)} className="group glass p-4 rounded-2xl border border-black/5 cursor-pointer hover:scale-[1.02] transition-all hover:bg-white/80 dark:hover:bg-white/5">
-                            <div className="relative aspect-video rounded-xl overflow-hidden mb-4 border border-black/5">
-                                <img src={proj.image} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-black text-white border border-white/30 uppercase tracking-widest">Open Editor</span>
+                )}
+
+                {win.type === 'compose' && (
+                    <div className="flex flex-col h-full">
+                        <div className="p-8 border-b border-black/5 bg-gray-50 dark:bg-transparent">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-6 border-b border-black/5 pb-3">
+                                    <span className="text-[10px] font-black opacity-30 uppercase w-20">Subject:</span>
+                                    <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="flex-1 bg-transparent text-xl font-bold outline-none" placeholder="Project Name..." />
+                                </div>
+                                <div className="flex items-center gap-6 border-b border-black/5 pb-3">
+                                    <span className="text-[10px] font-black opacity-30 uppercase w-20">CDN URL:</span>
+                                    <input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="flex-1 bg-transparent text-sm font-bold outline-none" placeholder="https://..." />
                                 </div>
                             </div>
-                            <h4 className="font-bold text-sm mb-1 truncate">{proj.title}</h4>
-                            <p className="text-[9px] font-black opacity-30 uppercase tracking-widest truncate">{proj.stack}</p>
-                            <div className="mt-4 flex justify-end">
-                                <button onClick={(e) => { e.stopPropagation(); if(confirm('Erase this deployment?')) deleteDoc(doc(db, "projects", proj.id)).then(fetchProjects); }} className="text-red-500 text-xs opacity-0 group-hover:opacity-100 hover:scale-125 transition-all"><i className="fas fa-trash-alt"></i></button>
-                            </div>
                         </div>
-                    ))}
-                </div>
-            </WindowFrame>
-          )}
-
-          {/* OVERLAY: COMPOSE WINDOW (Project Form) */}
-          {isComposeOpen && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
-                <div className="w-full max-w-4xl bg-white dark:bg-[#1C1C1E] rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.5)] border border-white/20 overflow-hidden flex flex-col h-[90vh] animate-scale-in">
-                    
-                    {/* Compose Header */}
-                    <div className="h-14 bg-[#F2F2F7] dark:bg-black/40 border-b border-black/5 flex items-center px-6 justify-between shrink-0">
-                        <div className="flex gap-2">
-                           <div onClick={() => setIsComposeOpen(false)} className="w-3.5 h-3.5 rounded-full bg-[#FF5F57] border border-[#E0443E] cursor-pointer"></div>
-                           <div className="w-3.5 h-3.5 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
-                           <div className="w-3.5 h-3.5 rounded-full bg-[#28C840] border border-[#1AAB29]"></div>
-                        </div>
-                        <span className="text-[11px] font-black uppercase tracking-[0.4em] opacity-40">New Project Specification</span>
-                        <div className="w-12"></div>
-                    </div>
-
-                    {/* Metadata Section (To/Subject Style) */}
-                    <div className="px-10 py-6 border-b border-black/5 bg-white dark:bg-transparent">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-6 border-b border-black/5 pb-3">
-                                <span className="text-[10px] font-black opacity-30 uppercase w-20">To:</span>
-                                <div className="px-3 py-1 rounded-full bg-blue-600/10 text-blue-600 text-[9px] font-black uppercase tracking-[0.2em] border border-blue-600/20">Production Portfolio</div>
-                            </div>
-                            <div className="flex items-center gap-6 border-b border-black/5 pb-3">
-                                <span className="text-[10px] font-black opacity-30 uppercase w-20">Subject:</span>
-                                <input value={projectForm.title} onChange={e => setProjectForm({...projectForm, title: e.target.value})} className="flex-1 bg-transparent text-xl font-bold outline-none placeholder:opacity-20" placeholder="A Strategic Digital Transformation..." />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Form Body */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-12">
-                        
-                        {/* 1. TECH PILL SYSTEM */}
-                        <div className="p-8 rounded-[2rem] bg-[#F2F2F7] dark:bg-white/5 border border-black/5">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><i className="fas fa-microchip text-blue-500"></i> Technical Architecture</h4>
-                            <div className="flex flex-wrap gap-2.5 mb-6">
-                                {techStackList.map(t => (
-                                    <div key={t} className="px-4 py-2 rounded-xl bg-blue-600 text-white text-[11px] font-bold flex items-center gap-3 shadow-lg group">
-                                        {t} 
-                                        <button onClick={() => setTechStackList(techStackList.filter(item => item !== t))} className="hover:text-red-200"><i className="fas fa-times"></i></button>
-                                    </div>
-                                ))}
-                                {techStackList.length === 0 && <span className="text-xs opacity-30 italic">No technologies defined...</span>}
-                            </div>
-                            <div className="flex gap-3">
-                                <input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTech(e)} className="flex-1 bg-white dark:bg-white/5 p-4 rounded-xl border border-black/5 text-sm font-bold outline-none" placeholder="Type tech name (e.g. Next.js, Python) and press Enter..." />
-                                <button onClick={addTech} className="px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">Inject</button>
-                            </div>
-                        </div>
-
-                        {/* 2. HIGHLIGHTS SYSTEM */}
-                        <div className="p-8 rounded-[2rem] bg-[#F2F2F7] dark:bg-white/5 border border-black/5">
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><i className="fas fa-award text-yellow-500"></i> Key Achievements & Performance</h4>
-                            <div className="space-y-3 mb-6">
-                                {highlightsList.map((h, i) => (
-                                    <div key={i} className="p-4 rounded-xl bg-white dark:bg-white/5 border border-black/5 text-sm flex justify-between items-center group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-6 h-6 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center text-[10px]"><i className="fas fa-check"></i></div>
-                                            <span className="font-medium">{h}</span>
+                        <div className="flex-1 p-10 space-y-12 overflow-y-auto">
+                            {/* Tech Stack Pills */}
+                            <section className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5">
+                                <h4 className="text-[10px] font-black uppercase mb-4 text-blue-600">Tech Arsenal</h4>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {techStackList.map(t => (
+                                        <div key={t} className="px-3 py-1 bg-blue-600 text-white rounded-lg text-[10px] font-black flex items-center gap-2">
+                                            {t} <button onClick={() => setTechStackList(techStackList.filter(i => i !== t))}><i className="fas fa-times"></i></button>
                                         </div>
-                                        <button onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))} className="text-red-400 hover:text-red-600"><i className="fas fa-trash-alt"></i></button>
-                                    </div>
-                                ))}
-                                {highlightsList.length === 0 && <span className="text-xs opacity-30 italic">No highlights recorded...</span>}
-                            </div>
-                            <div className="flex gap-3">
-                                <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addHighlight(e)} className="flex-1 bg-white dark:bg-white/5 p-4 rounded-xl border border-black/5 text-sm font-bold outline-none" placeholder="Add achievement (e.g. Boosted SEO by 80%) and press Enter..." />
-                                <button onClick={addHighlight} className="px-8 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl">Push</button>
-                            </div>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2">
+                                    <input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setTechStackList([...techStackList, techInput]), setTechInput(''))} className="flex-1 p-3 rounded-xl border border-black/5 bg-white text-xs outline-none" placeholder="Enter tech..." />
+                                </div>
+                            </section>
+                            {/* Highlights */}
+                            <section className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5">
+                                <h4 className="text-[10px] font-black uppercase mb-4 text-yellow-600">Highlights</h4>
+                                <div className="space-y-2 mb-4">
+                                    {highlightsList.map((h, i) => (
+                                        <div key={i} className="p-3 bg-white dark:bg-black rounded-xl border border-black/5 flex justify-between items-center text-xs">
+                                            <span>{h}</span>
+                                            <button onClick={() => setHighlightsList(highlightsList.filter((_, idx) => idx !== i))} className="text-red-500"><i className="fas fa-trash-alt"></i></button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2">
+                                    <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setHighlightsList([...highlightsList, highlightInput]), setHighlightInput(''))} className="flex-1 p-3 rounded-xl border border-black/5 bg-white text-xs outline-none" placeholder="Add highlight..." />
+                                </div>
+                            </section>
+                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full h-32 p-4 rounded-xl bg-black/5 border border-black/5 outline-none text-sm" placeholder="Description..." />
                         </div>
-
-                        {/* 3. ASSET LOGISTICS */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-widest opacity-30">CDN Image URL</label>
-                                <input value={projectForm.imageUrl} onChange={e => setProjectForm({...projectForm, imageUrl: e.target.value})} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 text-sm font-bold outline-none" placeholder="https://..." />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-30">Production Link</label>
-                                    <input value={projectForm.liveUrl} onChange={e => setProjectForm({...projectForm, liveUrl: e.target.value})} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 text-sm font-bold outline-none" placeholder="https://..." />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-30">Repository Link</label>
-                                    <input value={projectForm.codeUrl} onChange={e => setProjectForm({...projectForm, codeUrl: e.target.value})} className="w-full p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 text-sm font-bold outline-none" placeholder="https://..." />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 4. PROJECT NARRATIVE */}
-                        <div className="space-y-6">
-                            <label className="text-[10px] font-black uppercase tracking-widest opacity-30">Primary Narrative / Description</label>
-                            <textarea value={projectForm.desc} onChange={e => setProjectForm({...projectForm, desc: e.target.value})} className="w-full h-40 p-6 rounded-[2rem] bg-black/5 dark:bg-white/5 border border-black/5 text-lg leading-relaxed outline-none" placeholder="The mission behind this deployment..." />
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-red-500 uppercase tracking-widest">Architecture Challenge</label>
-                                    <textarea value={caseStudyForm.challenge} onChange={e => setCaseStudyForm({...caseStudyForm, challenge: e.target.value})} className="w-full h-32 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 text-xs font-bold leading-relaxed outline-none" />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-green-500 uppercase tracking-widest">Implemented Solution</label>
-                                    <textarea value={caseStudyForm.solution} onChange={e => setCaseStudyForm({...caseStudyForm, solution: e.target.value})} className="w-full h-32 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 text-xs font-bold leading-relaxed outline-none" />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-purple-500 uppercase tracking-widest">Technical Results</label>
-                                    <textarea value={caseStudyForm.results} onChange={e => setCaseStudyForm({...caseStudyForm, results: e.target.value})} className="w-full h-32 p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 text-xs font-bold leading-relaxed outline-none" />
-                                </div>
-                            </div>
+                        <div className="p-6 border-t border-black/5 flex justify-end gap-3 shrink-0">
+                            <button onClick={() => closeWindow(win.id)} className="px-6 py-2 text-xs font-black uppercase tracking-widest opacity-40">Discard</button>
+                            <button onClick={() => handleSaveProject(win.id)} className="px-10 py-2 bg-blue-600 text-white rounded-xl font-black text-xs uppercase shadow-xl tracking-widest">Deploy</button>
                         </div>
                     </div>
-
-                    {/* Compose Footer Actions */}
-                    <div className="p-8 border-t border-black/5 bg-white dark:bg-black/40 flex justify-end gap-4 shrink-0">
-                        <button onClick={() => setIsComposeOpen(false)} className="px-8 py-3 rounded-xl hover:bg-black/5 font-black text-[10px] uppercase tracking-widest">Discard Draft</button>
-                        <button onClick={handleSaveProject} className="px-12 py-3 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl hover:bg-blue-500 flex items-center gap-3">
-                            <i className="fas fa-paper-plane"></i> Deploy Signal
-                        </button>
-                    </div>
-                </div>
+                )}
             </div>
-          )}
+          </div>
+        ))}
 
       </main>
 
-      {/* 3. DESKTOP DOCK */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 p-3 bg-white/40 dark:bg-black/40 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 z-[100] group">
-          <button 
-            onClick={() => toggleWindow('inbox')} 
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all duration-300 relative group/btn ${openWindows.includes('inbox') ? 'bg-blue-600 text-white shadow-xl scale-110' : 'bg-black/5 dark:bg-white/5 hover:scale-110'}`}
-          >
-              <i className="fas fa-envelope"></i>
-              <span className="absolute -top-12 px-3 py-1 bg-black text-white text-[10px] font-bold rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Mail Inbox</span>
-              {openWindows.includes('inbox') && <div className="absolute -bottom-1 w-1 h-1 bg-black/50 dark:bg-white/50 rounded-full"></div>}
-          </button>
-          <button 
-            onClick={() => toggleWindow('projects')} 
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl transition-all duration-300 relative group/btn ${openWindows.includes('projects') ? 'bg-blue-600 text-white shadow-xl scale-110' : 'bg-black/5 dark:bg-white/5 hover:scale-110'}`}
-          >
-              <i className="fas fa-folder"></i>
-              <span className="absolute -top-12 px-3 py-1 bg-black text-white text-[10px] font-bold rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Deployments</span>
-              {openWindows.includes('projects') && <div className="absolute -bottom-1 w-1 h-1 bg-black/50 dark:bg-white/50 rounded-full"></div>}
-          </button>
-          <div className="w-px h-8 bg-black/10 dark:bg-white/10 mx-2"></div>
-          <button 
-            onClick={() => openCompose()} 
-            className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-white/10 text-blue-600 flex items-center justify-center text-2xl hover:scale-110 transition-all shadow-lg relative group/btn"
-          >
-              <i className="fas fa-plus"></i>
-              <span className="absolute -top-12 px-3 py-1 bg-black text-white text-[10px] font-bold rounded-lg opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Compose New</span>
-          </button>
+      {/* 3. DOCK */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 p-3 glass-strong rounded-3xl shadow-2xl border border-white/40 z-[2000]">
+        <button onClick={() => openWindow('inbox')} className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg hover:scale-110 active:scale-95 transition-all">
+          <i className="fas fa-envelope"></i>
+        </button>
+        <button onClick={() => openWindow('projects')} className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all border border-white/20">
+          <i className="fas fa-folder-open"></i>
+        </button>
+        <div className="w-px h-10 bg-black/10 mx-1"></div>
+        <button onClick={() => openWindow('compose')} className="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center text-white text-2xl hover:scale-110 active:scale-95 transition-all shadow-lg">
+          <i className="fas fa-plus"></i>
+        </button>
       </div>
-
     </div>
   );
 };
