@@ -6,6 +6,7 @@ import Layout from './Layout';
 import Footer from './Footer';
 import Reveal from './Reveal';
 import Toast from './Toast';
+import Contact from './Contact';
 
 /**
  * Enhanced mapping logic to assign professional brand icons and colors.
@@ -58,6 +59,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -85,6 +87,15 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     };
   }, [id]);
 
+  useEffect(() => {
+    if (isContactModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => { document.body.style.overflow = 'auto'; }
+  }, [isContactModalOpen]);
+
   const handleBack = () => {
     window.location.hash = '#work';
   };
@@ -109,8 +120,8 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
     }
   };
 
-  const navigateToContact = () => {
-    window.location.hash = '#/contact';
+  const openContactModal = () => {
+    setIsContactModalOpen(true);
   };
 
   if (loading) {
@@ -210,7 +221,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
                       <i className="fas fa-external-link-alt"></i> See Live Project
                     </a>
                   )}
-                  <button onClick={navigateToContact} className="px-10 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 flex items-center justify-center gap-3">
+                  <button onClick={openContactModal} className="px-10 py-5 rounded-2xl glass-strong border border-black/5 dark:border-white/10 text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all hover:bg-white dark:hover:bg-white/5 flex items-center justify-center gap-3">
                     Inquire Similar
                   </button>
                 </div>
@@ -320,7 +331,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
                 </p>
                 <div className="pt-8">
                   <button 
-                    onClick={navigateToContact}
+                    onClick={openContactModal}
                     className="px-14 py-6 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-[0.4em] shadow-[0_24px_48px_-12px_rgba(37,99,235,0.4)] transition-all hover:scale-105 active:scale-95"
                   >
                     Initiate Contact
@@ -332,6 +343,25 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
         </section>
 
         <Footer />
+
+        {/* Full Page Contact Modal */}
+        {isContactModalOpen && (
+          <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#050505]/95 backdrop-blur-xl overflow-y-auto animate-fade-in">
+            {/* Close Button */}
+            <button 
+              onClick={() => setIsContactModalOpen(false)}
+              className="fixed top-6 right-6 z-[110] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-800 dark:text-white hover:rotate-90 transition-all duration-300 shadow-lg hover:shadow-2xl"
+              title="Close Modal"
+            >
+              <i className="fas fa-times text-xl"></i>
+            </button>
+            
+            <div className="min-h-screen flex items-center justify-center">
+              <Contact onSuccess={() => setIsContactModalOpen(false)} />
+            </div>
+          </div>
+        )}
+
       </div>
     </Layout>
   );

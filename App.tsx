@@ -13,7 +13,6 @@ import Terminal from './components/Terminal';
 import Admin from './components/Admin';
 import CV from './components/CV';
 import ProjectPage from './components/ProjectPage';
-import ContactPage from './components/ContactPage';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -81,10 +80,6 @@ const App: React.FC = () => {
 
   if (currentRoute === '#/cv') {
     return <CV />;
-  }
-
-  if (currentRoute === '#/contact') {
-    return <ContactPage />;
   }
 
   if (currentRoute.startsWith('#/projects/')) {

@@ -4,7 +4,11 @@ import Toast from './Toast';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 
-const Contact: React.FC = () => {
+interface ContactProps {
+  onSuccess?: () => void;
+}
+
+const Contact: React.FC<ContactProps> = ({ onSuccess }) => {
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
@@ -36,6 +40,13 @@ const Contact: React.FC = () => {
       setStatus('idle');
       form.reset();
       showToast('Message sent successfully!', 'success');
+      
+      // If provided, trigger the success callback after a short delay to let user see the toast
+      if (onSuccess) {
+        setTimeout(() => {
+          onSuccess();
+        }, 2000);
+      }
     } catch (error) {
       console.error("Error adding document: ", error);
       setStatus('idle');
