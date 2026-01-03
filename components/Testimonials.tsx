@@ -7,9 +7,9 @@ const Testimonials: React.FC = () => {
   const [selectedTestimonial, setSelectedTestimonial] = useState<Testimonial | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Remove the first testimonial as requested and duplicate for loop
+  // Remove the first testimonial as requested and duplicate for infinite loop
   const filteredTestimonials = TESTIMONIALS.slice(1);
-  const duplicatedTestimonials = [...filteredTestimonials, ...filteredTestimonials];
+  const duplicatedTestimonials = [...filteredTestimonials, ...filteredTestimonials, ...filteredTestimonials];
 
   const openModal = (testimonial: Testimonial) => {
     setSelectedTestimonial(testimonial);
@@ -56,22 +56,24 @@ const Testimonials: React.FC = () => {
           </div>
         </Reveal>
 
+        {/* Improved Marquee Container - Fixed Masking Issues */}
         <div 
           ref={scrollRef}
-          className="relative w-full overflow-x-auto md:overflow-hidden mask-image-linear-gradient pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none no-scrollbar"
+          className="relative w-full overflow-x-auto md:overflow-hidden pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none no-scrollbar"
         >
+           {/* Side Fades - Replaces buggy CSS mask-image */}
            <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none hidden md:block"></div>
-           <div className="absolute inset-y-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none"></div>
+           <div className="absolute inset-y-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none hidden md:block"></div>
            
-           <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-4 md:px-0 no-scrollbar">
+           <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-4 md:px-0">
              {duplicatedTestimonials.map((testi, index) => (
                  <div 
                     key={`${testi.id}-${index}`} 
                     onClick={() => openModal(testi)}
                     className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center"
                  >
-                    <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/40 dark:bg-[#161618]/40 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/60 dark:hover:bg-[#161618]/60">
-                        <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50 pointer-events-none"></div>
+                    {/* Simplified Card Design - Removed distorted overlay gradient */}
+                    <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/50 dark:bg-[#161618]/50 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/70 dark:hover:bg-[#161618]/70">
                         
                         <div className="absolute top-6 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
                            <i className="fas fa-quote-right text-4xl md:text-5xl text-black dark:text-white"></i>

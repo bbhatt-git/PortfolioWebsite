@@ -57,13 +57,13 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, typingSpeed]);
 
-  // Parallax Tilt Logic - Optimized for responsiveness
+  // Parallax Tilt Logic - Ultra-fast response for zero-lag feel
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 30; 
-    const y = (e.clientY - top - height / 2) / 30;
+    const x = (e.clientX - left - width / 2) / 35; 
+    const y = (e.clientY - top - height / 2) / 35;
 
     setRotate({ x: -y, y: x });
   };
@@ -81,9 +81,9 @@ const Hero: React.FC = () => {
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden perspective-2000 px-4"
     >
       
-      {/* 3D Scene Wrapper - Reduced duration for interaction lag fix */}
+      {/* 3D Scene Wrapper - Reduced duration and sharpened easing for ultra-snappy feel */}
       <div 
-        className="relative preserve-3d transition-transform duration-300 ease-out-expo w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
+        className="relative preserve-3d transition-transform duration-150 ease-[cubic-bezier(0.03,0.98,0.52,0.99)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
         style={{ 
           transform: isMobile ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
         }}
