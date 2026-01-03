@@ -119,27 +119,15 @@ const Admin: React.FC = () => {
     }
   };
 
-  // Drag and Drop Logic
-  const handleDragStart = (index: number) => {
-    setDraggedItemIndex(index);
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-  };
-
+  const handleDragStart = (index: number) => setDraggedItemIndex(index);
+  const handleDragOver = (e: React.DragEvent, index: number) => e.preventDefault();
   const handleDrop = async (index: number) => {
     if (draggedItemIndex === null || draggedItemIndex === index) return;
-    
     const reorderedProjects = [...projects];
     const [movedItem] = reorderedProjects.splice(draggedItemIndex, 1);
     reorderedProjects.splice(index, 0, movedItem);
-    
-    // Optimistic update
     setProjects(reorderedProjects);
     setDraggedItemIndex(null);
-
-    // Persist new order to Firestore
     const batch = writeBatch(db);
     reorderedProjects.forEach((proj, idx) => {
       const ref = doc(db, "projects", proj.id);
@@ -147,6 +135,12 @@ const Admin: React.FC = () => {
     });
     await batch.commit();
   };
+
+  const unseenInquiriesCount = messages.filter(m => {
+    if (!m.timestamp) return false;
+    const last24h = new Date().getTime() - (24 * 60 * 60 * 1000);
+    return m.timestamp.toDate().getTime() > last24h;
+  }).length;
 
   if (loading) return (
     <div className="h-screen bg-[#F0F2F5] dark:bg-black flex items-center justify-center">
@@ -184,7 +178,7 @@ const Admin: React.FC = () => {
   return (
     <div className="h-screen flex bg-[#F0F2F5] dark:bg-[#050505] text-slate-900 dark:text-white font-sans overflow-hidden">
       
-      {/* SIDEBAR - Ultra Dark Minimal */}
+      {/* SIDEBAR */}
       <aside className="w-16 md:w-72 bg-black flex flex-col shrink-0 z-50">
           <div className="p-8 pb-14 flex items-center gap-4">
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-sm">BR</div>
@@ -208,7 +202,6 @@ const Admin: React.FC = () => {
       {/* MAIN VIEWPORT */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
           
-          {/* HEADER */}
           <header className="h-20 bg-white/60 dark:bg-black/40 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 flex items-center justify-between px-10 shrink-0 z-40">
               <div className="flex items-center gap-6">
                 <i className="fas fa-bars text-slate-400 cursor-pointer hover:text-blue-500 transition-colors"></i>
@@ -231,29 +224,23 @@ const Admin: React.FC = () => {
               </div>
           </header>
 
-          {/* CONTENT AREA */}
           <div className="flex-1 overflow-y-auto p-10 bg-[#F0F2F5] dark:bg-[#050505] custom-scrollbar">
               
-              {/* DASHBOARD: MINIMAL SIDE-BY-SIDE */}
+              {/* DASHBOARD: STRICTLY OPERATION SUMMARIES & RECENT LOGS */}
               {currentView === 'dashboard' && (
                   <div className="animate-fade-up max-w-7xl mx-auto">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                           <div className="glass-strong p-8 rounded-[2.5rem] border border-white shadow-xl">
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Records</p>
-                             <p className="text-4xl font-black">{projects.length}</p>
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Deployments</p>
+                             <p className="text-5xl font-black tracking-tighter">{projects.length}</p>
                           </div>
                           <div className="glass-strong p-8 rounded-[2.5rem] border border-white shadow-xl">
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Signals</p>
-                             <p className="text-4xl font-black">{messages.length}</p>
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Received Inquiries</p>
+                             <p className="text-5xl font-black tracking-tighter">{messages.length}</p>
                           </div>
-                          <div className="glass-strong p-8 rounded-[2.5rem] border border-white shadow-xl md:col-span-2 flex items-center justify-between">
-                             <div className="flex-1 mr-10">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Core Integrity</p>
-                                <div className="h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                   <div className="w-[100%] h-full bg-blue-600"></div>
-                                </div>
-                             </div>
-                             <span className="text-3xl font-black text-blue-600">100%</span>
+                          <div className="glass-strong p-8 rounded-[2.5rem] border border-white shadow-xl">
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Unseen Inquiries</p>
+                             <p className="text-5xl font-black tracking-tighter text-blue-600">{unseenInquiriesCount}</p>
                           </div>
                       </div>
 
@@ -284,7 +271,7 @@ const Admin: React.FC = () => {
                           {/* RECENT INQUIRIES */}
                           <div className="glass-strong rounded-[3rem] border border-white shadow-2xl overflow-hidden flex flex-col h-[600px]">
                              <div className="p-8 border-b border-black/5 flex justify-between items-center bg-white/20">
-                                <h3 className="text-[11px] font-black text-slate-600 dark:text-white uppercase tracking-[0.3em]">Signal Inbox</h3>
+                                <h3 className="text-[11px] font-black text-slate-600 dark:text-white uppercase tracking-[0.3em]">Recent Inquiries</h3>
                                 <button onClick={() => setCurrentView('messages-list')} className="text-[10px] text-blue-600 font-black uppercase tracking-widest hover:underline">All Messages</button>
                              </div>
                              <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -309,13 +296,13 @@ const Admin: React.FC = () => {
                   </div>
               )}
 
-              {/* PROJECT REPOSITORY: DRAGGABLE HIERARCHY */}
+              {/* PROJECTS LIST: DRAGGABLE */}
               {currentView === 'projects-list' && (
                   <div className="animate-fade-up max-w-6xl mx-auto">
                       <div className="flex justify-between items-end mb-12">
                           <div>
                             <h2 className="text-4xl font-black tracking-tighter">Repository Management</h2>
-                            <p className="text-sm text-slate-400 font-medium mt-1">Drag projects to reorder their display on the portfolio.</p>
+                            <p className="text-sm text-slate-400 font-medium mt-1">Drag projects to customize portfolio hierarchy.</p>
                           </div>
                           <button onClick={() => navigateToEditor()} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-blue-600/20 hover:scale-105 transition-all">New Deployment</button>
                       </div>
@@ -335,14 +322,11 @@ const Admin: React.FC = () => {
                                       <div className="w-1 h-1 bg-current rounded-full"></div>
                                       <div className="w-1 h-1 bg-current rounded-full"></div>
                                   </div>
-                                  
                                   <img src={p.image} className="w-20 h-14 object-cover rounded-2xl shadow-xl" />
-                                  
                                   <div className="flex-1 min-w-0">
                                       <p className="font-black text-lg text-slate-800 dark:text-white truncate">{p.title}</p>
                                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{p.stack}</p>
                                   </div>
-
                                   <div className="flex items-center gap-3">
                                       <span className="text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full uppercase">Order: {p.order}</span>
                                       <button onClick={() => navigateToEditor(p)} className="w-11 h-11 rounded-2xl bg-blue-500/5 text-blue-500 hover:bg-blue-500 hover:text-white transition-all"><i className="fas fa-edit"></i></button>
@@ -350,7 +334,6 @@ const Admin: React.FC = () => {
                                   </div>
                               </div>
                           ))}
-                          {projects.length === 0 && <div className="p-32 text-center text-slate-300 font-black text-[11px] uppercase tracking-[0.5em]">No Records Found</div>}
                       </div>
                   </div>
               )}
@@ -373,14 +356,13 @@ const Admin: React.FC = () => {
                                       <div className="text-right flex items-center gap-12">
                                           <div className="hidden sm:block">
                                               <p className="text-[10px] font-black text-slate-300 uppercase mb-1 tracking-widest">Received</p>
-                                              <p className="text-xs font-bold text-slate-500">{m.timestamp?.toDate().toLocaleString()}</p>
+                                              <p className="text-xs font-bold text-slate-400">{m.timestamp?.toDate().toLocaleString()}</p>
                                           </div>
                                           <i className="fas fa-chevron-right text-slate-200 group-hover:text-blue-500 transition-all"></i>
                                       </div>
                                   </div>
                               ))}
                           </div>
-                          {messages.length === 0 && <div className="p-32 text-center text-slate-300 font-black text-[11px] uppercase tracking-[0.5em]">Inbox Clear</div>}
                       </div>
                   </div>
               )}
@@ -447,7 +429,7 @@ const Admin: React.FC = () => {
                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-10">03. Performance Metrics & Highlights</p>
                                <div className="space-y-6">
                                    <div className="flex gap-4">
-                                      <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setHighlightsList([...highlightsList, highlightInput]), setHighlightInput(''))} className="flex-1 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl outline-none focus:ring-4 ring-blue-500/5 font-bold text-sm" placeholder="Add specific win (e.g., 40% performance boost)..." />
+                                      <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), setHighlightsList([...highlightsList, highlightInput]), setHighlightInput(''))} className="flex-1 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl outline-none focus:ring-4 ring-blue-500/5 font-bold text-sm" placeholder="Add specific win..." />
                                       <button onClick={() => { setHighlightsList([...highlightsList, highlightInput]); setHighlightInput(''); }} className="w-16 bg-blue-600 text-white rounded-2xl font-black text-xl hover:bg-blue-500 transition-all">+</button>
                                    </div>
                                    <div className="space-y-3 mt-6">
