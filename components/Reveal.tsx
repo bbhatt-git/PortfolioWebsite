@@ -20,7 +20,7 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '', va
         }
       },
       { 
-        threshold: 0.1, 
+        threshold: 0.15,
         rootMargin: "0px 0px -50px 0px" 
       }
     );
@@ -34,18 +34,23 @@ const Reveal: React.FC<RevealProps> = ({ children, delay = 0, className = '', va
 
   const style = {
     transitionDelay: `${delay}ms`,
+    willChange: 'transform, opacity, filter',
   };
 
+  // Professional 3D Scroll Animation
+  // Start: Tilted back 45deg, pushed down 60px, scaled down to 0.9, transparent, and blurred
+  // This creates a "cinematic" focus pull effect as elements enter the viewport.
   const hiddenState = variant === '3d' 
-    ? 'opacity-0 translate-y-12 scale-95 rotate-x-12' 
-    : 'opacity-0 translate-y-8';
+    ? 'opacity-0 [transform:perspective(1000px)_rotateX(45deg)_translateY(60px)_scale(0.9)] blur-[6px]'
+    : 'opacity-0 translate-y-12 blur-[4px]';
     
-  const visibleState = 'opacity-100 translate-y-0 scale-100 rotate-x-0';
+  // End: Reset all transforms, fully opaque, crisp focus
+  const visibleState = 'opacity-100 [transform:perspective(1000px)_rotateX(0deg)_translateY(0)_scale(1)] blur-0';
 
   return (
     <div
       ref={ref}
-      className={`transform-gpu transition-all duration-1000 ease-out-expo perspective-1000 ${
+      className={`transform-gpu transition-all duration-[1200ms] ease-out-expo ${
         isVisible ? visibleState : hiddenState
       } ${className}`}
       style={style}
