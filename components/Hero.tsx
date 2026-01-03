@@ -57,13 +57,13 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timer);
   }, [text, isDeleting, loopNum, typingSpeed]);
 
-  // Parallax Tilt Logic
+  // Parallax Tilt Logic - Optimized for responsiveness
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || isMobile) return;
     
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - left - width / 2) / 40; 
-    const y = (e.clientY - top - height / 2) / 40;
+    const x = (e.clientX - left - width / 2) / 30; 
+    const y = (e.clientY - top - height / 2) / 30;
 
     setRotate({ x: -y, y: x });
   };
@@ -81,9 +81,9 @@ const Hero: React.FC = () => {
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden perspective-2000 px-4"
     >
       
-      {/* 3D Scene Wrapper */}
+      {/* 3D Scene Wrapper - Reduced duration for interaction lag fix */}
       <div 
-        className="relative preserve-3d transition-transform duration-1000 ease-fluid w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
+        className="relative preserve-3d transition-transform duration-300 ease-out-expo w-full max-w-5xl mx-auto flex flex-col items-center justify-center h-full"
         style={{ 
           transform: isMobile ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
         }}
@@ -91,49 +91,37 @@ const Hero: React.FC = () => {
         
         {/* Deep 3D Space Elements */}
         <div className="absolute inset-0 pointer-events-none preserve-3d">
-            {/* CENTRAL CORE GLOW */}
+            {/* CENTRAL LIQUID CORE */}
             <div 
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[100px] opacity-25 dark:opacity-15 pointer-events-none animate-pulse-slow"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] opacity-20 pointer-events-none animate-liquid"
                 style={{ 
-                    transform: 'translateZ(-200px)',
-                    background: 'radial-gradient(circle, rgba(59,130,246,0.5) 0%, rgba(147,51,234,0.3) 50%, transparent 70%)' 
+                    transform: 'translateZ(-250px)',
+                    background: 'radial-gradient(circle, rgba(59,130,246,0.6) 0%, rgba(147,51,234,0.3) 50%, transparent 70%)' 
                 }}
             ></div>
 
-            {/* FLOATING ICONS GRID - Deep Layer */}
-            <div className="absolute top-[10%] left-[8%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(120px)' }}>
+            {/* FLOATING TECH ICONS */}
+            <div className="absolute top-[5%] left-[5%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(150px)' }}>
                 <div className="w-16 h-16 glass-strong rounded-2xl flex items-center justify-center shadow-2xl border border-white/30 ring-1 ring-white/10">
                     <i className="fab fa-react text-4xl text-[#61DAFB] animate-spin-slow"></i>
                 </div>
             </div>
 
-            <div className="absolute top-[20%] right-[10%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(150px)' }}>
+            <div className="absolute top-[15%] right-[5%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(180px)' }}>
                 <div className="w-14 h-14 glass-strong rounded-xl flex items-center justify-center shadow-xl border border-white/20 ring-1 ring-white/10 bg-blue-500/5">
                     <span className="font-bold text-blue-600 dark:text-blue-400 text-xl">TS</span>
                 </div>
             </div>
 
-            <div className="absolute bottom-[25%] left-[5%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(180px)' }}>
-                <div className="w-20 h-20 glass-strong rounded-3xl flex items-center justify-center shadow-2xl border border-white/20 ring-1 ring-white/10 bg-green-500/5">
+            <div className="absolute bottom-[20%] left-[8%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(200px)' }}>
+                <div className="w-20 h-20 glass-strong rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-white/20 ring-1 ring-white/10 bg-green-500/5 animate-liquid">
                      <i className="fab fa-node-js text-4xl text-green-500"></i>
                 </div>
             </div>
             
-            <div className="absolute bottom-[15%] right-[5%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(140px)' }}>
+            <div className="absolute bottom-[10%] right-[10%] animate-float-slow hidden md:block" style={{ transform: 'translateZ(160px)' }}>
                 <div className="w-16 h-16 glass-strong rounded-full flex items-center justify-center shadow-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/20 ring-1 ring-white/10">
                      <i className="fas fa-code text-2xl text-blue-500 drop-shadow-md"></i>
-                </div>
-            </div>
-
-            <div className="absolute top-[45%] right-[2%] animate-float-medium hidden md:block" style={{ transform: 'translateZ(80px)' }}>
-                <div className="w-12 h-12 glass rounded-2xl flex items-center justify-center shadow-md border border-white/10 ring-1 ring-white/5 opacity-60">
-                     <i className="fab fa-figma text-xl text-pink-500"></i>
-                </div>
-            </div>
-
-            <div className="absolute top-[40%] left-[2%] animate-float-fast hidden md:block" style={{ transform: 'translateZ(90px)' }}>
-                <div className="w-10 h-10 glass rounded-full flex items-center justify-center shadow-md border border-white/10 ring-1 ring-white/5 opacity-40">
-                     <i className="fab fa-git-alt text-lg text-orange-500"></i>
                 </div>
             </div>
         </div>
@@ -151,7 +139,7 @@ const Hero: React.FC = () => {
             </div>
           </Reveal>
           
-          <div style={{ transform: 'translateZ(60px)' }} className="px-4">
+          <div style={{ transform: 'translateZ(100px)' }} className="px-4">
             <Reveal delay={100} triggerOnMount>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
                 Hello, I'm
@@ -162,7 +150,7 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(40px)' }} className="h-8 flex items-center justify-center">
+          <div style={{ transform: 'translateZ(60px)' }} className="h-8 flex items-center justify-center">
              <Reveal delay={200} triggerOnMount>
                <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl border border-white/30 shadow-md ring-1 ring-white/10 hover:border-blue-500/30 transition-colors">
                   <span className="text-blue-600 font-bold mr-2">~</span>
@@ -173,7 +161,7 @@ const Hero: React.FC = () => {
              </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(30px)' }} className="max-w-2xl mx-auto px-6">
+          <div style={{ transform: 'translateZ(40px)' }} className="max-w-2xl mx-auto px-6">
             <Reveal delay={300} triggerOnMount>
               <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
                  Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">accessible architectures</span> with aesthetic precision. 
@@ -182,7 +170,7 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(100px)' }} className="mt-4 md:mt-6">
+          <div style={{ transform: 'translateZ(120px)' }} className="mt-4 md:mt-6">
             <Reveal delay={400} triggerOnMount>
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                 

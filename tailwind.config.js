@@ -37,13 +37,13 @@ export default {
         'shimmer': 'shimmer 3s linear infinite',
         'marquee': 'marquee 60s linear infinite',
         'pulse-slow': 'pulse 10s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'liquid': 'liquid 20s ease-in-out infinite alternate',
+        'liquid': 'liquid 15s ease-in-out infinite alternate',
       },
       keyframes: {
         liquid: {
-          '0%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' },
-          '50%': { borderRadius: '30% 60% 70% 40% / 50% 60% 30% 60%' },
-          '100%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' },
+          '0%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%', transform: 'rotate(0deg) scale(1)' },
+          '50%': { borderRadius: '30% 60% 70% 40% / 50% 60% 30% 60%', transform: 'rotate(180deg) scale(1.1)' },
+          '100%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%', transform: 'rotate(360deg) scale(1)' },
         },
         blob: {
           '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
