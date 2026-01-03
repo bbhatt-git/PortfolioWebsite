@@ -7,54 +7,46 @@ import Footer from './Footer';
 import Reveal from './Reveal';
 
 /**
- * Enhanced mapping logic to assign professional brand icons and colors
- * based on the technology name provided in the project stack.
+ * Enhanced mapping logic to assign professional brand icons and colors.
+ * Prioritizes framework-specific icons over generic language icons.
  */
 const getTechIcon = (tech: string) => {
   const t = tech.toLowerCase().trim();
 
-  // Frameworks & Libraries
-  if (t.includes('react')) return { icon: 'fab fa-react', color: 'text-[#61DAFB]' };
-  if (t.includes('next')) return { icon: 'fas fa-layer-group', color: 'text-gray-800 dark:text-white' };
+  // 1. SPECIFIC FRAMEWORKS & TOOLS (Highest Priority)
   if (t.includes('vite')) return { icon: 'fas fa-bolt', color: 'text-[#646CFF]' };
+  if (t.includes('tailwind')) return { icon: 'fas fa-wind', color: 'text-[#06B6D4]' };
+  if (t.includes('next')) return { icon: 'fas fa-layer-group', color: 'text-gray-900 dark:text-white' };
+  if (t.includes('react')) return { icon: 'fab fa-react', color: 'text-[#61DAFB]' };
   if (t.includes('flutter')) return { icon: 'fas fa-mobile-screen', color: 'text-[#02569B]' };
-  if (t.includes('node')) return { icon: 'fab fa-node-js', color: 'text-[#339933]' };
-  if (t.includes('express')) return { icon: 'fas fa-server', color: 'text-[#000000] dark:text-white' };
+  if (t.includes('pwa') || t.includes('manifest')) return { icon: 'fas fa-mobile-screen-button', color: 'text-[#5A0FC8]' };
+  if (t.includes('leaflet')) return { icon: 'fas fa-map-location-dot', color: 'text-[#199900]' };
+  if (t.includes('openstreetmap') || t.includes('osm')) return { icon: 'fas fa-map', color: 'text-[#7EBC6F]' };
+  if (t.includes('wordpress')) return { icon: 'fab fa-wordpress', color: 'text-[#21759B]' };
 
-  // Languages
-  if (t === 'ts' || t.includes('typescript')) return { icon: 'fas fa-code', color: 'text-[#3178C6]' };
-  if (t === 'js' || t.includes('javascript')) return { icon: 'fab fa-js', color: 'text-[#F7DF1E]' };
-  if (t.includes('python')) return { icon: 'fab fa-python', color: 'text-[#3776AB]' };
-  if (t.includes('php')) return { icon: 'fab fa-php', color: 'text-[#777BB4]' };
-  if (t === 'c' || t === 'cpp' || t.includes('c++')) return { icon: 'fas fa-microchip', color: 'text-[#A8B9CC]' };
+  // 2. LANGUAGES & CORE TECH
+  if (t.includes('typescript') || t === 'ts') return { icon: 'fas fa-code', color: 'text-[#3178C6]' };
+  if (t.includes('javascript') || t === 'js') return { icon: 'fab fa-js', color: 'text-[#F7DF1E]' };
   if (t.includes('html')) return { icon: 'fab fa-html5', color: 'text-[#E34F26]' };
   if (t.includes('css')) return { icon: 'fab fa-css3-alt', color: 'text-[#1572B6]' };
-  if (t.includes('tailwind')) return { icon: 'fas fa-wind', color: 'text-[#06B6D4]' };
+  if (t.includes('python')) return { icon: 'fab fa-python', color: 'text-[#3776AB]' };
+  if (t.includes('php')) return { icon: 'fab fa-php', color: 'text-[#777BB4]' };
+  if (t.includes('node')) return { icon: 'fab fa-node-js', color: 'text-[#339933]' };
+  if (t === 'c' || t === 'cpp' || t.includes('c++')) return { icon: 'fas fa-microchip', color: 'text-[#A8B9CC]' };
 
-  // Databases & CMS
+  // 3. DATABASES & BACKEND
   if (t.includes('firebase')) return { icon: 'fas fa-fire', color: 'text-[#FFCA28]' };
   if (t.includes('mongo')) return { icon: 'fas fa-leaf', color: 'text-[#47A248]' };
   if (t.includes('mysql') || t.includes('sql') || t.includes('postgres')) return { icon: 'fas fa-database', color: 'text-[#4479A1]' };
-  if (t.includes('wordpress')) return { icon: 'fab fa-wordpress', color: 'text-[#21759B]' };
 
-  // Maps & Location
-  if (t.includes('openstreetmap') || t.includes('osm')) return { icon: 'fas fa-map', color: 'text-[#7EBC6F]' };
-  if (t.includes('leaflet')) return { icon: 'fas fa-seedling', color: 'text-[#199900]' };
-  if (t.includes('maps')) return { icon: 'fas fa-location-dot', color: 'text-[#4285F4]' };
-
-  // APIs & Development Tools
-  if (t.includes('github') || t.includes('git')) return { icon: 'fab fa-github', color: 'text-gray-900 dark:text-white' };
-  if (t.includes('api')) return { icon: 'fas fa-gears', color: 'text-gray-500' };
-  if (t.includes('pwa') || t.includes('manifest')) return { icon: 'fas fa-mobile-screen-button', color: 'text-[#5A0FC8]' };
-  if (t.includes('docker')) return { icon: 'fab fa-docker', color: 'text-[#2496ED]' };
-  if (t.includes('aws')) return { icon: 'fab fa-aws', color: 'text-[#FF9900]' };
-
-  // Design & Creative
+  // 4. DESIGN & APIS
   if (t.includes('figma')) return { icon: 'fab fa-figma', color: 'text-[#F24E1E]' };
   if (t.includes('canva')) return { icon: 'fas fa-palette', color: 'text-[#00C4CC]' };
   if (t.includes('photoshop') || t.includes('adobe')) return { icon: 'fas fa-image', color: 'text-[#31A8FF]' };
+  if (t.includes('github') || t.includes('git')) return { icon: 'fab fa-github', color: 'text-gray-900 dark:text-white' };
+  if (t.includes('api')) return { icon: 'fas fa-gears', color: 'text-gray-500' };
 
-  // AI & Emerging
+  // 5. AI & BOTs
   if (t.includes('ai') || t.includes('ml') || t.includes('intelligence') || t.includes('gemini') || t.includes('gpt')) return { icon: 'fas fa-brain', color: 'text-[#8B5CF6]' };
   if (t.includes('bot') || t.includes('chat')) return { icon: 'fas fa-robot', color: 'text-[#3B82F6]' };
 
@@ -74,7 +66,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
         if (docSnap.exists()) {
           const data = { id: docSnap.id, ...docSnap.data() } as Project;
           setProject(data);
-          document.title = `${data.title} — Bhupesh Bhatt`;
+          document.title = `${data.title} — Portfolio`;
         }
       } catch (err) {
         console.error("Error fetching project:", err);
@@ -140,9 +132,7 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
             {/* Left: Device / Project View */}
             <Reveal variant="rotate-left" triggerOnMount>
               <div className="relative">
-                {/* Visual Depth Accents */}
                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-600/10 rounded-full blur-[80px] pointer-events-none"></div>
-                
                 <div className="relative glass-strong rounded-[2.5rem] p-2 md:p-3 overflow-hidden border border-white/60 dark:border-white/10 shadow-[0_48px_96px_-24px_rgba(0,0,0,0.12)]">
                   <div className="rounded-[1.8rem] overflow-hidden bg-gray-100 dark:bg-black/20 aspect-[16/10]">
                     <img 
@@ -274,7 +264,6 @@ const ProjectPage: React.FC<{ id: string }> = ({ id }) => {
 
         {/* Dynamic Project CTA */}
         <section className="py-32 md:py-48 text-center relative overflow-hidden">
-          {/* Animated Background Blob */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] animate-liquid pointer-events-none"></div>
 
           <div className="container mx-auto px-6 relative z-10">
