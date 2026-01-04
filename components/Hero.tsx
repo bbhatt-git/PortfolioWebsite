@@ -32,9 +32,16 @@ const FLOATING_ICONS = [
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Refs for background blobs for independent parallax
+  const blob1Ref = useRef<HTMLDivElement>(null);
+  const blob2Ref = useRef<HTMLDivElement>(null);
+  const iconsLayerRef = useRef<HTMLDivElement>(null);
+
   const [isMobile, setIsMobile] = useState(false);
   
   // Physics state for smooth interpolation
+  // Target represents mouse position (-1 to 1)
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   
@@ -42,7 +49,7 @@ const Hero: React.FC = () => {
   const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
-  const [typingSpeed, setTypingSpeed] = useState(100); // FASTER DEFAULT
+  const [typingSpeed, setTypingSpeed] = useState(100);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
@@ -51,25 +58,51 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Animation Loop for Physics-based Tilt
+  // Animation Loop for Physics-based Tilt & Parallax
   useEffect(() => {
     if (isMobile) return;
 
     let requestID: number;
-    // Faster ease for more reactive tilt
-    const ease = 0.15; 
+    // Lower ease for smoother, heavier feel
+    const ease = 0.08; 
 
     const update = () => {
+      // Interpolate current position towards target mouse position
       current.current.x += (target.current.x - current.current.x) * ease;
       current.current.y += (target.current.y - current.current.y) * ease;
 
+      // 1. Content Tilt (Subtle 3D effect on text)
       if (contentRef.current) {
+         const tiltX = current.current.y * 5; // Max 5deg tilt
+         const tiltY = current.current.x * 5;
          contentRef.current.style.transform = `
             perspective(1000px)
-            rotateX(${current.current.y}deg) 
-            rotateY(${current.current.x}deg)
+            rotateX(${tiltX}deg) 
+            rotateY(${tiltY}deg)
          `;
       }
+
+      // 2. Background Blob Parallax (Inverse movement, deeper depth)
+      // Moving opposite to mouse creates depth
+      if (blob1Ref.current) {
+         const x = current.current.x * -40; // Move 40px
+         const y = current.current.y * -40;
+         blob1Ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+
+      if (blob2Ref.current) {
+         const x = current.current.x * 60; // Move 60px (different speed for layer effect)
+         const y = current.current.y * 60;
+         blob2Ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+
+      // 3. Floating Icons Parallax (Mid-ground)
+      if (iconsLayerRef.current) {
+          const x = current.current.x * -20;
+          const y = current.current.y * -20;
+          iconsLayerRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+
       requestID = requestAnimationFrame(update);
     };
 
@@ -82,23 +115,25 @@ const Hero: React.FC = () => {
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
     const centerX = left + width / 2;
     const centerY = top + height / 2;
+    
+    // Normalize coordinates -1 to 1
     const x = (e.clientX - centerX) / (width / 2);
     const y = (e.clientY - centerY) / (height / 2);
-    const maxRot = 15; // More rotation
-    target.current = { x: x * maxRot, y: y * -maxRot };
+    
+    target.current = { x, y };
   };
 
   const handleMouseLeave = () => {
     target.current = { x: 0, y: 0 };
   };
 
+  // Typing Logic
   useEffect(() => {
     const handleTyping = () => {
       const i = loopNum % ROLES.length;
       const fullText = ROLES[i];
       setText(isDeleting ? fullText.substring(0, text.length - 1) : fullText.substring(0, text.length + 1));
       
-      // Much faster typing
       setTypingSpeed(isDeleting ? 25 : 60);
 
       if (!isDeleting && text === fullText) {
@@ -121,20 +156,31 @@ const Hero: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
     >
-      {/* 1. ENHANCED 3D BACKGROUND BLOBS */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-         <div className="absolute top-[-20%] left-[-10%] w-[80vw] h-[80vw] md:w-[700px] md:h-[700px] bg-gradient-to-br from-blue-400/20 via-indigo-500/20 to-purple-500/20 rounded-full blur-[100px] animate-blob mix-blend-multiply dark:mix-blend-screen opacity-70 will-change-transform"></div>
-         <div className="absolute bottom-[-20%] right-[-10%] w-[80vw] h-[80vw] md:w-[700px] md:h-[700px] bg-gradient-to-tr from-cyan-400/20 via-blue-500/20 to-pink-500/20 rounded-full blur-[100px] animate-blob-reverse mix-blend-multiply dark:mix-blend-screen opacity-70 will-change-transform" style={{ animationDelay: '2s' }}></div>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] animate-pulse-slow"></div>
-         <div className="absolute inset-0 backdrop-blur-[1px]"></div>
+      {/* 1. ENHANCED 3D BACKGROUND BLOBS - POSITIONED AWAY FROM CENTER */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
+         {/* Top Left Blob */}
+         <div ref={blob1Ref} className="absolute top-[-25%] left-[-15%] will-change-transform">
+            <div className="w-[80vw] h-[80vw] md:w-[800px] md:h-[800px] bg-gradient-to-br from-blue-400/20 via-indigo-500/20 to-purple-500/20 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
+         </div>
+         
+         {/* Bottom Right Blob */}
+         <div ref={blob2Ref} className="absolute bottom-[-25%] right-[-15%] will-change-transform">
+            <div className="w-[80vw] h-[80vw] md:w-[800px] md:h-[800px] bg-gradient-to-tr from-cyan-400/20 via-blue-500/20 to-pink-500/20 rounded-full blur-[120px] animate-blob-reverse mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
+         </div>
+         
+         {/* Center Glow (Static) - Ensuring text legibility */}
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/40 dark:bg-black/40 rounded-full blur-[100px]"></div>
+         
+         {/* Noise Texture */}
+         <div className="absolute inset-0 bg-noise opacity-[0.05]"></div>
       </div>
 
       {/* 2. FLOATING 3D ICONS (EXTENDED) */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform">
          {FLOATING_ICONS.map((icon, idx) => (
              <div 
                 key={idx}
-                className={`absolute ${icon.position} ${icon.animation} opacity-20 dark:opacity-10 hover:opacity-80 transition-opacity duration-300 will-change-transform`}
+                className={`absolute ${icon.position} ${icon.animation} opacity-20 dark:opacity-10 transition-opacity duration-300`}
                 style={{ animationDelay: icon.delay }}
              >
                 <div className={`relative w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform ${icon.rotate} shadow-lg`}>
@@ -144,12 +190,12 @@ const Hero: React.FC = () => {
          ))}
       </div>
 
-      {/* CONTENT LAYER */}
+      {/* CONTENT LAYER - INSTANT REVEALS */}
       <div 
         ref={contentRef}
         className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform"
       >
-          <Reveal triggerOnMount>
+          <Reveal triggerOnMount delay={0} variant="fade">
             <div 
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-110 transition-transform duration-300 cursor-default" 
                 style={{ transform: 'translateZ(20px)' }}
@@ -164,7 +210,7 @@ const Hero: React.FC = () => {
           </Reveal>
           
           <div style={{ transform: 'translateZ(40px)' }} className="px-4">
-            <Reveal delay={100} triggerOnMount variant="zoom-in">
+            <Reveal delay={0} triggerOnMount variant="slide">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
                 Hello, I'm
               </h1>
@@ -175,7 +221,7 @@ const Hero: React.FC = () => {
           </div>
 
           <div style={{ transform: 'translateZ(30px)' }} className="h-8 flex items-center justify-center">
-             <Reveal delay={150} triggerOnMount>
+             <Reveal delay={0} triggerOnMount variant="fade">
                <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl border border-white/30 shadow-md ring-1 ring-white/10 hover:border-blue-500/30 transition-colors flex items-center hover:scale-105 duration-300">
                   <span className="text-blue-600 font-bold mr-2">~</span>
                   <span className="text-gray-400 mr-1">$</span>
@@ -186,7 +232,7 @@ const Hero: React.FC = () => {
           </div>
 
           <div style={{ transform: 'translateZ(20px)' }} className="max-w-2xl mx-auto px-6">
-            <Reveal delay={200} triggerOnMount variant="slide">
+            <Reveal delay={0} triggerOnMount variant="slide">
               <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
                  Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">fluid architectures</span> with aesthetic precision. 
                  Bridging design intuition with technical mastery.
@@ -195,7 +241,7 @@ const Hero: React.FC = () => {
           </div>
 
           <div style={{ transform: 'translateZ(30px)' }} className="mt-4 md:mt-6">
-            <Reveal delay={250} triggerOnMount variant="zoom-in">
+            <Reveal delay={0} triggerOnMount variant="zoom-in">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                 <MagneticButton 
                   href="#work" 

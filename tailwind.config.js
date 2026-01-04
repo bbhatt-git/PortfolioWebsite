@@ -29,8 +29,8 @@ export default {
         'fluid': 'cubic-bezier(0.3, 0, 0, 1)',
       },
       animation: {
-        'blob': 'blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Much faster
-        'blob-reverse': 'blobReverse 12s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Much faster
+        'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Slower, more fluid
+        'blob-reverse': 'blobReverse 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Slower, more fluid
         'fade-up': 'fadeUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
         'scale-in': 'scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
         'slide-up': 'slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
@@ -39,9 +39,9 @@ export default {
         'float-fast': 'float 2.5s ease-in-out infinite',
         'spin-slow': 'spin 15s linear infinite',
         'shimmer': 'shimmer 2s linear infinite',
-        'marquee': 'marquee 40s linear infinite', // Faster marquee
-        'pulse-slow': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite', // Faster pulse
-        'liquid': 'liquid 8s ease-in-out infinite alternate', // Faster liquid
+        'marquee': 'marquee 40s linear infinite',
+        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'liquid': 'liquid 12s ease-in-out infinite alternate',
       },
       keyframes: {
         liquid: {
@@ -51,14 +51,14 @@ export default {
         },
         blob: {
           '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
-          '33%': { transform: 'translate(100px, -150px) scale(1.2) rotate(10deg)' },
-          '66%': { transform: 'translate(-80px, 80px) scale(0.9) rotate(-10deg)' },
+          '33%': { transform: 'translate(50px, -50px) scale(1.1) rotate(5deg)' },
+          '66%': { transform: 'translate(-40px, 40px) scale(0.95) rotate(-5deg)' },
           '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
         },
         blobReverse: {
           '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
-          '33%': { transform: 'translate(-100px, 150px) scale(0.9) rotate(-10deg)' },
-          '66%': { transform: 'translate(80px, -80px) scale(1.2) rotate(10deg)' },
+          '33%': { transform: 'translate(-50px, 50px) scale(0.95) rotate(-5deg)' },
+          '66%': { transform: 'translate(40px, -40px) scale(1.1) rotate(5deg)' },
           '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
         },
         fadeUp: {
