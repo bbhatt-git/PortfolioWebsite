@@ -72,11 +72,11 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
   };
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Services', href: '#services' },
-    { name: 'Work', href: '#work' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Home', href: '#home', botMsg: "Home sweet home.|Back to the start.|Restarting coordinates." },
+    { name: 'About', href: '#about', botMsg: "Want to know more about Bhupesh?|Who is this guy?|The origin story." },
+    { name: 'Services', href: '#services', botMsg: "What can we do for you?|Check out the skills.|Professional services." },
+    { name: 'Work', href: '#work', botMsg: "The portfolio vault.|See the magic.|Proof of concept." },
+    { name: 'Contact', href: '#contact', botMsg: "Say hello!|Don't be shy.|Let's build something." },
   ];
 
   const closeMobileMenu = () => {
@@ -102,6 +102,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             href="#home" 
             onClick={(e) => handleLinkClick(e, '#home')}
             className="group flex items-center relative z-50 select-none"
+            data-bot-msg="Bhupesh Raj Bhatt - The Creator.|System Architect.|Back to base."
           >
              {/* Scrolled Logo - BR */}
              <div className={`transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-hidden ${
@@ -141,6 +142,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
                   <a
                     href={link.href}
                     onClick={(e) => handleLinkClick(e, link.href)}
+                    data-bot-msg={link.botMsg}
                     className={`relative px-4 py-1.5 text-sm font-medium transition-all duration-500 ease-out rounded-full group ${
                       activeSection === link.href.substring(1)
                         ? 'text-black dark:text-white'
@@ -163,6 +165,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
           <div className={`flex items-center gap-2 transition-all duration-500 ${isScrolled ? 'pl-2 border-l border-gray-200 dark:border-white/10 ml-2' : 'pl-2 md:pl-6 border-l border-gray-200 dark:border-white/10 ml-2 md:ml-6'}`}>
             <button 
               onClick={toggleTheme} 
+              data-bot-msg="Toggle Dark/Light mode.|My eyes! Or... ah, relief.|Switching themes."
               className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Toggle Theme"
             >
@@ -170,6 +173,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             </button>
             <button 
               onClick={openSearch} 
+              data-bot-msg="Searching for something?|Cmd+K also works.|Find it fast."
               className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Search"
             >
@@ -178,6 +182,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             {/* TERMINAL BUTTON (Visible on Mobile) */}
             <button 
               onClick={openTerminal} 
+              data-bot-msg="Accessing Terminal.|Hacker mode.|System Shell."
               className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-all"
               aria-label="Terminal"
             >
@@ -188,6 +193,7 @@ const Navbar: React.FC<NavbarProps> = ({ isDark, toggleTheme, openSearch, openTe
             <button 
               className="lg:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 z-50 ml-1"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              data-bot-msg="Open Menu.|Navigation."
             >
               <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
               <span className={`w-5 h-0.5 bg-black dark:bg-white rounded-full transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>

@@ -149,6 +149,7 @@ const Hero: React.FC = () => {
             <div 
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-105 transition-transform cursor-default" 
                 style={{ transform: 'translateZ(20px)' }}
+                data-bot-msg="I am ready to work!|Currently accepting projects.|Hire me?"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -197,14 +198,24 @@ const Hero: React.FC = () => {
             <Reveal delay={400} triggerOnMount>
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                 
-                <MagneticButton href="#work" variant="glass-primary" className="group px-8 py-3.5">
+                <MagneticButton 
+                  href="#work" 
+                  variant="glass-primary" 
+                  className="group px-8 py-3.5"
+                  data-bot-msg="Check out the projects!|Seeing is believing.|My best work."
+                >
                   <span className="relative flex items-center gap-2.5 text-base">
                     Selected Work 
                     <i className="fas fa-arrow-right text-xs group-hover:translate-x-1.5 transition-transform duration-500"></i>
                   </span>
                 </MagneticButton>
 
-                <MagneticButton href="#contact" variant="glass-secondary" className="px-8 py-3.5 text-base">
+                <MagneticButton 
+                  href="#contact" 
+                  variant="glass-secondary" 
+                  className="px-8 py-3.5 text-base"
+                  data-bot-msg="Let's start a conversation.|Have an idea?|Contact me."
+                >
                    <span className="flex items-center gap-2.5">
                     Let's Talk
                     <i className="fas fa-paper-plane text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>

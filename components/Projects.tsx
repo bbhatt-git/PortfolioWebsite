@@ -3,7 +3,6 @@ import Reveal from './Reveal';
 import { Project } from '../types';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useBot } from '../context/BotContext';
 
 // 3D Tilt Card Component
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
@@ -12,7 +11,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
-  const { say, shutup } = useBot();
 
   useEffect(() => {
     setIsTouch(window.matchMedia("(pointer: coarse)").matches);
@@ -31,14 +29,12 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    say(`Checking out ${project.title}? Excellent choice!`, 3000);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
     setRotate({ x: 0, y: 0 });
     setGlare((prev) => ({ ...prev, opacity: 0 }));
-    shutup();
   };
 
   return (
@@ -50,6 +46,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
+      data-bot-msg={`${project.title} - excellent choice!|I helped build ${project.title}.|Want to see how ${project.title} works?|${project.title} is one of my favorites.`}
     >
       {/* Glare Effect */}
       <div 
@@ -92,6 +89,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
                   <button onClick={(e) => { e.stopPropagation(); window.open(project.codeUrl, '_blank'); }}
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-gray-500 transition-all hover:scale-110 shadow-sm"
                     title="View Source Code"
+                    data-bot-msg="Checking the source code?|Peeking under the hood.|It's clean code, I promise."
                   >
                     <i className="fab fa-github text-lg"></i>
                   </button>
