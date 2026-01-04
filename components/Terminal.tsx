@@ -18,11 +18,10 @@ interface Message {
 const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   const [history, setHistory] = useState<Message[]>([
       { role: 'system', text: 'INITIALIZING AI KERNEL...' },
-      { role: 'system', text: 'CONNECTING TO NEURAL NET...' },
-      { role: 'model', text: 'Greetings. I am the AI assistant for Bhupesh. I have access to his entire portfolio, skills, and project database. Ask me anything.' }
   ]);
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -35,20 +34,32 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
   // 1. Fetch Data & Initialize Gemini
   useEffect(() => {
     const initAI = async () => {
+        // Step 1: Check API Key
+        if (!process.env.API_KEY) {
+             setHistory(prev => [...prev, { role: 'system', text: 'CRITICAL ERROR: API_KEY MISSING IN ENVIRONMENT.' }]);
+             return;
+        }
+
+        // Step 2: Try Fetching Projects (Non-blocking)
+        let fetchedProjects: Project[] = [];
         try {
-            // Fetch Projects for Context
             const q = query(collection(db, "projects"), orderBy("order", "asc"));
             const querySnapshot = await getDocs(q);
-            const fetchedProjects: Project[] = [];
             querySnapshot.forEach((doc) => {
                 fetchedProjects.push({ id: doc.id, ...doc.data() } as Project);
             });
-            projectsRef.current = fetchedProjects;
+            setHistory(prev => [...prev, { role: 'system', text: `> DATABASE CONNECTION ESTABLISHED. LOADED ${fetchedProjects.length} PROJECTS.` }]);
+        } catch (error) {
+            console.warn("Firebase fetch failed, using static fallback", error);
+            setHistory(prev => [...prev, { role: 'system', text: '> WARNING: DATABASE UNREACHABLE. USING LOCAL CACHE.' }]);
+        }
+        projectsRef.current = fetchedProjects;
 
-            // Build System Prompt
-            const projectDescriptions = fetchedProjects.map(p => 
-                `- ${p.title}: ${p.desc} (Stack: ${p.stack})`
-            ).join('\n');
+        try {
+            // Step 3: Initialize AI
+            const projectDescriptions = fetchedProjects.length > 0 
+                ? fetchedProjects.map(p => `- ${p.title}: ${p.desc} (Stack: ${p.stack})`).join('\n')
+                : "No specific project data available currently. Answer generally about web development.";
 
             const serviceDescriptions = SERVICES.map(s => `- ${s.title}: ${s.desc}`).join('\n');
             const statsDescription = STATS.map(s => `${s.label}: ${s.value}`).join(', ');
@@ -83,25 +94,25 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                 6. When listing things, use bullet points or simple lists.
             `;
 
-            // Initialize Gemini
-            // Ensure API key is available via process.env.API_KEY
-            if (!process.env.API_KEY) {
-                console.error("Missing API_KEY in environment");
-                throw new Error("API Key Missing");
-            }
-            
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             chatSession.current = ai.chats.create({
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-1.5-flash',
                 config: {
                     systemInstruction: systemInstruction,
                     temperature: 0.7,
                 },
             });
 
+            setIsOnline(true);
+            setHistory(prev => [
+                ...prev, 
+                { role: 'system', text: 'NEURAL NET CONNECTED.' },
+                { role: 'model', text: 'Greetings. I am the AI assistant for Bhupesh. I have access to his portfolio and skills. Ask me anything.' }
+            ]);
+
         } catch (error) {
             console.error("Failed to init AI:", error);
-            setHistory(prev => [...prev, { role: 'system', text: 'ERROR: NEURAL LINK FAILED. OFFLINE MODE ACTIVE.' }]);
+            setHistory(prev => [...prev, { role: 'system', text: 'FATAL ERROR: COULD NOT INITIALIZE AI MODEL.' }]);
         }
     };
 
@@ -153,7 +164,6 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       }
       // UI Navigation triggers (Simulated)
       if (lowerCmd.includes('project') || lowerCmd.includes('work')) {
-          // We let the AI handle the text response, but we trigger scroll
           setTimeout(() => document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' }), 1000);
       }
       if (lowerCmd.includes('contact') || lowerCmd.includes('email')) {
@@ -173,13 +183,15 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
 
       // 2. Add User Message to History
       setHistory(prev => [...prev, { role: 'user', text: userMsg }]);
+      
+      if (!isOnline || !chatSession.current) {
+          setHistory(prev => [...prev, { role: 'system', text: 'ERROR: AI OFFLINE. CHECK CONFIGURATION.' }]);
+          return;
+      }
+
       setIsThinking(true);
 
       try {
-          if (!chatSession.current) {
-              throw new Error("AI Offline");
-          }
-
           // 3. Stream Response from Gemini
           const resultStream = await chatSession.current.sendMessageStream({ message: userMsg });
           
@@ -204,7 +216,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           }
 
       } catch (error) {
-          console.error("Gemini Error:", error);
+          console.error("Gemini Runtime Error:", error);
           let errorMsg = 'ERROR: COMMUNICATION INTERRUPTED.';
           if (error instanceof Error) {
              if (error.message.includes("404")) errorMsg = 'ERROR: MODEL_NOT_FOUND (404). RECALIBRATING...';
@@ -249,7 +261,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
               <div className="w-3 h-3 rounded-full bg-[#28C840]"></div>
            </div>
            <div className="text-xs font-mono text-gray-400 opacity-80 flex items-center gap-2">
-               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+               <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
                bhupesh_ai — v2.5
            </div>
            <div className="w-10"></div>
@@ -296,12 +308,13 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                             ref={inputRef}
                             type="text"
                             className="w-full bg-transparent border-none outline-none text-white font-mono text-[16px] placeholder-gray-700"
-                            placeholder="Ask me about my projects, skills, or experience..." 
+                            placeholder={isOnline ? "Ask me about my projects, skills, or experience..." : "Initializing..."}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleSubmit}
                             autoComplete="off"
                             autoFocus
+                            disabled={!isOnline}
                          />
                     </div>
                 </div>
