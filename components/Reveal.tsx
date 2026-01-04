@@ -28,7 +28,7 @@ const Reveal: React.FC<RevealProps> = ({
   delay = 0, 
   className = '', 
   variant = 'fade',
-  duration = 400, 
+  duration = 500, // Premium speed
   triggerOnMount = false,
   threshold = 0.1
 }) => {
@@ -48,7 +48,7 @@ const Reveal: React.FC<RevealProps> = ({
           observer.disconnect(); 
         }
       },
-      { threshold, rootMargin: "0px 0px -50px 0px" }
+      { threshold, rootMargin: "0px 0px -60px 0px" }
     );
 
     if (ref.current) {
@@ -58,6 +58,7 @@ const Reveal: React.FC<RevealProps> = ({
     return () => observer.disconnect();
   }, [triggerOnMount, threshold]);
 
+  // Professional Expo curve for "instant" feel
   const cleanEase = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
   const style: React.CSSProperties = {
@@ -74,7 +75,7 @@ const Reveal: React.FC<RevealProps> = ({
     case 'slide':
     case '3d':
     case 'skew-up':
-      hiddenState = 'opacity-0 translate-y-8';
+      hiddenState = 'opacity-0 translate-y-12';
       break;
     case 'zoom-in':
     case 'matrix-zoom':
@@ -83,11 +84,11 @@ const Reveal: React.FC<RevealProps> = ({
       break;
     case 'slit-scan':
     case 'turbine':
-      hiddenState = 'opacity-0 -translate-y-4 scale-105';
+      hiddenState = 'opacity-0 -translate-y-6 scale-105';
       break;
     case 'book-open':
     case 'deck-shuffle':
-      hiddenState = 'opacity-0 translate-x-8';
+      hiddenState = 'opacity-0 translate-x-12';
       break;
     case 'fade':
     default:

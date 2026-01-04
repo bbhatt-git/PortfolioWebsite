@@ -44,18 +44,20 @@ const Hero: React.FC = () => {
   useEffect(() => {
     if (isMobile) return;
     let requestID: number;
-    const ease = 0.1; 
+    const ease = 0.12; 
 
     const update = () => {
       current.current.x += (target.current.x - current.current.x) * ease;
       current.current.y += (target.current.y - current.current.y) * ease;
 
       if (contentRef.current) {
-         contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 5}deg) rotateY(${current.current.x * 5}deg)`;
+         // Subtle 3D tilt
+         contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 6}deg) rotateY(${current.current.x * 6}deg)`;
       }
 
       if (iconsLayerRef.current) {
-          iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -30}px, ${current.current.y * -30}px, 0)`;
+          // Icons move opposite to mouse for depth
+          iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -25}px, ${current.current.y * -25}px, 0)`;
       }
 
       requestID = requestAnimationFrame(update);
@@ -78,14 +80,14 @@ const Hero: React.FC = () => {
       const i = loopNum % ROLES.length;
       const fullText = ROLES[i];
       setText(isDeleting ? fullText.substring(0, text.length - 1) : fullText.substring(0, text.length + 1));
-      setTypingSpeed(isDeleting ? 30 : 60);
+      setTypingSpeed(isDeleting ? 40 : 80);
 
       if (!isDeleting && text === fullText) {
-        setTimeout(() => setIsDeleting(true), 1500); 
+        setTimeout(() => setIsDeleting(true), 2000); 
       } else if (isDeleting && text === '') {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
-        setTypingSpeed(150); 
+        setTypingSpeed(100); 
       }
     };
     const timer = setTimeout(handleTyping, typingSpeed);
@@ -100,76 +102,77 @@ const Hero: React.FC = () => {
       onMouseLeave={() => target.current = { x: 0, y: 0 }}
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
     >
-      {/* LOCAL HERO ACCENTS */}
+      {/* LOCAL HERO ACCENT GLOW */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 dark:bg-white/5 rounded-full blur-[100px] animate-pulse-slow"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 dark:bg-white/5 rounded-full blur-[120px] animate-pulse-slow"></div>
       </div>
 
-      {/* FLOATING ICONS */}
-      <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform">
+      {/* FLOATING ICONS LAYER */}
+      <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform opacity-60">
          {FLOATING_ICONS.map((icon, idx) => (
              <div 
                 key={idx}
-                className={`absolute ${icon.position} ${icon.animation} opacity-15 dark:opacity-10`}
+                className={`absolute ${icon.position} ${icon.animation} opacity-15 dark:opacity-10 transition-opacity duration-300`}
                 style={{ animationDelay: icon.delay }}
              >
-                <div className={`w-16 h-16 md:w-24 md:h-24 glass rounded-2xl flex items-center justify-center transform ${icon.rotate} shadow-lg`}>
-                   <i className={`${icon.icon} ${icon.size} ${icon.color}`}></i>
+                <div className={`w-16 h-16 md:w-24 md:h-24 glass rounded-[2rem] flex items-center justify-center transform ${icon.rotate} shadow-lg border border-white/20`}>
+                   <i className={`${icon.icon} ${icon.size} ${icon.color} drop-shadow-sm`}></i>
                 </div>
              </div>
          ))}
       </div>
 
-      {/* CONTENT - NO DELAY, INSTANT REVEAL */}
+      {/* CONTENT STACK - NO DELAYS, SNAPPY REVEALS */}
       <div ref={contentRef} className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform">
-          <Reveal triggerOnMount delay={0} variant="fade">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg">
-              <span className="relative flex h-2 w-2">
+          <Reveal triggerOnMount variant="fade">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg ring-1 ring-black/5">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
               </span>
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300">Available for Work</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-800 dark:text-gray-200">System Online</span>
             </div>
           </Reveal>
           
           <div className="px-4">
-            <Reveal delay={0} triggerOnMount variant="slide">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
+            <Reveal triggerOnMount variant="slide">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-3">
                 Hello, I'm
               </h1>
-              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
                  Bhupesh Bhatt
               </h2>
             </Reveal>
           </div>
 
-          <div className="h-8 flex items-center justify-center">
-             <Reveal delay={0} triggerOnMount variant="fade">
-               <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl">
+          <div className="h-10 flex items-center justify-center">
+             <Reveal triggerOnMount variant="fade">
+               <div className="text-sm md:text-lg font-mono text-gray-600 dark:text-gray-300 glass-strong px-8 py-2.5 rounded-2xl border border-white/30 shadow-sm flex items-center">
                   <span className="text-blue-600 font-bold mr-2">~</span>
-                  <span className="text-gray-400 mr-1">$</span>
+                  <span className="text-gray-400 mr-2">$</span>
                   {text}
-                  <span className="animate-pulse ml-0.5 inline-block w-2 h-4 bg-blue-500 align-middle"></span>
+                  <span className="animate-pulse ml-0.5 inline-block w-2.5 h-5 bg-blue-500 align-middle"></span>
                </div>
              </Reveal>
           </div>
 
           <div className="max-w-2xl mx-auto px-6">
-            <Reveal delay={0} triggerOnMount variant="slide">
-              <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
+            <Reveal triggerOnMount variant="slide">
+              <p className="text-lg md:text-xl lg:text-2xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
                  Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">fluid architectures</span> with aesthetic precision. 
+                 Bridging design intuition with technical mastery.
               </p>
             </Reveal>
           </div>
 
-          <div className="mt-4 md:mt-6">
-            <Reveal delay={0} triggerOnMount variant="zoom-in">
-              <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-                <MagneticButton href="#work" variant="glass-primary" className="group px-8 py-3.5">
-                  <span className="relative flex items-center gap-2.5 text-base">Selected Work <i className="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1.5"></i></span>
+          <div className="mt-6">
+            <Reveal triggerOnMount variant="zoom-in">
+              <div className="flex flex-col sm:flex-row gap-5 items-center justify-center">
+                <MagneticButton href="#work" variant="glass-primary" className="group px-10 py-4 shadow-xl">
+                  <span className="relative flex items-center gap-3 text-base font-bold">Selected Work <i className="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-2"></i></span>
                 </MagneticButton>
-                <MagneticButton href="#contact" variant="glass-secondary" className="px-8 py-3.5 text-base">
-                   <span className="flex items-center gap-2.5">Let's Talk <i className="fas fa-paper-plane text-xs opacity-50"></i></span>
+                <MagneticButton href="#contact" variant="glass-secondary" className="px-10 py-4 text-base font-bold">
+                   <span className="flex items-center gap-3">Let's Talk <i className="fas fa-paper-plane text-xs opacity-60"></i></span>
                 </MagneticButton>
               </div>
             </Reveal>
