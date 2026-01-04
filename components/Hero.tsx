@@ -120,22 +120,58 @@ const Hero: React.FC = () => {
       onMouseLeave={handleMouseLeave}
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
     >
-      {/* SVG FILTERS for Liquid Distortion */}
-      <svg className="hidden">
-        <defs>
-          <filter id="liquid-distortion">
-            <feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="30" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
+      {/* 
+        --------------------------
+        1. ENHANCED 3D BACKGROUND
+        --------------------------
+      */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+         {/* Top Left Blob - Blue/Purple Gradient */}
+         <div className="absolute top-[-20%] left-[-10%] w-[80vw] h-[80vw] md:w-[700px] md:h-[700px] bg-gradient-to-br from-blue-400/20 via-indigo-500/20 to-purple-500/20 rounded-full blur-[100px] animate-blob mix-blend-multiply dark:mix-blend-screen opacity-70 will-change-transform"></div>
+         
+         {/* Bottom Right Blob - Cyan/Pink Gradient */}
+         <div className="absolute bottom-[-20%] right-[-10%] w-[80vw] h-[80vw] md:w-[700px] md:h-[700px] bg-gradient-to-tr from-cyan-400/20 via-blue-500/20 to-pink-500/20 rounded-full blur-[100px] animate-blob-reverse mix-blend-multiply dark:mix-blend-screen opacity-70 will-change-transform" style={{ animationDelay: '4s' }}></div>
+         
+         {/* Center Glow */}
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] animate-pulse-slow"></div>
 
-      {/* AMBIENT FLUID BACKGROUND (No container box) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-         <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-[100px] animate-float-slow mix-blend-multiply dark:mix-blend-screen opacity-60"
-              style={{ filter: 'url(#liquid-distortion)' }}></div>
-         <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[400px] bg-purple-500/20 dark:bg-purple-600/10 rounded-full blur-[100px] animate-float-medium mix-blend-multiply dark:mix-blend-screen opacity-60"
-              style={{ filter: 'url(#liquid-distortion)' }}></div>
+         {/* Glass Blur Overlay to enhance "blurry" feel */}
+         <div className="absolute inset-0 backdrop-blur-[1px]"></div>
+      </div>
+
+      {/* 
+        --------------------------
+        2. FLOATING 3D ICONS
+        --------------------------
+      */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+         {/* Python - Bottom Left Area */}
+         <div className="absolute bottom-[15%] left-[5%] md:left-[10%] animate-float-slow opacity-30 dark:opacity-20 hover:opacity-100 transition-opacity duration-500 will-change-transform">
+            <div className="relative w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-yellow-300/10 to-yellow-600/10 rounded-3xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform -rotate-12 shadow-2xl">
+               <i className="fab fa-python text-4xl md:text-6xl text-yellow-500 drop-shadow-[0_4px_4px_rgba(0,0,0,0.2)]"></i>
+            </div>
+         </div>
+
+         {/* React - Top Right Area */}
+         <div className="absolute top-[12%] right-[5%] md:right-[12%] animate-float-medium opacity-30 dark:opacity-20 hover:opacity-100 transition-opacity duration-500 will-change-transform" style={{ animationDelay: '1s' }}>
+             <div className="relative w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-300/10 to-blue-600/10 rounded-full backdrop-blur-sm border border-white/10 flex items-center justify-center transform rotate-12 shadow-2xl">
+                <i className="fab fa-react text-5xl md:text-7xl text-blue-400 drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] animate-spin-slow"></i>
+             </div>
+         </div>
+
+         {/* Git - Top Left Area */}
+         <div className="absolute top-[18%] left-[8%] md:left-[15%] animate-float-fast opacity-30 dark:opacity-20 hover:opacity-100 transition-opacity duration-500 will-change-transform" style={{ animationDelay: '2s' }}>
+             <div className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-red-300/10 to-orange-600/10 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform -rotate-6 shadow-2xl">
+                <i className="fab fa-git-alt text-3xl md:text-4xl text-red-500 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"></i>
+             </div>
+         </div>
+         
+         {/* JS - Bottom Right */}
+         <div className="absolute bottom-[20%] right-[8%] md:right-[15%] animate-float-slow opacity-30 dark:opacity-20 hover:opacity-100 transition-opacity duration-500 will-change-transform" style={{ animationDelay: '3s' }}>
+             <div className="relative w-18 h-18 md:w-24 md:h-24 bg-gradient-to-br from-yellow-200/10 to-yellow-500/10 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform rotate-6 shadow-2xl">
+                <i className="fab fa-js text-4xl md:text-5xl text-yellow-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"></i>
+             </div>
+         </div>
       </div>
 
       {/* CONTENT LAYER - Free floating */}
