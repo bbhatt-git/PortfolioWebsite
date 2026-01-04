@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import { SERVICES } from '../constants';
 import { Service } from '../types';
+import { useBot } from '../context/BotContext';
 
 const Services: React.FC = () => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const { say, shutup } = useBot();
 
   const openModal = (service: Service) => {
     setSelectedService(service);
@@ -22,6 +24,10 @@ const Services: React.FC = () => {
     }
     return () => { document.body.style.overflow = ''; };
   }, [selectedService]);
+
+  const handleMouseEnter = (service: Service) => {
+    say(`Ah! ${service.title}. We excel at this.`, 4000);
+  };
 
   return (
     <section id="services" className="py-24 relative overflow-hidden">
@@ -51,6 +57,8 @@ const Services: React.FC = () => {
             <Reveal key={index} delay={index * 100} variant="zoom-in" className="h-full">
                 <div 
                   onClick={() => openModal(service)}
+                  onMouseEnter={() => handleMouseEnter(service)}
+                  onMouseLeave={() => shutup()}
                   className="group relative h-full rounded-[2.5rem] cursor-pointer"
                 >
                     {/* Card Content - Subtle glass interaction instead of neon */}

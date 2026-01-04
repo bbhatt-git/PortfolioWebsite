@@ -14,7 +14,8 @@ import Admin from './components/Admin';
 import CV from './components/CV';
 import ProjectPage from './components/ProjectPage';
 import Preloader from './components/Preloader';
-import CustomCursor from './components/CustomCursor';
+import AssistantBot from './components/AssistantBot';
+import { BotProvider } from './context/BotContext';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -86,21 +87,21 @@ const App: React.FC = () => {
   // Route Handling
   if (currentPath === '/admin') {
     return (
-      <>
+      <BotProvider>
         {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
-        <CustomCursor />
+        <AssistantBot />
         <Admin />
-      </>
+      </BotProvider>
     );
   }
 
   if (currentPath === '/cv') {
     return (
-      <>
+      <BotProvider>
         {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
-        <CustomCursor />
+        <AssistantBot />
         <CV />
-      </>
+      </BotProvider>
     );
   }
 
@@ -111,19 +112,19 @@ const App: React.FC = () => {
     
     if (slug) {
       return (
-        <>
+        <BotProvider>
           {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
-          <CustomCursor />
+          <AssistantBot />
           <ProjectPage slug={slug} />
-        </>
+        </BotProvider>
       );
     }
   }
 
   return (
-    <>
+    <BotProvider>
       {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
-      <CustomCursor />
+      <AssistantBot />
       <Layout>
         <Navbar 
           isDark={isDark} 
@@ -151,7 +152,7 @@ const App: React.FC = () => {
           onClose={() => setIsTerminalOpen(false)} 
         />
       </Layout>
-    </>
+    </BotProvider>
   );
 };
 

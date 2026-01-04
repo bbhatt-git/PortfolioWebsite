@@ -3,6 +3,7 @@ import Reveal from './Reveal';
 import { Project } from '../types';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useBot } from '../context/BotContext';
 
 // 3D Tilt Card Component
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
@@ -11,6 +12,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  const { say, shutup } = useBot();
 
   useEffect(() => {
     setIsTouch(window.matchMedia("(pointer: coarse)").matches);
@@ -27,10 +29,16 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     setGlare({ x: glareX, y: glareY, opacity: 1 });
   };
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    say(`Checking out ${project.title}? Excellent choice!`, 3000);
+  };
+
   const handleMouseLeave = () => {
     setIsHovered(false);
     setRotate({ x: 0, y: 0 });
     setGlare((prev) => ({ ...prev, opacity: 0 }));
+    shutup();
   };
 
   return (
@@ -39,7 +47,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       className="group relative rounded-[2rem] transition-all duration-500 ease-out-expo transform-gpu preserve-3d h-full perspective-1000 cursor-pointer"
       style={{ transform: isTouch ? 'none' : `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) scale3d(1, 1, 1)` }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
     >

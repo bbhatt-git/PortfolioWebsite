@@ -1,127 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GoogleGenAI, Chat, GenerateContentResponse } from "@google/genai";
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
-import { Project } from '../types';
-import { SERVICES, TECH_STACK, STATS } from '../constants';
+import { TECH_STACK } from '../constants';
 
 interface TerminalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface Message {
-    role: 'user' | 'model' | 'system';
-    text: string;
+interface FileSystem {
+  [key: string]: string | FileSystem;
 }
 
+// Virtual File System Structure
+const fileSystem: FileSystem = {
+  'about.txt': "Name: Bhupesh Raj Bhatt\nRole: Senior Full Stack Developer\nLocation: Mahendranagar, Nepal\nExp: 2+ Years\n\nI build pixel-perfect, performant web architectures.",
+  'contact.md': "Email: hello@bbhatt.com.np\nPhone: +977 9761184935\nGitHub: github.com/bbhatt-git\nLinkedIn: linkedin.com/in/bhattbhupesh",
+  'skills.json': JSON.stringify(TECH_STACK, null, 2),
+  'projects': {
+    'portfolio.txt': "This website. Built with React, Vite, Tailwind, and Firebase.",
+    'ecommerce.txt': "A full-stack e-commerce solution using Next.js and Stripe.",
+    'saas_dashboard.txt': "Real-time analytics dashboard for fintech clients.",
+    'readme.md': "To view a project, type 'cat [filename]'."
+  }
+};
+
 const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
-  const [history, setHistory] = useState<Message[]>([
-      { role: 'system', text: 'INITIALIZING AI KERNEL...' },
-  ]);
+  const [history, setHistory] = useState<string[]>(['Welcome to BhupeshOS v1.0.0', 'Type "help" for a list of commands.']);
   const [input, setInput] = useState('');
-  const [isThinking, setIsThinking] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
+  const [currentPath, setCurrentPath] = useState<string[]>([]); // [] = root
   
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
-  // Ref to hold the chat instance
-  const chatSession = useRef<Chat | null>(null);
-  // Ref to hold project data for context
-  const projectsRef = useRef<Project[]>([]);
 
-  // 1. Fetch Data & Initialize Gemini
-  useEffect(() => {
-    const initAI = async () => {
-        // Step 1: Check API Key
-        if (!process.env.API_KEY) {
-             setHistory(prev => [...prev, { role: 'system', text: 'CRITICAL ERROR: API_KEY MISSING IN ENVIRONMENT.' }]);
-             return;
-        }
-
-        // Step 2: Try Fetching Projects (Non-blocking)
-        let fetchedProjects: Project[] = [];
-        try {
-            const q = query(collection(db, "projects"), orderBy("order", "asc"));
-            const querySnapshot = await getDocs(q);
-            querySnapshot.forEach((doc) => {
-                fetchedProjects.push({ id: doc.id, ...doc.data() } as Project);
-            });
-            setHistory(prev => [...prev, { role: 'system', text: `> DATABASE CONNECTION ESTABLISHED. LOADED ${fetchedProjects.length} PROJECTS.` }]);
-        } catch (error) {
-            console.warn("Firebase fetch failed, using static fallback", error);
-            setHistory(prev => [...prev, { role: 'system', text: '> WARNING: DATABASE UNREACHABLE. USING LOCAL CACHE.' }]);
-        }
-        projectsRef.current = fetchedProjects;
-
-        try {
-            // Step 3: Initialize AI
-            const projectDescriptions = fetchedProjects.length > 0 
-                ? fetchedProjects.map(p => `- ${p.title}: ${p.desc} (Stack: ${p.stack})`).join('\n')
-                : "No specific project data available currently. Answer generally about web development.";
-
-            const serviceDescriptions = SERVICES.map(s => `- ${s.title}: ${s.desc}`).join('\n');
-            const statsDescription = STATS.map(s => `${s.label}: ${s.value}`).join(', ');
-
-            const systemInstruction = `
-                You are "Bhupesh AI", an advanced virtual assistant living in the terminal of Bhupesh Raj Bhatt's portfolio website.
-                
-                **Identity:**
-                - Name: Bhupesh AI (v2.5)
-                - Personality: Professional, witty, slightly "cyberpunk/hacker" aesthetic, but very helpful.
-                - Creator: Bhupesh Raj Bhatt
-                
-                **About Bhupesh:**
-                - Role: Senior Full Stack Developer & UI/UX Designer based in Mahendranagar, Nepal.
-                - Experience: 2+ Years.
-                - Key Skills: ${TECH_STACK.join(', ')}.
-                - Stats: ${statsDescription}
-                - Contact: hello@bbhatt.com.np, +977 9761184935.
-                
-                **Projects:**
-                ${projectDescriptions}
-                
-                **Services:**
-                ${serviceDescriptions}
-                
-                **Rules:**
-                1. Keep answers concise and terminal-friendly (avoid long paragraphs).
-                2. Use technical jargon where appropriate but stay understandable.
-                3. If asked to navigate, tell the user you are executing the command (e.g., "Navigating to Projects...").
-                4. If asked about something not in your database, politely say you lack that data.
-                5. Do NOT hallucinate personal details not provided here.
-                6. When listing things, use bullet points or simple lists.
-            `;
-
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-            chatSession.current = ai.chats.create({
-                model: 'gemini-1.5-flash',
-                config: {
-                    systemInstruction: systemInstruction,
-                    temperature: 0.7,
-                },
-            });
-
-            setIsOnline(true);
-            setHistory(prev => [
-                ...prev, 
-                { role: 'system', text: 'NEURAL NET CONNECTED.' },
-                { role: 'model', text: 'Greetings. I am the AI assistant for Bhupesh. I have access to his portfolio and skills. Ask me anything.' }
-            ]);
-
-        } catch (error) {
-            console.error("Failed to init AI:", error);
-            setHistory(prev => [...prev, { role: 'system', text: 'FATAL ERROR: COULD NOT INITIALIZE AI MODEL.' }]);
-        }
-    };
-
-    if (isOpen && !chatSession.current) {
-        initAI();
-    }
-  }, [isOpen]);
-
-  // Focus input on open
+  // Focus and scroll
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
@@ -132,100 +42,135 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
     return () => { document.body.style.overflow = 'auto'; }
   }, [isOpen]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [history, isThinking]);
+  }, [history]);
 
-  // Local commands
-  const handleLocalCommand = (cmd: string): boolean => {
-      const lowerCmd = cmd.toLowerCase().trim();
-      
-      if (lowerCmd === 'clear') {
-          setHistory([]);
-          return true;
+  // Helper to get current directory object
+  const getCurrentDir = () => {
+    let current: any = fileSystem;
+    for (const segment of currentPath) {
+      if (current[segment] && typeof current[segment] === 'object') {
+        current = current[segment];
+      } else {
+        return null;
       }
-      if (lowerCmd === 'exit') {
-          onClose();
-          return true;
-      }
-      if (lowerCmd === 'help') {
-           setHistory(prev => [...prev, { role: 'user', text: cmd }]);
-           setHistory(prev => [...prev, { role: 'model', text: 'Available Local Commands:\n- clear: Clear terminal\n- exit: Close terminal\n- admin: Access admin panel\n\nFor everything else, just ask me naturally! E.g., "Who is Bhupesh?", "Show me his projects".' }]);
-           return true;
-      }
-      if (lowerCmd === 'admin') {
-          window.history.pushState({}, '', '/admin');
-          window.dispatchEvent(new Event('pushstate'));
-          onClose();
-          return true;
-      }
-      // UI Navigation triggers (Simulated)
-      if (lowerCmd.includes('project') || lowerCmd.includes('work')) {
-          setTimeout(() => document.querySelector('#work')?.scrollIntoView({ behavior: 'smooth' }), 1000);
-      }
-      if (lowerCmd.includes('contact') || lowerCmd.includes('email')) {
-           setTimeout(() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }), 1000);
-      }
-
-      return false;
+    }
+    return current;
   };
 
-  const handleSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && input.trim()) {
-      const userMsg = input;
+  const executeCommand = (cmd: string) => {
+    const parts = cmd.trim().split(' ');
+    const command = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    
+    // Echo command
+    setHistory(prev => [...prev, `${getUserPrompt()} ${cmd}`]);
+
+    if (!command) return;
+
+    switch (command) {
+      case 'help':
+        setHistory(prev => [...prev, 
+          'Available commands:',
+          '  ls           List directory contents',
+          '  cd [dir]     Change directory',
+          '  cat [file]   Print file content',
+          '  whoami       Display current user',
+          '  date         Display system date',
+          '  clear        Clear terminal screen',
+          '  exit         Close terminal'
+        ]);
+        break;
+
+      case 'clear':
+        setHistory([]);
+        break;
+
+      case 'exit':
+        onClose();
+        break;
+
+      case 'whoami':
+        setHistory(prev => [...prev, 'guest']);
+        break;
+
+      case 'date':
+        setHistory(prev => [...prev, new Date().toString()]);
+        break;
+
+      case 'ls': {
+        const dir = getCurrentDir();
+        if (dir) {
+          const items = Object.keys(dir).map(key => {
+            const isDir = typeof dir[key] === 'object';
+            return isDir ? `${key}/` : key;
+          });
+          setHistory(prev => [...prev, items.join('  ')]);
+        } else {
+          setHistory(prev => [...prev, 'Error: Current directory not found']);
+        }
+        break;
+      }
+
+      case 'cd': {
+        const target = args[0];
+        if (!target) {
+          setCurrentPath([]); // go root
+        } else if (target === '..') {
+          setCurrentPath(prev => prev.slice(0, -1));
+        } else if (target === '/') {
+          setCurrentPath([]);
+        } else {
+          const dir = getCurrentDir();
+          if (dir && dir[target] && typeof dir[target] === 'object') {
+            setCurrentPath(prev => [...prev, target]);
+          } else {
+            setHistory(prev => [...prev, `cd: ${target}: No such directory`]);
+          }
+        }
+        break;
+      }
+
+      case 'cat': {
+        const target = args[0];
+        if (!target) {
+          setHistory(prev => [...prev, 'usage: cat [file]']);
+        } else {
+          const dir = getCurrentDir();
+          if (dir && dir[target]) {
+             if (typeof dir[target] === 'string') {
+               setHistory(prev => [...prev, dir[target] as string]);
+             } else {
+               setHistory(prev => [...prev, `cat: ${target}: Is a directory`]);
+             }
+          } else {
+            setHistory(prev => [...prev, `cat: ${target}: No such file`]);
+          }
+        }
+        break;
+      }
+      
+      case 'sudo':
+        setHistory(prev => [...prev, 'Permission denied: You are not an admin.']);
+        break;
+
+      default:
+        setHistory(prev => [...prev, `command not found: ${command}`]);
+    }
+  };
+
+  const getUserPrompt = () => {
+    const pathStr = currentPath.length === 0 ? '~' : `~/${currentPath.join('/')}`;
+    return `guest@bhupesh:${pathStr}$`;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      executeCommand(input);
       setInput('');
-      
-      // 1. Handle Local Commands first
-      if (handleLocalCommand(userMsg)) return;
-
-      // 2. Add User Message to History
-      setHistory(prev => [...prev, { role: 'user', text: userMsg }]);
-      
-      if (!isOnline || !chatSession.current) {
-          setHistory(prev => [...prev, { role: 'system', text: 'ERROR: AI OFFLINE. CHECK CONFIGURATION.' }]);
-          return;
-      }
-
-      setIsThinking(true);
-
-      try {
-          // 3. Stream Response from Gemini
-          const resultStream = await chatSession.current.sendMessageStream({ message: userMsg });
-          
-          let fullResponse = "";
-          // Add a placeholder message for the model
-          setHistory(prev => [...prev, { role: 'model', text: '' }]);
-
-          for await (const chunk of resultStream) {
-              const c = chunk as GenerateContentResponse;
-              const textChunk = c.text;
-              fullResponse += textChunk;
-              
-              // Update the last message in history with the growing text
-              setHistory(prev => {
-                  const newHistory = [...prev];
-                  const lastMsg = newHistory[newHistory.length - 1];
-                  if (lastMsg.role === 'model') {
-                      lastMsg.text = fullResponse;
-                  }
-                  return newHistory;
-              });
-          }
-
-      } catch (error) {
-          console.error("Gemini Runtime Error:", error);
-          let errorMsg = 'ERROR: COMMUNICATION INTERRUPTED.';
-          if (error instanceof Error) {
-             if (error.message.includes("404")) errorMsg = 'ERROR: MODEL_NOT_FOUND (404). RECALIBRATING...';
-             if (error.message.includes("400") || error.message.includes("API Key")) errorMsg = 'ERROR: INVALID_API_KEY. ACCESS DENIED.';
-          }
-          setHistory(prev => [...prev, { role: 'system', text: errorMsg }]);
-      } finally {
-          setIsThinking(false);
-      }
     }
   };
 
@@ -241,80 +186,66 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-3xl h-[85vh] md:h-[600px] relative flex flex-col transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] overflow-hidden rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] border border-white/10"
+        className="w-full max-w-3xl h-[85vh] md:h-[600px] relative flex flex-col transform transition-all scale-100 animate-[scaleIn_0.2s_ease-out] overflow-hidden rounded-lg shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-[#333] bg-[#0c0c0c]"
         onClick={e => e.stopPropagation()}
-        style={{
-            background: 'rgba(15, 15, 20, 0.95)',
-            boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 20px 40px rgba(0,0,0,0.6)'
-        }}
       >
-        {/* CRT Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none z-30 opacity-10" 
-             style={{ background: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))', backgroundSize: '100% 2px, 3px 100%' }}>
-        </div>
-
         {/* Title Bar */}
-        <div className="relative z-20 h-10 flex items-center px-4 bg-[#1a1a1a] border-b border-white/10 select-none shrink-0 justify-between">
-           <div className="flex gap-2 group">
+        <div className="relative z-20 h-8 flex items-center px-4 bg-[#1f1f1f] border-b border-[#333] select-none shrink-0 justify-between">
+           <div className="flex gap-2">
               <button onClick={onClose} className="w-3 h-3 rounded-full bg-[#FF5F57] hover:brightness-110"></button>
               <div className="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
               <div className="w-3 h-3 rounded-full bg-[#28C840]"></div>
            </div>
-           <div className="text-xs font-mono text-gray-400 opacity-80 flex items-center gap-2">
-               <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
-               bhupesh_ai — v2.5
-           </div>
+           <div className="text-xs font-mono text-gray-400">guest@bhupesh: ~</div>
            <div className="w-10"></div>
         </div>
 
         {/* Terminal Body */}
         <div 
-            className="relative z-10 flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar bg-[#0C0C0C]"
+            className="relative z-10 flex-1 p-4 overflow-y-auto custom-scrollbar"
             ref={scrollRef}
             onClick={handleContainerClick}
+            style={{ backgroundColor: '#0C0C0C' }}
         >
-            <div 
-                className="font-mono text-[14px] md:text-[15px] leading-relaxed"
-                style={{ fontFamily: '"JetBrains Mono", monospace' }}
-            >
-                {history.map((msg, i) => (
-                    <div key={i} className="mb-4 break-words whitespace-pre-wrap animate-fade-in">
-                       {msg.role === 'user' ? (
-                           <div className="text-white">
-                               <span className="text-[#00C7FC] mr-2">➜</span>
-                               <span className="font-bold text-[#E0E0E0]">{msg.text}</span>
-                           </div>
-                       ) : msg.role === 'system' ? (
-                           <div className="text-yellow-500 text-xs uppercase tracking-widest opacity-80">
-                               [{msg.text}]
-                           </div>
-                       ) : (
-                           <div className="text-[#4AF626] ml-4 border-l-2 border-[#4AF626]/30 pl-3">
-                               {msg.text}
-                               {/* Cursor at end of last model message if still thinking */}
-                               {i === history.length - 1 && isThinking && <span className="inline-block w-2 h-4 bg-[#4AF626] ml-1 animate-pulse align-middle"></span>}
-                           </div>
-                       )}
+            <div className="font-mono text-[14px] leading-6 text-[#cccccc]">
+                {history.map((line, i) => (
+                    <div key={i} className="whitespace-pre-wrap break-words">
+                        {line.startsWith('guest@') ? (
+                           <span>
+                             <span className="text-green-500">guest@bhupesh</span>
+                             <span className="text-white">:</span>
+                             <span className="text-blue-500">
+                                {line.split(':')[1].split('$')[0]}
+                             </span>
+                             <span className="text-white">$ </span>
+                             <span>{line.split('$')[1]}</span>
+                           </span>
+                        ) : (
+                          <span>{line}</span>
+                        )}
                     </div>
                 ))}
                 
                 {/* Active Input Line */}
-                <div className="flex flex-row items-center mt-6">
-                    <span className="text-[#00C7FC] mr-2 text-lg">➜</span>
-                    <span className="text-[#ff5f57] font-bold mr-2">~</span>
+                <div className="flex flex-row items-center mt-1">
+                    <span className="text-green-500">guest@bhupesh</span>
+                    <span className="text-white">:</span>
+                    <span className="text-blue-500">
+                        {currentPath.length === 0 ? '~' : `~/${currentPath.join('/')}`}
+                    </span>
+                    <span className="text-white mr-2">$</span>
                     
                     <div className="relative flex-1">
                          <input 
                             ref={inputRef}
                             type="text"
-                            className="w-full bg-transparent border-none outline-none text-white font-mono text-[16px] placeholder-gray-700"
-                            placeholder={isOnline ? "Ask me about my projects, skills, or experience..." : "Initializing..."}
+                            className="w-full bg-transparent border-none outline-none text-[#cccccc] font-mono text-[14px] p-0 m-0"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handleSubmit}
+                            onKeyDown={handleKeyDown}
                             autoComplete="off"
                             autoFocus
-                            disabled={!isOnline}
+                            spellCheck={false}
                          />
                     </div>
                 </div>
