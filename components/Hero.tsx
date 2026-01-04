@@ -16,8 +16,6 @@ const FLOATING_ICONS = [
   { icon: 'fab fa-react', color: 'text-blue-400', position: 'top-[12%] right-[5%]', size: 'text-5xl md:text-7xl', animation: 'animate-float-medium', delay: '0.2s', rotate: 'rotate-12' },
   { icon: 'fab fa-git-alt', color: 'text-red-500', position: 'top-[18%] left-[8%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-fast', delay: '0.4s', rotate: '-rotate-6' },
   { icon: 'fab fa-js', color: 'text-yellow-400', position: 'bottom-[20%] right-[8%]', size: 'text-4xl md:text-5xl', animation: 'animate-float-medium', delay: '0.1s', rotate: 'rotate-6' },
-  { icon: 'fas fa-database', color: 'text-blue-500', position: 'top-[40%] left-[15%]', size: 'text-2xl md:text-3xl', animation: 'animate-float-fast', delay: '0.3s', rotate: 'rotate-12' },
-  { icon: 'fab fa-node', color: 'text-green-500', position: 'bottom-[35%] right-[15%]', size: 'text-4xl md:text-5xl', animation: 'animate-float-fast', delay: '0.5s', rotate: '-rotate-12' },
 ];
 
 const Hero: React.FC = () => {
@@ -44,18 +42,18 @@ const Hero: React.FC = () => {
   useEffect(() => {
     if (isMobile) return;
     let requestID: number;
-    const ease = 0.12; 
+    const ease = 0.1; 
 
     const update = () => {
       current.current.x += (target.current.x - current.current.x) * ease;
       current.current.y += (target.current.y - current.current.y) * ease;
 
       if (contentRef.current) {
-         contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 6}deg) rotateY(${current.current.x * 6}deg)`;
+         contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 5}deg) rotateY(${current.current.x * 5}deg)`;
       }
 
       if (iconsLayerRef.current) {
-          iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -25}px, ${current.current.y * -25}px, 0)`;
+          iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -20}px, ${current.current.y * -20}px, 0)`;
       }
 
       requestID = requestAnimationFrame(update);
@@ -98,33 +96,44 @@ const Hero: React.FC = () => {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => target.current = { x: 0, y: 0 }}
-      className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
+      className="min-h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
     >
-      {/* LOCAL HERO ACCENT GLOW */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 dark:bg-white/5 rounded-full blur-[120px] animate-pulse-slow"></div>
+      {/* LOCAL ACCENTS */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 dark:bg-white/5 rounded-full blur-[100px] animate-pulse-slow"></div>
       </div>
 
-      {/* FLOATING ICONS LAYER */}
-      <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform opacity-60">
+      {/* FLOATING ICONS */}
+      <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform opacity-40">
          {FLOATING_ICONS.map((icon, idx) => (
              <div 
                 key={idx}
-                className={`absolute ${icon.position} ${icon.animation} opacity-15 dark:opacity-10 transition-opacity duration-300`}
+                className={`absolute ${icon.position} ${icon.animation}`}
                 style={{ animationDelay: icon.delay }}
              >
-                <div className={`w-16 h-16 md:w-24 md:h-24 glass rounded-[2rem] flex items-center justify-center transform ${icon.rotate} shadow-lg border border-white/20`}>
-                   <i className={`${icon.icon} ${icon.size} ${icon.color} drop-shadow-sm`}></i>
+                <div className={`w-12 h-12 md:w-20 md:h-20 glass rounded-2xl flex items-center justify-center transform ${icon.rotate} shadow-lg border border-white/20`}>
+                   <i className={`${icon.icon} text-2xl md:text-4xl ${icon.color}`}></i>
                 </div>
              </div>
          ))}
       </div>
 
-      {/* CONTENT STACK - NO DELAYS, SNAPPY REVEALS */}
-      <div ref={contentRef} className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform">
+      {/* CONTENT STACK - pt-24 fixes the navbar overlap */}
+      <div ref={contentRef} className="relative z-10 flex flex-col items-center gap-6 md:gap-8 pt-24 md:pt-32 pb-12 will-change-transform">
+          
+          <Reveal triggerOnMount variant="fade">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-white/40 dark:border-white/10 shadow-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-700 dark:text-gray-300">Available for Hire</span>
+            </div>
+          </Reveal>
+
           <div className="px-4">
             <Reveal triggerOnMount variant="slide">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-3">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
                 Hello, I'm
               </h1>
               <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
@@ -135,7 +144,7 @@ const Hero: React.FC = () => {
 
           <div className="h-10 flex items-center justify-center">
              <Reveal triggerOnMount variant="fade">
-               <div className="text-sm md:text-lg font-mono text-gray-600 dark:text-gray-300 glass-strong px-8 py-2.5 rounded-2xl border border-white/30 shadow-sm flex items-center">
+               <div className="text-sm md:text-lg font-mono text-gray-600 dark:text-gray-300 glass px-8 py-2.5 rounded-2xl border border-white/30 shadow-sm flex items-center">
                   <span className="text-blue-600 font-bold mr-2">~</span>
                   <span className="text-gray-400 mr-2">$</span>
                   {text}
@@ -153,7 +162,7 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Reveal triggerOnMount variant="zoom-in">
               <div className="flex flex-col sm:flex-row gap-5 items-center justify-center">
                 <MagneticButton href="#work" variant="glass-primary" className="group px-10 py-4 shadow-xl">
