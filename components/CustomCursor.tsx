@@ -67,8 +67,8 @@ const CustomCursor: React.FC = () => {
           const destX = targetPos.current.x + 40;
           const destY = targetPos.current.y + 40;
           
-          // Ease factor for smooth following
-          const ease = 0.08; 
+          // Ease factor for smooth following - slightly looser for better "following" effect
+          const ease = 0.06; 
           
           // Calculate previous position to determine velocity
           const prevX = pos.current.x;
