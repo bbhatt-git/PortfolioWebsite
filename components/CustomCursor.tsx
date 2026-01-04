@@ -63,12 +63,12 @@ const CustomCursor: React.FC = () => {
       
       let rAF: number;
       const loop = () => {
-          // Dest is the mouse position with offset so it follows, not covers
-          const destX = targetPos.current.x + 32;
-          const destY = targetPos.current.y + 32;
+          // Dest is the mouse position with a larger offset to ensure it follows clearly behind/next to cursor
+          const destX = targetPos.current.x + 40;
+          const destY = targetPos.current.y + 40;
           
-          // Lower ease = more "floaty" / laggy (Drone behavior)
-          const ease = 0.05; 
+          // Ease factor for smooth following
+          const ease = 0.08; 
           
           // Calculate previous position to determine velocity
           const prevX = pos.current.x;
