@@ -51,12 +51,10 @@ const Hero: React.FC = () => {
       current.current.y += (target.current.y - current.current.y) * ease;
 
       if (contentRef.current) {
-         // Subtle 3D tilt
          contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 6}deg) rotateY(${current.current.x * 6}deg)`;
       }
 
       if (iconsLayerRef.current) {
-          // Icons move opposite to mouse for depth
           iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -25}px, ${current.current.y * -25}px, 0)`;
       }
 
@@ -124,16 +122,6 @@ const Hero: React.FC = () => {
 
       {/* CONTENT STACK - NO DELAYS, SNAPPY REVEALS */}
       <div ref={contentRef} className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform">
-          <Reveal triggerOnMount variant="fade">
-            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg ring-1 ring-black/5">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-800 dark:text-gray-200">System Online</span>
-            </div>
-          </Reveal>
-          
           <div className="px-4">
             <Reveal triggerOnMount variant="slide">
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-3">
