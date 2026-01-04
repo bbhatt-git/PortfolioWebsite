@@ -2,19 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 
 const CustomCursor: React.FC = () => {
   const cursorRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const eyesRef = useRef<HTMLDivElement>(null);
+  
+  // Target is where the mouse is
+  const targetPos = useRef({ x: 0, y: 0 });
+  // Pos is where the drone is currently
+  const pos = useRef({ x: 0, y: 0 });
+  // Velocity for tilt calculation
+  const vel = useRef({ x: 0, y: 0 });
+  const rot = useRef(0);
+
   const [isPointer, setIsPointer] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
 
-  // Physics state
-  const pos = useRef({ x: 0, y: 0 });
-  const vel = useRef({ x: 0, y: 0 });
-  const rot = useRef(0);
-
-  // Optimization: Use a ref for the target position to avoid re-running the effect loop
-  const targetPos = useRef({ x: 0, y: 0 });
-  
   useEffect(() => {
      // Hide on touch devices
      if (window.matchMedia("(pointer: coarse)").matches) return;
@@ -22,7 +23,7 @@ const CustomCursor: React.FC = () => {
      const onMove = (e: MouseEvent) => {
          targetPos.current = { x: e.clientX, y: e.clientY };
          setIsHidden(false);
-         // Check pointer for interactive state
+         
          const target = e.target as HTMLElement;
          const isClickable = 
             target.tagName.toLowerCase() === 'a' || 
@@ -56,33 +57,50 @@ const CustomCursor: React.FC = () => {
      };
   }, []);
 
-  // Animation Loop
+  // Animation Loop - Drone Physics
   useEffect(() => {
       if (window.matchMedia("(pointer: coarse)").matches) return;
       
       let rAF: number;
       const loop = () => {
+          // Dest is the mouse position
           const destX = targetPos.current.x;
           const destY = targetPos.current.y;
           
-          // Ease factor: Lower = more lag/floaty, Higher = tighter follow
-          const ease = 0.12; 
+          // Lower ease = more "floaty" / laggy (Drone behavior)
+          const ease = 0.08; 
           
-          // Lerp position
+          // Calculate previous position to determine velocity
+          const prevX = pos.current.x;
+          const prevY = pos.current.y;
+
+          // Lerp position (Follow logic)
           pos.current.x += (destX - pos.current.x) * ease;
           pos.current.y += (destY - pos.current.y) * ease;
           
-          // Calculate Velocity for Tilt
-          const vx = (destX - pos.current.x) * ease;
+          // Calculate Velocity
+          vel.current.x = pos.current.x - prevX;
+          vel.current.y = pos.current.y - prevY;
           
-          // Rotate based on velocity (max 25deg)
-          const targetRot = Math.min(Math.max(vx * 1.5, -25), 25);
-          rot.current += (targetRot - rot.current) * 0.1;
+          // Calculate Tilt/Banking based on horizontal velocity
+          // Clamp rotation between -25 and 25 degrees
+          const targetRotation = Math.min(Math.max(vel.current.x * 2.5, -25), 25);
+          rot.current += (targetRotation - rot.current) * 0.1;
 
           if (cursorRef.current) {
-               // Offset by -50% (handled by negative margins in class) to center
+               // Update Drone Position
                cursorRef.current.style.transform = `translate3d(${pos.current.x}px, ${pos.current.y}px, 0) rotate(${rot.current}deg)`;
           }
+
+          // Eye Tracking Logic (Look at the cursor)
+          if (eyesRef.current) {
+            const angle = Math.atan2(destY - pos.current.y, destX - pos.current.x);
+            // Limit eye movement distance
+            const eyeX = Math.cos(angle) * 3; 
+            const eyeY = Math.sin(angle) * 3;
+            eyesRef.current.style.transform = `translate(${eyeX}px, ${eyeY}px)`;
+          }
+
           rAF = requestAnimationFrame(loop);
       };
       loop();
@@ -93,43 +111,52 @@ const CustomCursor: React.FC = () => {
 
   return (
     <div 
-      ref={cursorRef}
       className="fixed top-0 left-0 z-[9999] pointer-events-none will-change-transform -ml-6 -mt-6"
+      ref={cursorRef}
     >
       {/* ROBOT CHARACTER CONTAINER */}
-      <div className={`relative transition-all duration-300 ${isClicking ? 'scale-90' : 'scale-100'}`}>
+      <div className={`relative transition-all duration-500 ease-out-expo ${isClicking ? 'scale-75' : 'scale-100'}`}>
          
-         {/* Floating Animation Wrapper */}
+         {/* Floating Hover Animation (Independent of movement) */}
          <div className="animate-float-fast">
             
-            {/* BODY */}
+            {/* DRONE BODY */}
             <div className={`
-                w-12 h-12 rounded-xl backdrop-blur-md border border-white/40 shadow-xl 
-                flex items-center justify-center relative transition-colors duration-300
-                ${isPointer ? 'bg-blue-500/80 border-blue-300' : 'bg-white/60 dark:bg-black/60 dark:border-white/20'}
+                w-14 h-14 rounded-2xl backdrop-blur-md border shadow-2xl 
+                flex items-center justify-center relative transition-all duration-300
+                ${isPointer 
+                    ? 'bg-blue-600/90 border-blue-400 shadow-blue-500/40' 
+                    : 'bg-white/80 dark:bg-[#1a1a1a]/80 border-white/40 dark:border-white/20'
+                }
             `}>
                 {/* ANTENNA */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-1 h-3 bg-gray-400 dark:bg-gray-500"></div>
-                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full ${isPointer ? 'bg-red-500 animate-ping' : 'bg-blue-400'}`}></div>
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-[2px] h-3 bg-gray-400 dark:bg-gray-500 origin-bottom transition-transform duration-300"
+                     style={{ transform: `translateX(-50%) rotate(${-rot.current * 1.5}deg)` }}></div>
+                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full shadow-lg ${isPointer ? 'bg-red-500 animate-ping' : 'bg-green-400'}`}></div>
+                <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full ${isPointer ? 'bg-red-500' : 'bg-green-400'}`}></div>
 
                 {/* FACE SCREEN */}
-                <div className="w-8 h-6 bg-black rounded-md flex items-center justify-center gap-1.5 overflow-hidden relative">
-                    {/* EYES */}
-                    <div className={`w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,1)] transition-all duration-200 ${isPointer ? 'h-3 rounded-sm bg-yellow-400' : 'animate-blink'}`}></div>
-                    <div className={`w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_5px_rgba(96,165,250,1)] transition-all duration-200 ${isPointer ? 'h-3 rounded-sm bg-yellow-400' : 'animate-blink'}`}></div>
+                <div className="w-10 h-7 bg-black rounded-lg flex items-center justify-center overflow-hidden relative border border-white/10">
+                    
+                    {/* EYES CONTAINER (Moves to look at cursor) */}
+                    <div ref={eyesRef} className="flex gap-1.5 transition-transform duration-75 ease-linear">
+                        <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)] transition-all duration-200 ${isPointer ? 'h-3 rounded-[2px] bg-yellow-400' : 'bg-blue-400 animate-blink'}`}></div>
+                        <div className={`w-2 h-2 rounded-full shadow-[0_0_8px_rgba(96,165,250,0.8)] transition-all duration-200 ${isPointer ? 'h-3 rounded-[2px] bg-yellow-400' : 'bg-blue-400 animate-blink'}`}></div>
+                    </div>
                     
                     {/* Scan line effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent animate-scan"></div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/10 to-transparent animate-scan pointer-events-none"></div>
                 </div>
 
-                {/* EAR PIECES */}
-                <div className="absolute -left-1 w-1 h-3 bg-gray-300 dark:bg-gray-600 rounded-l-sm"></div>
-                <div className="absolute -right-1 w-1 h-3 bg-gray-300 dark:bg-gray-600 rounded-r-sm"></div>
+                {/* MECHANICAL DETAILS */}
+                <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-gray-300 dark:bg-gray-600 rounded-l-md border-r border-black/10"></div>
+                <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-gray-300 dark:bg-gray-600 rounded-r-md border-l border-black/10"></div>
             </div>
 
             {/* JET FLAME (Trail) */}
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex justify-center">
-                <div className={`w-2 h-4 rounded-full blur-[2px] animate-pulse ${isPointer ? 'bg-orange-500' : 'bg-blue-400'}`}></div>
+            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex justify-center opacity-80">
+                <div className={`w-3 h-6 rounded-full blur-[3px] animate-pulse transition-colors duration-300 ${isPointer ? 'bg-orange-500' : 'bg-blue-400'}`}></div>
+                <div className={`absolute top-1 w-1.5 h-4 rounded-full bg-white blur-[1px]`}></div>
             </div>
          </div>
       </div>
@@ -141,7 +168,7 @@ const CustomCursor: React.FC = () => {
           95% { transform: scaleY(0.1); }
         }
         .animate-blink {
-          animation: blink 4s infinite;
+          animation: blink 3.5s infinite;
         }
         @keyframes scan {
             0% { transform: translateY(-100%); }
