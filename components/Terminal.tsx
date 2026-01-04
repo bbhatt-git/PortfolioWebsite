@@ -86,7 +86,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             // Initialize Gemini
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             chatSession.current = ai.chats.create({
-                model: 'gemini-2.5-flash-lite-latest',
+                model: 'gemini-2.0-flash-exp',
                 config: {
                     systemInstruction: systemInstruction,
                     temperature: 0.7,
