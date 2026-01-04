@@ -32,16 +32,17 @@ const Reveal: React.FC<RevealProps> = ({
   delay = 0, 
   className = '', 
   variant = '3d',
-  duration = 1200, // Slower default for cinematic feel
+  duration = 600, // FAST: Slashed from 1200 to 600 for instant snappy feel
   triggerOnMount = false,
-  threshold = 0.15
+  threshold = 0.1
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (triggerOnMount) {
-      const timer = setTimeout(() => setIsVisible(true), 50);
+      // Almost instant trigger
+      const timer = setTimeout(() => setIsVisible(true), 10);
       return () => clearTimeout(timer);
     }
 
@@ -54,7 +55,7 @@ const Reveal: React.FC<RevealProps> = ({
       },
       { 
         threshold: threshold,
-        rootMargin: "0px 0px -100px 0px" // Trigger slightly later for drama
+        rootMargin: "0px 0px -50px 0px" // Trigger earlier
       }
     );
 
@@ -65,11 +66,15 @@ const Reveal: React.FC<RevealProps> = ({
     return () => observer.disconnect();
   }, [triggerOnMount, threshold]);
 
+  // Using a spring-like bezier for "pop" effect
+  const springBezier = 'cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+
   const style: React.CSSProperties = {
     transitionDelay: `${delay}ms`,
     transitionDuration: `${duration}ms`,
+    transitionTimingFunction: springBezier,
     willChange: 'transform, opacity, filter',
-    transformStyle: 'preserve-3d', // CRITICAL for 3D
+    transformStyle: 'preserve-3d',
   };
 
   // Base state: usually hidden
@@ -80,77 +85,67 @@ const Reveal: React.FC<RevealProps> = ({
   switch (variant) {
     // --- LEGACY VARIANTS ---
     case 'rotate-left':
-      hiddenState = 'opacity-0 [transform:perspective(1500px)_rotateY(-45deg)_translateX(-50px)_translateZ(-200px)] blur-[4px] origin-left';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateY(-25deg)_translateX(-30px)_translateZ(-100px)] blur-[4px] origin-left';
       break;
     case 'rotate-right':
-      hiddenState = 'opacity-0 [transform:perspective(1500px)_rotateY(45deg)_translateX(50px)_translateZ(-200px)] blur-[4px] origin-right';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateY(25deg)_translateX(30px)_translateZ(-100px)] blur-[4px] origin-right';
       break;
     case 'zoom-in':
-      hiddenState = 'opacity-0 [transform:scale(0.85)_translateY(30px)] blur-[2px]';
+      hiddenState = 'opacity-0 [transform:scale(0.8)_translateY(20px)] blur-[0px]';
       break;
     case 'flip-up':
-      hiddenState = 'opacity-0 [transform:perspective(1500px)_rotateX(80deg)_translateY(50px)_translateZ(-100px)] blur-[4px] origin-bottom';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateX(90deg)_translateY(50px)] blur-[0px] origin-bottom';
       break;
     case 'skew-up':
-      hiddenState = 'opacity-0 [transform:skewY(5deg)_translateY(40px)] blur-[4px]';
+      hiddenState = 'opacity-0 [transform:skewY(10deg)_translateY(60px)] blur-[4px]';
       break;
     case 'slide':
-      hiddenState = 'opacity-0 translate-y-12 blur-[4px]';
+      hiddenState = 'opacity-0 translate-y-20 blur-[0px]'; // No blur for sharpness
       break;
     case 'fade':
-      hiddenState = 'opacity-0 blur-[4px]';
+      hiddenState = 'opacity-0 blur-[8px]';
       break;
       
-    // --- NEW 3D CINEMATIC VARIANTS ---
+    // --- NEW 3D CINEMATIC VARIANTS (AGGRESSIVE) ---
     
     case 'hologram':
-      // Looks like a sci-fi hologram materializing
-      hiddenState = 'opacity-0 [transform:perspective(1000px)_scale3d(0.8,0.8,0.8)_translateZ(-100px)_rotateX(20deg)] blur-[10px] grayscale';
-      visibleState = 'opacity-100 [transform:perspective(1000px)_scale3d(1,1,1)_translateZ(0)_rotateX(0)] blur-0 grayscale-0';
+      // Fast snap-in scale
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_scale3d(0.5,0.5,0.5)_translateZ(-200px)_rotateX(20deg)] blur-[10px] grayscale';
       break;
 
     case 'matrix-zoom':
-      // Flies in from VERY deep Z-space
-      hiddenState = 'opacity-0 [transform:perspective(2000px)_translateZ(-800px)] blur-[12px]';
-      visibleState = 'opacity-100 [transform:perspective(2000px)_translateZ(0)] blur-0';
+      // Very deep Z push for "flying in" feeling
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_translateZ(-1200px)] blur-[4px]';
       break;
 
     case 'book-open':
-      // Unfolds from the center Y-axis
-      hiddenState = 'opacity-0 [transform:perspective(2000px)_rotateY(90deg)] origin-left blur-[5px]';
-      visibleState = 'opacity-100 [transform:perspective(2000px)_rotateY(0deg)] origin-left blur-0';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateY(90deg)] origin-left blur-[5px]';
       break;
 
     case 'deck-shuffle':
-      // Slides up and rotates slightly like cards being dealt
-      hiddenState = 'opacity-0 [transform:perspective(1200px)_translateY(100%)_rotateZ(-15deg)_translateZ(-200px)] blur-[5px]';
-      visibleState = 'opacity-100 [transform:perspective(1200px)_translateY(0)_rotateZ(0)_translateZ(0)] blur-0';
+      // More rotation for a "dealing cards" snap
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_translateY(150%)_rotateZ(-30deg)_translateZ(-300px)] blur-[2px]';
       break;
 
     case 'turbine':
-      // Rotates in from a spin
-      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateZ(45deg)_scale(0.5)_translateZ(-500px)] blur-[10px]';
-      visibleState = 'opacity-100 [transform:perspective(1000px)_rotateZ(0)_scale(1)_translateZ(0)] blur-0';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateZ(90deg)_scale(0.2)_translateZ(-500px)] blur-[5px]';
       break;
 
     case 'slit-scan':
-      // Expands horizontally with a 3D twist
-      hiddenState = 'opacity-0 [transform:perspective(1500px)_rotateX(90deg)_scaleY(0)] blur-[8px] origin-top';
-      visibleState = 'opacity-100 [transform:perspective(1500px)_rotateX(0deg)_scaleY(1)] blur-0 origin-top';
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateX(90deg)_scaleY(0)] blur-[0px] origin-center';
       break;
 
     case '3d':
     default:
-      // Standard cinematic rise with tilt
-      hiddenState = 'opacity-0 [transform:perspective(1500px)_rotateX(45deg)_translateY(60px)_scale(0.9)_translateZ(-100px)] blur-[6px]';
-      visibleState = 'opacity-100 [transform:perspective(1500px)_rotateX(0deg)_translateY(0)_scale(1)_translateZ(0)] blur-0';
+      // Snappier 3D rise
+      hiddenState = 'opacity-0 [transform:perspective(1000px)_rotateX(30deg)_translateY(100px)_scale(0.85)_translateZ(-100px)] blur-[0px]';
       break;
   }
 
   return (
     <div
       ref={ref}
-      className={`transform-gpu transition-all ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+      className={`transform-gpu ${
         isVisible ? visibleState : hiddenState
       } ${className}`}
       style={style}

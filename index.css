@@ -9,17 +9,17 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   background-color: #FBFBFD;
-  /* KEY: Global 3D Perspective for "Literal 3D" feel */
-  perspective: 2000px; 
+  /* KEY: Tighter perspective for more aggressive 3D pop */
+  perspective: 1000px; 
 }
 
 .dark body {
   background-color: #020203;
 }
 
-/* Atmospheric Theme Transition */
+/* Atmospheric Theme Transition - Snappier */
 html {
-  transition: background-color 1.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.8s ease;
+  transition: background-color 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), color 0.3s ease;
 }
 
 ::selection {

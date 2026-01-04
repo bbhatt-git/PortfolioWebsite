@@ -24,24 +24,24 @@ export default {
       transitionTimingFunction: {
         'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
         'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
-        'out-circ': 'cubic-bezier(0.075, 0.82, 0.165, 1)',
+        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)', // Bouncy and fast
+        'out-back': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
         'fluid': 'cubic-bezier(0.3, 0, 0, 1)',
-        'slow-mo': 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       animation: {
-        'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
-        'blob-reverse': 'blobReverse 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
-        'fade-up': 'fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'scale-in': 'scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'float-slow': 'float 12s ease-in-out infinite',
-        'float-medium': 'float 9s ease-in-out infinite',
-        'float-fast': 'float 6s ease-in-out infinite',
-        'spin-slow': 'spin 25s linear infinite',
-        'shimmer': 'shimmer 3s linear infinite',
-        'marquee': 'marquee 60s linear infinite',
-        'pulse-slow': 'pulse 10s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'liquid': 'liquid 15s ease-in-out infinite alternate',
+        'blob': 'blob 10s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Much faster
+        'blob-reverse': 'blobReverse 12s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Much faster
+        'fade-up': 'fadeUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
+        'scale-in': 'scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
+        'slide-up': 'slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
+        'float-slow': 'float 6s ease-in-out infinite',
+        'float-medium': 'float 4s ease-in-out infinite',
+        'float-fast': 'float 2.5s ease-in-out infinite',
+        'spin-slow': 'spin 15s linear infinite',
+        'shimmer': 'shimmer 2s linear infinite',
+        'marquee': 'marquee 40s linear infinite', // Faster marquee
+        'pulse-slow': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite', // Faster pulse
+        'liquid': 'liquid 8s ease-in-out infinite alternate', // Faster liquid
       },
       keyframes: {
         liquid: {
@@ -66,7 +66,7 @@ export default {
           '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '0%': { opacity: '0', transform: 'scale(0.8)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
         slideUp: {
@@ -75,7 +75,7 @@ export default {
         },
         float: {
           '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
-          '50%': { transform: 'translate3d(0, -35px, 0)' },
+          '50%': { transform: 'translate3d(0, -20px, 0)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-1200px 0' },
