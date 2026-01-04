@@ -63,12 +63,12 @@ const CustomCursor: React.FC = () => {
       
       let rAF: number;
       const loop = () => {
-          // Dest is the mouse position
-          const destX = targetPos.current.x;
-          const destY = targetPos.current.y;
+          // Dest is the mouse position with offset so it follows, not covers
+          const destX = targetPos.current.x + 32;
+          const destY = targetPos.current.y + 32;
           
           // Lower ease = more "floaty" / laggy (Drone behavior)
-          const ease = 0.08; 
+          const ease = 0.05; 
           
           // Calculate previous position to determine velocity
           const prevX = pos.current.x;
@@ -94,7 +94,7 @@ const CustomCursor: React.FC = () => {
 
           // Eye Tracking Logic (Look at the cursor)
           if (eyesRef.current) {
-            const angle = Math.atan2(destY - pos.current.y, destX - pos.current.x);
+            const angle = Math.atan2(targetPos.current.y - pos.current.y, targetPos.current.x - pos.current.x);
             // Limit eye movement distance
             const eyeX = Math.cos(angle) * 3; 
             const eyeY = Math.sin(angle) * 3;
