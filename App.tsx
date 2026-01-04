@@ -14,6 +14,7 @@ import Admin from './components/Admin';
 import CV from './components/CV';
 import ProjectPage from './components/ProjectPage';
 import Preloader from './components/Preloader';
+import CustomCursor from './components/CustomCursor';
 
 const App: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -87,6 +88,7 @@ const App: React.FC = () => {
     return (
       <>
         {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+        <CustomCursor />
         <Admin />
       </>
     );
@@ -96,6 +98,7 @@ const App: React.FC = () => {
     return (
       <>
         {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+        <CustomCursor />
         <CV />
       </>
     );
@@ -110,6 +113,7 @@ const App: React.FC = () => {
       return (
         <>
           {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+          <CustomCursor />
           <ProjectPage slug={slug} />
         </>
       );
@@ -119,6 +123,7 @@ const App: React.FC = () => {
   return (
     <>
       {isLoading && <Preloader onLoadingComplete={() => setIsLoading(false)} />}
+      <CustomCursor />
       <Layout>
         <Navbar 
           isDark={isDark} 
