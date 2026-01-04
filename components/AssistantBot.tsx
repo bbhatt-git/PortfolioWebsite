@@ -1,116 +1,146 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useBot } from '../context/BotContext';
 
-// --- MASSIVE VOCABULARY ARRAYS ---
+// --- CONTEXT-AWARE VOCABULARY ---
 
-const VERBS = [
-  "Analyzing", "Scanning", "Parsing", "Computing", "Rendering", "Optimizing", "Debugging", "Refactoring", 
-  "Indexing", "Fetching", "Caching", "Compiling", "Minifying", "Bundling", "Hydrating", "Vectorizing", 
-  "Encrypting", "Decrypting", "Validating", "Sanitizing", "Serializing", "Virtualizing", "Observing", 
-  "Tracking", "Monitoring", "Auditing", "Profiling", "Linting", "Transpiling", "Injecting", "Mounting",
-  "Unmounting", "Updating", "Patching", "Diffing", "Reconciling", "Buffering", "Streaming", "Ping",
-  "Tracing", "Logging", "Mapping", "Reducing", "Filtering", "Sorting", "Allocating", "Garbage Collecting"
+const PREFIXES = [
+  "System:", "Core:", "UI:", "DOM:", "Audit:", "Trace:", "Log:", "Debug:", "Net:", "Event:", "State:", "Memo:", "Ref:", "Info:", "Bot:"
 ];
 
 const ADJECTIVES = [
-  "asynchronous", "synchronous", "blocked", "non-blocking", "concurrent", "parallel", "distributed", 
-  "redundant", "immutable", "mutable", "volatile", "persistent", "ephemeral", "stateful", "stateless", 
-  "responsive", "adaptive", "fluid", "static", "dynamic", "relative", "absolute", "fixed", "sticky", 
-  "flex", "grid", "hidden", "visible", "opaque", "transparent", "blurred", "pixelated", "vectorized", 
-  "minified", "obfuscated", "secure", "insecure", "encrypted", "hashed", "cached", "stale", "fresh", 
-  "dirty", "clean", "pure", "impure", "recursive", "iterative", "declarative", "imperative", "functional"
+  "asynchronous", "concurrent", "recursive", "immutable", "volatile", "persistent", "virtual", 
+  "responsive", "dynamic", "static", "relative", "absolute", "fixed", "floating", "cached", 
+  "minified", "obfuscated", "secure", "encrypted", "hashed", "serialized", "vectorized", 
+  "optimized", "redundant", "lazy-loaded", "hydrated", "server-side", "client-side", "atomic",
+  "modular", "encapsulated", "inherited", "polymorphic", "abstract", "concrete", "reactive"
 ];
 
-const NOUNS = [
-  "DOM Tree", "Shadow DOM", "Virtual DOM", "Event Loop", "Call Stack", "Heap Memory", "Render Layer", 
-  "Composite Layer", "Layout Engine", "CSSOM", "AST", "Bytecode", "Machine Code", "Binary Blob", 
-  "JSON Payload", "XML Schema", "JWT Token", "Session Cookie", "Local Storage", "IndexedDB", "Cache API", 
-  "Service Worker", "Web Worker", "Main Thread", "GPU Process", "Network Request", "HTTP Header", 
-  "TCP Handshake", "TLS Cert", "DNS Record", "IP Address", "Mac Address", "Subnet Mask", "Gateway", 
-  "Firewall", "Proxy", "Load Balancer", "CDN Edge", "Viewport", "Scroll Offset", "Mouse Coordinates", 
-  "Touch Event", "Pointer Event", "Key Code", "Frame Rate", "Refresh Rate", "Pixel Ratio", "Aspect Ratio"
-];
-
-const TECH_JARGON = [
-  "Quantum entanglement detected.", "Flux capacitor charging.", "Reticulating splines.", 
-  "Reversing the polarity.", "Overclocking the neural net.", "Defragmenting the mainframe.", 
-  "Bypassing the compressor.", "Routing through proxy chain.", "Establishing secure handshake.", 
-  "Calculating pi to last digit.", "Solving P vs NP.", "Mining fictional crypto.", 
-  "Downloading more RAM.", "Updating dependencies...", "Resolving merge conflicts.", 
-  "Git push --force origin master.", "Sudo make me a sandwich.", "Console.log('Is this real?');", 
-  "Checking robotic laws.", "Applying Turing test.", "Zero-knowledge proof verified.", 
-  "Homomorphic encryption active.", "Simulating universe...", "Rendering 4D hypercube.", 
-  "Detecting user aura.", "Measuring cognitive load.", "Optimizing dopamine hits."
-];
-
-const PREFIXES = [
-  "Notice:", "Alert:", "System:", "Info:", "Debug:", "Log:", "Status:", "Metrics:", "Trace:", "Ping:", "Ack:", "Syn:"
+const TECH_NOUNS = [
+  "component", "element", "node", "instance", "object", "entity", "reference", "interface", 
+  "module", "directive", "fragment", "wrapper", "container", "layer", "tree", "graph", 
+  "property", "attribute", "listener", "handler", "callback", "promise", "observable"
 ];
 
 const SUFFIXES = [
-  " - optimized.", " - nominal.", " - critical.", " - stable.", " - efficient.", " - redundant.", 
-  " - latency detected.", " - bandwidth high.", " - packet loss 0%.", " - cpu idle.", " - gpu active.", 
-  " - memory safe.", " - thread locked.", " - async await.", " - promise resolved.", " - catch block."
+  "- nominal.", "- active.", "- verified.", "- optimized.", "- 0ms latency.", "- rendered.", 
+  "- watching.", "- interactive.", "- clean.", "- mounted.", "- updated.", "- stable.", 
+  "- secure.", "- valid.", "- cached.", "- processed.", "- linked.", "- synced."
 ];
 
-// --- ADVANCED MESSAGE GENERATOR ---
+// Context-Specific Verbs
+const VERBS = {
+  NAVIGATION: [
+    "Routing to", "Resolving", "Fetching", "Navigating", "Targeting", "Linking", "Prefetching", 
+    "Requesting", "Handshaking", "Bridging", "Redirecting", "Locating", "Indexing"
+  ],
+  ACTION: [ // Buttons
+    "Executing", "Triggering", "Dispatching", "Arming", "Initializing", "Invoking", "Firing", 
+    "Binding", "Constructing", "Compiling", "Calculating", "Processing"
+  ],
+  INPUT: [ // Forms
+    "Buffering", "Sanitizing", "Validating", "Debouncing", "Listening to", "Recording", "Capturing", 
+    "Mutating", "Parsing", "Tokenizing", "Observing", "Tracking"
+  ],
+  INSPECTION: [ // Text, Images, Divs
+    "Scanning", "Rendering", "Compositing", "Painting", "Measuring", "Layout", "Rasterizing", 
+    "Analyzing", "Inspecting", "Detecting", "Profiling", "Tracing"
+  ]
+};
 
-class MessageEngine {
+// --- ADVANCED CONTEXTUAL ENGINE ---
+
+class ContextualMessageEngine {
   private history: Set<string>;
   private maxHistory: number;
 
   constructor() {
     this.history = new Set();
-    this.maxHistory = 1000; // Keep track of last 1000 messages to ensure strict uniqueness locally
+    this.maxHistory = 500;
   }
 
   private getRandom(arr: string[]): string {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  private generateCandidate(): string {
-    const template = Math.floor(Math.random() * 6);
-
-    switch (template) {
-      case 0: // Verb + Noun
-        return `${this.getRandom(VERBS)} ${this.getRandom(NOUNS)}...`;
-      case 1: // Verb + Adjective + Noun
-        return `${this.getRandom(VERBS)} ${this.getRandom(ADJECTIVES)} ${this.getRandom(NOUNS)}.`;
-      case 2: // Adjective + Noun + Suffix
-        return `${this.getRandom(ADJECTIVES)} ${this.getRandom(NOUNS)}${this.getRandom(SUFFIXES)}`;
-      case 3: // Prefix + Noun + is + Adjective
-        return `${this.getRandom(PREFIXES)} ${this.getRandom(NOUNS)} is ${this.getRandom(ADJECTIVES)}.`;
-      case 4: // Tech Jargon (Rare)
-        return this.getRandom(TECH_JARGON);
-      case 5: // Complex Action
-        return `Attempting to ${this.getRandom(VERBS).toLowerCase()} the ${this.getRandom(ADJECTIVES)} ${this.getRandom(NOUNS)}.`;
-      default:
-        return "System nominal.";
+  private getElementLabel(el: HTMLElement): string {
+    // 1. Try ARIA label
+    if (el.getAttribute('aria-label')) return el.getAttribute('aria-label')!;
+    // 2. Try Title or Alt
+    if (el.getAttribute('title')) return el.getAttribute('title')!;
+    if (el.getAttribute('alt')) return el.getAttribute('alt')!;
+    // 3. Try Name or Placeholder (Inputs)
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        const input = el as HTMLInputElement;
+        return input.name || input.placeholder || input.type || 'Input';
     }
+    // 4. Try Text Content (Cleaned)
+    const text = el.innerText || el.textContent || '';
+    const cleanText = text.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+    if (cleanText.length > 0 && cleanText.length < 25) return cleanText;
+    
+    // 5. Try Icon Analysis
+    const icon = el.querySelector('i');
+    if (icon) {
+        if (icon.classList.contains('fa-github')) return 'GitHub';
+        if (icon.classList.contains('fa-linkedin')) return 'LinkedIn';
+        if (icon.classList.contains('fa-instagram')) return 'Instagram';
+        if (icon.classList.contains('fa-facebook')) return 'Facebook';
+        if (icon.classList.contains('fa-envelope')) return 'Email';
+        if (icon.classList.contains('fa-phone')) return 'Phone';
+        if (icon.classList.contains('fa-search')) return 'Search';
+        if (icon.classList.contains('fa-bars')) return 'Menu';
+        if (icon.classList.contains('fa-times')) return 'Close';
+    }
+    
+    // 6. Fallback based on Tag
+    return el.tagName.toLowerCase();
   }
 
-  public getUniqueMessage(): string {
-    let candidate = this.generateCandidate();
-    let attempts = 0;
+  public generate(el: HTMLElement): string {
+    const label = this.getElementLabel(el);
+    const tag = el.tagName.toLowerCase();
+    const type = el.getAttribute('type');
+    const role = el.getAttribute('role');
 
-    // Retry if message exists in history
-    while (this.history.has(candidate) && attempts < 10) {
-      candidate = this.generateCandidate();
-      attempts++;
+    // Determine Context
+    let contextVerbs = VERBS.INSPECTION;
+    if (tag === 'a' || role === 'link') contextVerbs = VERBS.NAVIGATION;
+    else if (tag === 'button' || role === 'button' || type === 'submit') contextVerbs = VERBS.ACTION;
+    else if (tag === 'input' || tag === 'textarea') contextVerbs = VERBS.INPUT;
+
+    // Generate Candidate: {Prefix} {Verb} {Adjective} '{Label}' {Noun} {Suffix}
+    // "System: Routing to asynchronous 'Home' module - nominal."
+    const prefix = this.getRandom(PREFIXES);
+    const verb = this.getRandom(contextVerbs);
+    const adj = this.getRandom(ADJECTIVES);
+    const noun = this.getRandom(TECH_NOUNS);
+    const suffix = this.getRandom(SUFFIXES);
+
+    let candidate = `${prefix} ${verb} ${adj} '${label}' ${noun} ${suffix}`;
+
+    // Retry Logic for Uniqueness
+    let attempts = 0;
+    while (this.history.has(candidate) && attempts < 5) {
+        const v = this.getRandom(contextVerbs);
+        const a = this.getRandom(ADJECTIVES);
+        const n = this.getRandom(TECH_NOUNS);
+        const s = this.getRandom(SUFFIXES);
+        candidate = `${prefix} ${v} ${a} '${label}' ${n} ${s}`;
+        attempts++;
     }
 
     // Update History
     this.history.add(candidate);
     if (this.history.size > this.maxHistory) {
-      const first = this.history.values().next().value;
-      if (first) this.history.delete(first);
+        const first = this.history.values().next().value;
+        if (first) this.history.delete(first);
     }
 
     return candidate;
   }
 }
 
-const engine = new MessageEngine();
+const engine = new ContextualMessageEngine();
 
 const AssistantBot: React.FC = () => {
   const { message, say } = useBot();
@@ -143,7 +173,6 @@ const AssistantBot: React.FC = () => {
        setShouldRender(hasFinePointer && isLargeScreen);
        
        if (hasFinePointer && isLargeScreen) {
-          // Initialize position if valid
           setPos({ x: window.innerWidth - 120, y: window.innerHeight - 200 });
        }
     };
@@ -154,21 +183,19 @@ const AssistantBot: React.FC = () => {
   }, []);
 
   // --- INTERACTION LOGIC ---
-  const getInteractionMessage = (el: HTMLElement): string => {
-    // Specific overrides based on attributes
-    const customMsg = el.getAttribute('data-bot-msg');
-    if (customMsg) {
-       const parts = customMsg.split('|');
-       return parts[Math.floor(Math.random() * parts.length)];
-    }
+  const handleInteraction = (el: HTMLElement) => {
+      // 1. Priority: Custom explicit message
+      const customMsg = el.getAttribute('data-bot-msg');
+      if (customMsg) {
+         const parts = customMsg.split('|');
+         const randomPart = parts[Math.floor(Math.random() * parts.length)];
+         say(randomPart, 4000);
+         return;
+      }
 
-    const href = (el.getAttribute('href') || '').toLowerCase();
-    
-    // Fallback to the massive combinatorial engine
-    if (href.includes('github')) return `Analyzing repo: ${engine.getUniqueMessage()}`;
-    if (href.includes('linkedin')) return `Networking protocol: ${engine.getUniqueMessage()}`;
-    
-    return engine.getUniqueMessage();
+      // 2. Priority: Contextual Engine Generation
+      const generatedMsg = engine.generate(el);
+      say(generatedMsg, 3500);
   };
 
   useEffect(() => {
@@ -176,13 +203,13 @@ const AssistantBot: React.FC = () => {
 
     const handleGlobalMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const interactiveEl = target.closest('a, button, input, textarea, img, [role="button"], [data-bot-msg]') as HTMLElement;
+      // Interact with specific elements
+      const interactiveEl = target.closest('a, button, input, textarea, [role="button"], [data-bot-msg], img') as HTMLElement;
 
       if (interactiveEl) {
         if (lastHoveredElement.current !== interactiveEl) {
           lastHoveredElement.current = interactiveEl;
-          const msg = getInteractionMessage(interactiveEl);
-          say(msg, 4000);
+          handleInteraction(interactiveEl);
         }
       } else {
         lastHoveredElement.current = null;
@@ -256,7 +283,6 @@ const AssistantBot: React.FC = () => {
         vel.current.y += (Math.random() - 0.5) * 0.2;
 
         // 2. Repulsion Force (Avoid Cursor)
-        // "don't come near anything"
         const botCenterX = pos.x + 32;
         const botCenterY = pos.y + 40;
         const dx = botCenterX - mousePos.current.x;
@@ -265,7 +291,7 @@ const AssistantBot: React.FC = () => {
         
         // If closer than 250px, push away
         if (dist < 250) {
-            const force = (250 - dist) / 250; // 0 to 1
+            const force = (250 - dist) / 250; 
             const pushX = (dx / dist) * force * 1.5;
             const pushY = (dy / dist) * force * 1.5;
             vel.current.x += pushX;
