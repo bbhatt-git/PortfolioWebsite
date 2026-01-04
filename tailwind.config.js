@@ -22,18 +22,19 @@ export default {
         'mac-gray': '#1D1D1F',
       },
       transitionTimingFunction: {
-        'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        // Professional, clean, no bounce
+        'expo': 'cubic-bezier(0.16, 1, 0.3, 1)', 
         'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
-        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)', // Bouncy and fast
-        'out-back': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'spring': 'cubic-bezier(0.25, 1, 0.5, 1)', // Renamed for compatibility, but now a clean ease-out
+        'out-back': 'cubic-bezier(0.25, 1, 0.5, 1)', // Flattened
         'fluid': 'cubic-bezier(0.3, 0, 0, 1)',
       },
       animation: {
-        'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Slower, more fluid
-        'blob-reverse': 'blobReverse 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)', // Slower, more fluid
-        'fade-up': 'fadeUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
-        'scale-in': 'scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
-        'slide-up': 'slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards',
+        'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'blob-reverse': 'blobReverse 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'float-slow': 'float 6s ease-in-out infinite',
         'float-medium': 'float 4s ease-in-out infinite',
         'float-fast': 'float 2.5s ease-in-out infinite',
@@ -62,11 +63,11 @@ export default {
           '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
         },
         fadeUp: {
-          '0%': { opacity: '0', transform: 'translate3d(0, 40px, 0)' },
+          '0%': { opacity: '0', transform: 'translate3d(0, 30px, 0)' },
           '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.8)' },
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
         slideUp: {
@@ -75,7 +76,7 @@ export default {
         },
         float: {
           '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
-          '50%': { transform: 'translate3d(0, -20px, 0)' },
+          '50%': { transform: 'translate3d(0, -15px, 0)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-1200px 0' },
