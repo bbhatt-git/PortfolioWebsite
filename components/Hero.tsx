@@ -215,12 +215,6 @@ const Hero: React.FC = () => {
             </Reveal>
           </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce pointer-events-none">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Scroll</span>
-          <i className="fas fa-chevron-down text-gray-400 text-xs"></i>
-      </div>
     </section>
   );
 };
