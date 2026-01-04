@@ -59,10 +59,10 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 
       {/* Main Card Container */}
       <div className="bg-white/60 dark:bg-[#161618]/80 backdrop-blur-3xl rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-white/20 dark:ring-white/5 relative z-10 flex flex-col h-full transition-transform duration-300 preserve-3d group-hover:shadow-2xl"
-           style={{ transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)' }}>
+           style={{ transform: isHovered ? 'translateZ(40px)' : 'translateZ(0)' }}>
         
         {/* Image Section with Overlay */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-black/20">
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-100 dark:bg-black/20 transform-style-3d">
           <img 
              src={project.image} 
              alt={project.title} 
@@ -78,9 +78,9 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
           </div>
         </div>
 
-        <div className="p-6 md:p-8 flex flex-col flex-1 relative">
+        <div className="p-6 md:p-8 flex flex-col flex-1 relative transform-style-3d">
            
-           <div className="flex justify-between items-start mb-3 relative z-10">
+           <div className="flex justify-between items-start mb-3 relative z-10 transform translate-z-10">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {project.title}
               </h3>
@@ -149,9 +149,9 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <section id="work" className="py-24 relative overflow-hidden">
-      <div className="container mx-auto px-6 relative z-10">
-        <Reveal variant="skew-up">
+    <section id="work" className="py-24 relative overflow-hidden preserve-3d">
+      <div className="container mx-auto px-6 relative z-10 preserve-3d">
+        <Reveal variant="slit-scan">
           <div className="flex flex-col items-center mb-16 text-center">
              <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">Selected Work.</h2>
              <div className="h-1 w-20 bg-blue-600 rounded-full mb-4"></div>
@@ -166,13 +166,13 @@ const Projects: React.FC = () => {
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : projects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 perspective-2000">
             {projects.map((project, index) => (
               <Reveal 
                 key={project.id} 
-                delay={index * 100} 
-                variant={index % 2 === 0 ? "rotate-left" : "rotate-right"} 
-                className="h-full"
+                delay={index * 150} 
+                variant="deck-shuffle" // NEW: Cinematic deck deal animation
+                className="h-full preserve-3d"
               >
                 <ProjectCard project={project} onClick={() => navigateToProject(project)} />
               </Reveal>

@@ -41,15 +41,15 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <section id="testimonials" className="py-24 relative overflow-hidden">
+    <section id="testimonials" className="py-24 relative overflow-hidden preserve-3d">
       {/* Background Ambience */}
       <div className="absolute bottom-0 left-0 w-full h-[500px] bg-gradient-to-t from-white/80 via-transparent to-transparent dark:from-black/80 pointer-events-none z-0"></div>
       
       {/* SECTION LIQUID ORB */}
       <div className="absolute top-1/4 right-0 w-64 h-64 bg-purple-500/5 rounded-full blur-[100px] animate-liquid pointer-events-none"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <Reveal variant="skew-up">
+      <div className="container mx-auto px-6 relative z-10 preserve-3d">
+        <Reveal variant="turbine">
           <div className="mb-16 text-center max-w-2xl mx-auto">
             <div className="inline-block px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
                 Testimonials
@@ -66,7 +66,7 @@ const Testimonials: React.FC = () => {
         {/* Improved Marquee Container - Replaced buggy masking with gradient overlays */}
         <div 
           ref={scrollRef}
-          className="relative w-full overflow-x-auto md:overflow-hidden pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none no-scrollbar"
+          className="relative w-full overflow-x-auto md:overflow-hidden pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none no-scrollbar perspective-1000"
         >
            {/* Side Fades - Replaces buggy CSS mask-image for cleaner visual edge */}
            <div className="absolute inset-y-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#F2F2F7] dark:from-[#050505] to-transparent z-20 pointer-events-none hidden md:block"></div>
@@ -77,10 +77,10 @@ const Testimonials: React.FC = () => {
                  <div 
                     key={`${testi.id}-${index}`} 
                     onClick={() => openModal(testi)}
-                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center"
+                    className="w-[85vw] sm:w-[350px] md:w-[400px] flex-shrink-0 mr-4 md:mr-8 group relative cursor-pointer snap-center preserve-3d"
                  >
                     {/* Simplified Card Design - Removed distorted overlay gradient */}
-                    <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/60 dark:bg-[#161618]/60 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/80 dark:hover:bg-[#161618]/80">
+                    <div className="h-full flex flex-col p-6 md:p-8 rounded-[2.5rem] bg-white/60 dark:bg-[#161618]/60 backdrop-blur-2xl border border-white/40 dark:border-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/80 dark:hover:bg-[#161618]/80 hover:rotate-1 hover:translate-z-4">
                         
                         <div className="absolute top-6 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
                            <i className="fas fa-quote-right text-4xl md:text-5xl text-black dark:text-white"></i>
@@ -124,7 +124,7 @@ const Testimonials: React.FC = () => {
           onClick={closeModal}
         >
            <div 
-             className="w-full max-w-xl bg-white/40 dark:bg-[#161618]/40 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10 overflow-hidden relative ring-1 ring-black/5 dark:ring-white/5"
+             className="w-full max-w-xl bg-white/40 dark:bg-[#161618]/40 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10 overflow-hidden relative ring-1 ring-black/5 dark:ring-white/5 transform transition-transform hover:scale-[1.01]"
              onClick={e => e.stopPropagation()}
            >
               {/* Internal Refraction Light */}

@@ -24,13 +24,13 @@ const Services: React.FC = () => {
   }, [selectedService]);
 
   return (
-    <section id="services" className="py-24 relative overflow-hidden">
+    <section id="services" className="py-24 relative overflow-hidden preserve-3d">
       {/* Background Decor - Subtle and distant */}
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-96 h-96 bg-blue-500/5 rounded-full blur-[128px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-full h-[500px] bg-gradient-to-t from-white/80 via-transparent to-transparent dark:from-black/80 pointer-events-none z-0"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <Reveal variant="skew-up">
+      <div className="container mx-auto px-6 relative z-10 preserve-3d">
+        <Reveal variant="hologram">
           <div className="mb-16 md:mb-24 text-center max-w-3xl mx-auto">
              <div className="inline-block px-4 py-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 text-gray-600 dark:text-gray-400 text-xs font-bold uppercase tracking-widest mb-6 shadow-sm">
                 My Expertise
@@ -46,16 +46,21 @@ const Services: React.FC = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 preserve-3d">
           {SERVICES.map((service, index) => (
-            <Reveal key={index} delay={index * 100} variant="zoom-in" className="h-full">
+            <Reveal 
+              key={index} 
+              delay={index * 150} 
+              variant="matrix-zoom" // Cinematic Fly-in
+              className="h-full preserve-3d"
+            >
                 <div 
                   onClick={() => openModal(service)}
                   data-bot-msg={`Ah, ${service.title}! We excel at this.|Looking for ${service.title}? I can help.|Top-notch ${service.title} services here.|Click to see details about ${service.title}.`}
-                  className="group relative h-full rounded-[2.5rem] cursor-pointer"
+                  className="group relative h-full rounded-[2.5rem] cursor-pointer perspective-1000"
                 >
                     {/* Card Content - Subtle glass interaction instead of neon */}
-                    <div className="relative h-full bg-white/50 dark:bg-[#121212]/40 backdrop-blur-xl rounded-[2.4rem] p-8 md:p-10 border border-white/40 dark:border-white/5 overflow-hidden shadow-xl transition-all duration-500 group-hover:-translate-y-2 group-hover:bg-white/80 dark:group-hover:bg-[#1c1c20]/60 group-hover:border-white/80 dark:group-hover:border-white/10 group-hover:shadow-2xl group-hover:shadow-black/5 dark:group-hover:shadow-black/40">
+                    <div className="relative h-full bg-white/50 dark:bg-[#121212]/40 backdrop-blur-xl rounded-[2.4rem] p-8 md:p-10 border border-white/40 dark:border-white/5 overflow-hidden shadow-xl transition-all duration-700 ease-out-expo group-hover:translate-z-10 group-hover:scale-105 group-hover:bg-white/80 dark:group-hover:bg-[#1c1c20]/60 group-hover:border-white/80 dark:group-hover:border-white/10 group-hover:shadow-2xl group-hover:shadow-black/5 dark:group-hover:shadow-black/40">
                         
                         {/* Noise Texture */}
                         <div className="absolute inset-0 bg-noise opacity-[0.03] mix-blend-overlay"></div>
@@ -64,13 +69,13 @@ const Services: React.FC = () => {
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/30 to-transparent dark:from-white/5 opacity-40 pointer-events-none rounded-[2.4rem]"></div>
 
                         {/* Minimalist Icon Container */}
-                        <div className="relative w-16 h-16 mb-8 group-hover:scale-105 transition-transform duration-500 ease-out-expo">
+                        <div className="relative w-16 h-16 mb-8 group-hover:scale-105 transition-transform duration-500 ease-out-expo group-hover:rotate-6">
                             <div className="relative w-full h-full bg-gray-100 dark:bg-[#1E1E20] backdrop-blur-md rounded-2xl border border-white/60 dark:border-white/10 flex items-center justify-center text-2xl shadow-sm ring-1 ring-black/5 dark:ring-white/5">
                                 <i className={`fas ${service.icon} text-gray-800 dark:text-gray-200 transition-all`}></i>
                             </div>
                         </div>
 
-                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300 relative z-10">{service.title}</h3>
+                        <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white transition-colors duration-300 relative z-10 transform group-hover:translate-x-2 transition-transform">{service.title}</h3>
                         
                         <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm mb-8 relative z-10">
                             {service.desc}
@@ -93,7 +98,7 @@ const Services: React.FC = () => {
       {selectedService && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-scale-in" onClick={closeModal}>
            <div 
-             className="w-full max-w-2xl bg-white/60 dark:bg-[#161618]/50 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10 overflow-hidden relative flex flex-col max-h-[85vh] ring-1 ring-black/5 dark:ring-white/5"
+             className="w-full max-w-2xl bg-white/60 dark:bg-[#161618]/50 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10 overflow-hidden relative flex flex-col max-h-[85vh] ring-1 ring-black/5 dark:ring-white/5 transform transition-all hover:scale-[1.01]"
              onClick={e => e.stopPropagation()}
            >
               {/* Internal Refraction Light */}

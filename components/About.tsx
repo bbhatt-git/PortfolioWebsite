@@ -80,14 +80,14 @@ const About: React.FC = () => {
   );
 
   return (
-    <section id="about" className="py-24 relative overflow-hidden">
+    <section id="about" className="py-24 relative overflow-hidden preserve-3d">
       
       {/* SECTION BACKGROUND ACCENTS */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] animate-pulse-slow pointer-events-none"></div>
       <div className="absolute bottom-[-10%] left-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl animate-liquid pointer-events-none"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <Reveal variant="skew-up">
+      <div className="container mx-auto px-6 relative z-10 preserve-3d">
+        <Reveal variant="slit-scan">
           <div className="mb-12 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">About Me.</h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-xl">
@@ -97,10 +97,10 @@ const About: React.FC = () => {
         </Reveal>
 
         {/* Top Row: Bio + Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-          {/* Biography */}
-          <Reveal variant="rotate-left" className="lg:col-span-2 h-full">
-            <div className="h-full glass-strong rounded-[2rem] p-8 md:p-10 relative overflow-hidden group flex flex-col justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 preserve-3d">
+          {/* Biography - 3D Book Open Effect */}
+          <Reveal variant="book-open" className="lg:col-span-2 h-full">
+            <div className="h-full glass-strong rounded-[2rem] p-8 md:p-10 relative overflow-hidden group flex flex-col justify-center transform transition-all duration-500 hover:translate-z-10 preserve-3d">
                <div className="relative z-10">
                    <div className="flex items-center gap-4 mb-6">
                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/20">
@@ -138,19 +138,19 @@ const About: React.FC = () => {
             </div>
           </Reveal>
 
-          {/* Stats */}
-           <Reveal variant="rotate-right" delay={200} className="lg:col-span-1 h-full">
-            <div className="h-full glass rounded-[2rem] p-8 flex flex-col justify-center gap-6 relative overflow-hidden">
+          {/* Stats - Hologram Effect */}
+           <Reveal variant="hologram" delay={200} className="lg:col-span-1 h-full">
+            <div className="h-full glass rounded-[2rem] p-8 flex flex-col justify-center gap-6 relative overflow-hidden preserve-3d">
                {/* Background decoration */}
                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl animate-liquid"></div>
 
                {STATS.map((stat, idx) => (
-                  <div key={idx} className="relative z-10 p-4 rounded-2xl hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
-                     <h4 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:scale-110 transition-transform origin-left">
+                  <div key={idx} className="relative z-10 p-4 rounded-2xl hover:bg-white/40 dark:hover:bg-white/5 transition-colors group transform preserve-3d">
+                     <h4 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white group-hover:translate-x-4 transition-transform duration-300 ease-out">
                        {stat.value}
                      </h4>
                      <div className="flex items-center gap-2 mt-1">
-                        <div className="h-px w-8 bg-gray-300 dark:bg-gray-700"></div>
+                        <div className="h-px w-8 bg-gray-300 dark:bg-gray-700 group-hover:w-12 transition-all"></div>
                         <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">{stat.label}</span>
                      </div>
                   </div>
@@ -159,7 +159,7 @@ const About: React.FC = () => {
           </Reveal>
         </div>
 
-        {/* Technical Arsenal Section */}
+        {/* Technical Arsenal Section - Deck Shuffle Effect for stacks */}
         <Reveal variant="3d" delay={300}>
             <div className="text-center mb-10">
                 <h3 className="text-3xl font-bold mb-3 tracking-tight">My Technical Arsenal</h3>
@@ -167,11 +167,11 @@ const About: React.FC = () => {
             </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 preserve-3d">
             {/* Frontend & Mobile */}
-            <Reveal variant="flip-up" delay={400} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10 group">
-                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <Reveal variant="deck-shuffle" delay={400} className="h-full">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-blue-500 hover:-translate-y-4 hover:rotate-x-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-blue-500/10 group preserve-3d">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3 transform translate-z-4">
                         <span className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-md group-hover:rotate-12 transition-transform">
                             <i className="fas fa-desktop text-xl"></i>
                         </span>
@@ -182,9 +182,9 @@ const About: React.FC = () => {
             </Reveal>
 
             {/* Backend & DB */}
-            <Reveal variant="flip-up" delay={500} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10 group">
-                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <Reveal variant="deck-shuffle" delay={600} className="h-full">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-green-500 hover:-translate-y-4 hover:rotate-x-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-green-500/10 group preserve-3d">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3 transform translate-z-4">
                         <span className="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center text-green-600 dark:text-green-400 shadow-md group-hover:rotate-12 transition-transform">
                             <i className="fas fa-server text-xl"></i>
                         </span>
@@ -195,9 +195,9 @@ const About: React.FC = () => {
             </Reveal>
 
             {/* Design & Tools */}
-            <Reveal variant="flip-up" delay={600} className="h-full">
-                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10 group">
-                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3">
+            <Reveal variant="deck-shuffle" delay={800} className="h-full">
+                <div className="glass rounded-[2rem] p-8 h-full border-t-4 border-t-purple-500 hover:-translate-y-4 hover:rotate-x-2 transition-transform duration-500 hover:shadow-2xl hover:shadow-purple-500/10 group preserve-3d">
+                    <h4 className="text-xl font-bold mb-6 flex items-center gap-3 transform translate-z-4">
                         <span className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-md group-hover:rotate-12 transition-transform">
                             <i className="fas fa-wand-magic-sparkles text-xl"></i>
                         </span>
@@ -216,7 +216,7 @@ const About: React.FC = () => {
           onClick={closeModal}
         >
           <div 
-            className="w-full max-w-md bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative"
+            className="w-full max-w-md bg-white/90 dark:bg-[#161618]/95 backdrop-blur-3xl rounded-[2rem] shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden relative transform transition-transform scale-100 hover:scale-[1.02]"
             onClick={e => e.stopPropagation()}
           >
              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-blue-500/10 to-purple-500/10 pointer-events-none"></div>

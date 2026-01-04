@@ -9,6 +9,8 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   background-color: #FBFBFD;
+  /* KEY: Global 3D Perspective for "Literal 3D" feel */
+  perspective: 2000px; 
 }
 
 .dark body {
@@ -88,9 +90,8 @@ html {
 }
 
 /* 3D Utilities Optimized */
-.preserve-3d { transform-style: preserve-3d; backface-visibility: hidden; }
-.perspective-2000 { perspective: 2000px; }
-.perspective-1000 { perspective: 1000px; }
+.preserve-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; }
 
 /* Modern Typography Utilities */
 .text-glow {
