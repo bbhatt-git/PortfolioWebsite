@@ -84,6 +84,12 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
             `;
 
             // Initialize Gemini
+            // Ensure API key is available via process.env.API_KEY
+            if (!process.env.API_KEY) {
+                console.error("Missing API_KEY in environment");
+                throw new Error("API Key Missing");
+            }
+            
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             chatSession.current = ai.chats.create({
                 model: 'gemini-3-flash-preview',
@@ -198,8 +204,13 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
           }
 
       } catch (error) {
-          console.error(error);
-          setHistory(prev => [...prev, { role: 'system', text: 'ERROR: COMMUNICATION INTERRUPTED.' }]);
+          console.error("Gemini Error:", error);
+          let errorMsg = 'ERROR: COMMUNICATION INTERRUPTED.';
+          if (error instanceof Error) {
+             if (error.message.includes("404")) errorMsg = 'ERROR: MODEL_NOT_FOUND (404). RECALIBRATING...';
+             if (error.message.includes("400") || error.message.includes("API Key")) errorMsg = 'ERROR: INVALID_API_KEY. ACCESS DENIED.';
+          }
+          setHistory(prev => [...prev, { role: 'system', text: errorMsg }]);
       } finally {
           setIsThinking(false);
       }
