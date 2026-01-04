@@ -1,27 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-// Simplified variants only. 
-// Note: We keep the Type definition to prevent TypeScript errors in files that use the old names,
-// but we map them all to simple animations internally.
 type RevealVariant = 
   | 'fade' 
   | 'slide' 
-  | '3d' 
-  | 'rotate-left' 
-  | 'rotate-right'
   | 'zoom-in' 
-  | 'flip-up'
+  | '3d' 
   | 'skew-up'
-  | 'hologram'      
-  | 'matrix-zoom'   
-  | 'book-open'     
-  | 'deck-shuffle'  
-  | 'turbine'       
-  | 'slit-scan';    
+  | 'slit-scan'
+  | 'hologram'
+  | 'matrix-zoom'
+  | 'book-open'
+  | 'deck-shuffle'
+  | 'turbine';
 
 interface RevealProps {
   children: React.ReactNode;
-  delay?: number; // delay in ms
+  delay?: number; 
   className?: string;
   variant?: RevealVariant;
   duration?: number;
@@ -34,16 +28,16 @@ const Reveal: React.FC<RevealProps> = ({
   delay = 0, 
   className = '', 
   variant = 'fade',
-  duration = 500, // Fast, crisp duration
+  duration = 400, 
   triggerOnMount = false,
-  threshold = 0.15
+  threshold = 0.1
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (triggerOnMount) {
-      const timer = setTimeout(() => setIsVisible(true), 50);
+      const timer = setTimeout(() => setIsVisible(true), 10);
       return () => clearTimeout(timer);
     }
 
@@ -54,10 +48,7 @@ const Reveal: React.FC<RevealProps> = ({
           observer.disconnect(); 
         }
       },
-      { 
-        threshold: threshold,
-        rootMargin: "0px 0px -50px 0px" 
-      }
+      { threshold, rootMargin: "0px 0px -50px 0px" }
     );
 
     if (ref.current) {
@@ -67,53 +58,40 @@ const Reveal: React.FC<RevealProps> = ({
     return () => observer.disconnect();
   }, [triggerOnMount, threshold]);
 
-  // Clean, professional easing (Quart Out)
-  const cleanEase = 'cubic-bezier(0.25, 1, 0.5, 1)';
+  const cleanEase = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
   const style: React.CSSProperties = {
     transitionDelay: `${delay}ms`,
     transitionDuration: `${duration}ms`,
     transitionTimingFunction: cleanEase,
     willChange: 'opacity, transform',
-    // Removed transformStyle: 'preserve-3d' to flatten the render
   };
 
-  // Base state: usually hidden
   let hiddenState = '';
-  // Target state: usually visible/reset
-  const visibleState = 'opacity-100 transform-none filter-none';
+  const visibleState = 'opacity-100 transform-none';
 
-  // MAPPING EVERYTHING TO MINIMALIST ANIMATIONS
   switch (variant) {
+    case 'slide':
+    case '3d':
+    case 'skew-up':
+      hiddenState = 'opacity-0 translate-y-8';
+      break;
     case 'zoom-in':
-    case 'matrix-zoom': // Remapped
-    case 'hologram':    // Remapped
+    case 'matrix-zoom':
+    case 'hologram':
       hiddenState = 'opacity-0 scale-95';
       break;
-
-    case 'rotate-left':
-    case 'book-open':   // Remapped
-      hiddenState = 'opacity-0 -translate-x-4';
+    case 'slit-scan':
+    case 'turbine':
+      hiddenState = 'opacity-0 -translate-y-4 scale-105';
       break;
-
-    case 'rotate-right':
-      hiddenState = 'opacity-0 translate-x-4';
+    case 'book-open':
+    case 'deck-shuffle':
+      hiddenState = 'opacity-0 translate-x-8';
       break;
-
     case 'fade':
-      hiddenState = 'opacity-0';
-      break;
-      
-    case 'slide':
-    case '3d':          // Remapped
-    case 'flip-up':     // Remapped
-    case 'skew-up':     // Remapped
-    case 'deck-shuffle': // Remapped
-    case 'turbine':     // Remapped
-    case 'slit-scan':   // Remapped
     default:
-      // Default Professional Fade Up
-      hiddenState = 'opacity-0 translate-y-6';
+      hiddenState = 'opacity-0';
       break;
   }
 

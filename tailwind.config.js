@@ -22,27 +22,24 @@ export default {
         'mac-gray': '#1D1D1F',
       },
       transitionTimingFunction: {
-        // Professional, clean, no bounce
-        'expo': 'cubic-bezier(0.16, 1, 0.3, 1)', 
+        'expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
         'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
-        'spring': 'cubic-bezier(0.25, 1, 0.5, 1)', // Renamed for compatibility, but now a clean ease-out
-        'out-back': 'cubic-bezier(0.25, 1, 0.5, 1)', // Flattened
+        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)',
+        'out-back': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
         'fluid': 'cubic-bezier(0.3, 0, 0, 1)',
       },
       animation: {
-        'blob': 'blob 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
-        'blob-reverse': 'blobReverse 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
-        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'float-slow': 'float 6s ease-in-out infinite',
-        'float-medium': 'float 4s ease-in-out infinite',
+        'blob': 'blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'blob-reverse': 'blobReverse 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'blob-slow': 'blobSlow 35s infinite alternate cubic-bezier(0.4, 0, 0.2, 1)',
+        'fade-up': 'fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-in': 'scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'float-slow': 'float 8s ease-in-out infinite',
+        'float-medium': 'float 5s ease-in-out infinite',
         'float-fast': 'float 2.5s ease-in-out infinite',
-        'spin-slow': 'spin 15s linear infinite',
-        'shimmer': 'shimmer 2s linear infinite',
-        'marquee': 'marquee 40s linear infinite',
-        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'liquid': 'liquid 12s ease-in-out infinite alternate',
+        'pulse-slow': 'pulse 10s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'liquid': 'liquid 15s ease-in-out infinite alternate',
       },
       keyframes: {
         liquid: {
@@ -52,14 +49,20 @@ export default {
         },
         blob: {
           '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
-          '33%': { transform: 'translate(50px, -50px) scale(1.1) rotate(5deg)' },
-          '66%': { transform: 'translate(-40px, 40px) scale(0.95) rotate(-5deg)' },
+          '33%': { transform: 'translate(60px, -80px) scale(1.1) rotate(10deg)' },
+          '66%': { transform: 'translate(-50px, 50px) scale(0.9) rotate(-10deg)' },
           '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
         },
         blobReverse: {
           '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
-          '33%': { transform: 'translate(-50px, 50px) scale(0.95) rotate(-5deg)' },
-          '66%': { transform: 'translate(40px, -40px) scale(1.1) rotate(5deg)' },
+          '33%': { transform: 'translate(-60px, 80px) scale(0.9) rotate(-10deg)' },
+          '66%': { transform: 'translate(50px, -50px) scale(1.1) rotate(10deg)' },
+          '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
+        },
+        blobSlow: {
+          '0%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
+          '33%': { transform: 'translate(100px, 100px) scale(1.2) rotate(15deg)' },
+          '66%': { transform: 'translate(-100px, -100px) scale(0.8) rotate(-15deg)' },
           '100%': { transform: 'translate(0px, 0px) scale(1) rotate(0deg)' },
         },
         fadeUp: {
@@ -76,16 +79,8 @@ export default {
         },
         float: {
           '0%, 100%': { transform: 'translate3d(0, 0, 0)' },
-          '50%': { transform: 'translate3d(0, -15px, 0)' },
+          '50%': { transform: 'translate3d(0, -20px, 0)' },
         },
-        shimmer: {
-          '0%': { backgroundPosition: '-1200px 0' },
-          '100%': { backgroundPosition: '1200px 0' }
-        },
-        marquee: {
-          '0%': { transform: 'translate3d(0, 0, 0)' },
-          '100%': { transform: 'translate3d(-50%, 0, 0)' },
-        }
       }
     }
   },

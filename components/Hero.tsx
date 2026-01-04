@@ -11,41 +11,24 @@ const ROLES = [
   "System Architect"
 ];
 
-// Extended list of floating icons for the background - FASTER ANIMATIONS
 const FLOATING_ICONS = [
   { icon: 'fab fa-python', color: 'text-yellow-500', position: 'bottom-[15%] left-[5%]', size: 'text-4xl md:text-6xl', animation: 'animate-float-fast', delay: '0s', rotate: '-rotate-12' },
   { icon: 'fab fa-react', color: 'text-blue-400', position: 'top-[12%] right-[5%]', size: 'text-5xl md:text-7xl', animation: 'animate-float-medium', delay: '0.2s', rotate: 'rotate-12' },
   { icon: 'fab fa-git-alt', color: 'text-red-500', position: 'top-[18%] left-[8%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-fast', delay: '0.4s', rotate: '-rotate-6' },
   { icon: 'fab fa-js', color: 'text-yellow-400', position: 'bottom-[20%] right-[8%]', size: 'text-4xl md:text-5xl', animation: 'animate-float-medium', delay: '0.1s', rotate: 'rotate-6' },
-  
-  // New Icons
   { icon: 'fas fa-database', color: 'text-blue-500', position: 'top-[40%] left-[15%]', size: 'text-2xl md:text-3xl', animation: 'animate-float-fast', delay: '0.3s', rotate: 'rotate-12' },
   { icon: 'fab fa-node', color: 'text-green-500', position: 'bottom-[35%] right-[15%]', size: 'text-4xl md:text-5xl', animation: 'animate-float-fast', delay: '0.5s', rotate: '-rotate-12' },
-  { icon: 'fab fa-figma', color: 'text-purple-500', position: 'top-[15%] left-[45%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-medium', delay: '0.2s', rotate: 'rotate-3' },
-  { icon: 'fab fa-docker', color: 'text-blue-600', position: 'bottom-[10%] left-[35%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-fast', delay: '0.1s', rotate: 'rotate-6' },
-  { icon: 'fab fa-aws', color: 'text-orange-500', position: 'top-[25%] right-[25%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-medium', delay: '0.4s', rotate: '-rotate-6' },
-  { icon: 'fab fa-html5', color: 'text-orange-600', position: 'top-[60%] left-[5%]', size: 'text-2xl md:text-3xl', animation: 'animate-float-fast', delay: '0.2s', rotate: 'rotate-12' },
-  { icon: 'fab fa-css3-alt', color: 'text-blue-600', position: 'top-[65%] right-[5%]', size: 'text-2xl md:text-3xl', animation: 'animate-float-fast', delay: '0.3s', rotate: '-rotate-12' },
-  { icon: 'fab fa-linux', color: 'text-gray-800 dark:text-gray-200', position: 'bottom-[45%] left-[80%]', size: 'text-3xl md:text-4xl', animation: 'animate-float-medium', delay: '0.1s', rotate: 'rotate-0' },
 ];
 
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  
-  // Refs for background blobs for independent parallax
-  const blob1Ref = useRef<HTMLDivElement>(null);
-  const blob2Ref = useRef<HTMLDivElement>(null);
   const iconsLayerRef = useRef<HTMLDivElement>(null);
 
   const [isMobile, setIsMobile] = useState(false);
-  
-  // Physics state for smooth interpolation
-  // Target represents mouse position (-1 to 1)
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   
-  // Typing Effect State
   const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
@@ -58,49 +41,21 @@ const Hero: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Animation Loop for Physics-based Tilt & Parallax
   useEffect(() => {
     if (isMobile) return;
-
     let requestID: number;
-    // Lower ease for smoother, heavier feel
-    const ease = 0.08; 
+    const ease = 0.1; 
 
     const update = () => {
-      // Interpolate current position towards target mouse position
       current.current.x += (target.current.x - current.current.x) * ease;
       current.current.y += (target.current.y - current.current.y) * ease;
 
-      // 1. Content Tilt (Subtle 3D effect on text)
       if (contentRef.current) {
-         const tiltX = current.current.y * 5; // Max 5deg tilt
-         const tiltY = current.current.x * 5;
-         contentRef.current.style.transform = `
-            perspective(1000px)
-            rotateX(${tiltX}deg) 
-            rotateY(${tiltY}deg)
-         `;
+         contentRef.current.style.transform = `perspective(1000px) rotateX(${current.current.y * 5}deg) rotateY(${current.current.x * 5}deg)`;
       }
 
-      // 2. Background Blob Parallax (Inverse movement, deeper depth)
-      // Moving opposite to mouse creates depth
-      if (blob1Ref.current) {
-         const x = current.current.x * -40; // Move 40px
-         const y = current.current.y * -40;
-         blob1Ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-
-      if (blob2Ref.current) {
-         const x = current.current.x * 60; // Move 60px (different speed for layer effect)
-         const y = current.current.y * 60;
-         blob2Ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-
-      // 3. Floating Icons Parallax (Mid-ground)
       if (iconsLayerRef.current) {
-          const x = current.current.x * -20;
-          const y = current.current.y * -20;
-          iconsLayerRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+          iconsLayerRef.current.style.transform = `translate3d(${current.current.x * -30}px, ${current.current.y * -30}px, 0)`;
       }
 
       requestID = requestAnimationFrame(update);
@@ -113,35 +68,24 @@ const Hero: React.FC = () => {
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || isMobile) return;
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    
-    // Normalize coordinates -1 to 1
-    const x = (e.clientX - centerX) / (width / 2);
-    const y = (e.clientY - centerY) / (height / 2);
-    
+    const x = (e.clientX - (left + width / 2)) / (width / 2);
+    const y = (e.clientY - (top + height / 2)) / (height / 2);
     target.current = { x, y };
   };
 
-  const handleMouseLeave = () => {
-    target.current = { x: 0, y: 0 };
-  };
-
-  // Typing Logic
   useEffect(() => {
     const handleTyping = () => {
       const i = loopNum % ROLES.length;
       const fullText = ROLES[i];
       setText(isDeleting ? fullText.substring(0, text.length - 1) : fullText.substring(0, text.length + 1));
-      
-      setTypingSpeed(isDeleting ? 25 : 60);
+      setTypingSpeed(isDeleting ? 30 : 60);
 
       if (!isDeleting && text === fullText) {
         setTimeout(() => setIsDeleting(true), 1500); 
       } else if (isDeleting && text === '') {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
-        setTypingSpeed(200); 
+        setTypingSpeed(150); 
       }
     };
     const timer = setTimeout(handleTyping, typingSpeed);
@@ -153,76 +97,55 @@ const Hero: React.FC = () => {
       id="home" 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={() => target.current = { x: 0, y: 0 }}
       className="h-screen w-full flex flex-col justify-center items-center text-center relative overflow-hidden px-4"
     >
-      {/* 1. ENHANCED 3D BACKGROUND BLOBS - POSITIONED AWAY FROM CENTER */}
+      {/* LOCAL HERO ACCENTS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
-         {/* Top Left Blob */}
-         <div ref={blob1Ref} className="absolute top-[-25%] left-[-15%] will-change-transform">
-            <div className="w-[80vw] h-[80vw] md:w-[800px] md:h-[800px] bg-gradient-to-br from-blue-400/20 via-indigo-500/20 to-purple-500/20 rounded-full blur-[120px] animate-blob mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
-         </div>
-         
-         {/* Bottom Right Blob */}
-         <div ref={blob2Ref} className="absolute bottom-[-25%] right-[-15%] will-change-transform">
-            <div className="w-[80vw] h-[80vw] md:w-[800px] md:h-[800px] bg-gradient-to-tr from-cyan-400/20 via-blue-500/20 to-pink-500/20 rounded-full blur-[120px] animate-blob-reverse mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
-         </div>
-         
-         {/* Center Glow (Static) - Ensuring text legibility */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/40 dark:bg-black/40 rounded-full blur-[100px]"></div>
-         
-         {/* Noise Texture */}
-         <div className="absolute inset-0 bg-noise opacity-[0.05]"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 dark:bg-white/5 rounded-full blur-[100px] animate-pulse-slow"></div>
       </div>
 
-      {/* 2. FLOATING 3D ICONS (EXTENDED) */}
+      {/* FLOATING ICONS */}
       <div ref={iconsLayerRef} className="absolute inset-0 pointer-events-none z-0 overflow-hidden will-change-transform">
          {FLOATING_ICONS.map((icon, idx) => (
              <div 
                 key={idx}
-                className={`absolute ${icon.position} ${icon.animation} opacity-20 dark:opacity-10 transition-opacity duration-300`}
+                className={`absolute ${icon.position} ${icon.animation} opacity-15 dark:opacity-10`}
                 style={{ animationDelay: icon.delay }}
              >
-                <div className={`relative w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-white/10 to-white/5 rounded-2xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform ${icon.rotate} shadow-lg`}>
-                   <i className={`${icon.icon} ${icon.size} ${icon.color} drop-shadow-[0_4px_4px_rgba(0,0,0,0.2)]`}></i>
+                <div className={`w-16 h-16 md:w-24 md:h-24 glass rounded-2xl flex items-center justify-center transform ${icon.rotate} shadow-lg`}>
+                   <i className={`${icon.icon} ${icon.size} ${icon.color}`}></i>
                 </div>
              </div>
          ))}
       </div>
 
-      {/* CONTENT LAYER - INSTANT REVEALS */}
-      <div 
-        ref={contentRef}
-        className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform"
-      >
+      {/* CONTENT - NO DELAY, INSTANT REVEAL */}
+      <div ref={contentRef} className="relative z-10 flex flex-col items-center gap-6 md:gap-8 will-change-transform">
           <Reveal triggerOnMount delay={0} variant="fade">
-            <div 
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg backdrop-blur-3xl ring-1 ring-white/20 hover:scale-110 transition-transform duration-300 cursor-default" 
-                style={{ transform: 'translateZ(20px)' }}
-                data-bot-msg="I am ready to work!|Currently accepting projects.|Hire me?"
-            >
-              <span className="relative flex h-2.5 w-2.5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-strong border border-white/40 dark:border-white/10 shadow-lg">
+              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-700 dark:text-gray-300">Available for Work</span>
             </div>
           </Reveal>
           
-          <div style={{ transform: 'translateZ(40px)' }} className="px-4">
+          <div className="px-4">
             <Reveal delay={0} triggerOnMount variant="slide">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-none text-gray-900 dark:text-white mb-2">
                 Hello, I'm
               </h1>
-              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 animate-gradient bg-[length:200%_auto] filter drop-shadow-sm pb-2">
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                  Bhupesh Bhatt
               </h2>
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(30px)' }} className="h-8 flex items-center justify-center">
+          <div className="h-8 flex items-center justify-center">
              <Reveal delay={0} triggerOnMount variant="fade">
-               <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl border border-white/30 shadow-md ring-1 ring-white/10 hover:border-blue-500/30 transition-colors flex items-center hover:scale-105 duration-300">
+               <div className="text-sm md:text-base font-mono text-gray-600 dark:text-gray-300 glass-strong px-6 py-2 rounded-xl">
                   <span className="text-blue-600 font-bold mr-2">~</span>
                   <span className="text-gray-400 mr-1">$</span>
                   {text}
@@ -231,40 +154,22 @@ const Hero: React.FC = () => {
              </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(20px)' }} className="max-w-2xl mx-auto px-6">
+          <div className="max-w-2xl mx-auto px-6">
             <Reveal delay={0} triggerOnMount variant="slide">
               <p className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 leading-relaxed font-light">
                  Engineering high-performance, <span className="text-blue-600 dark:text-blue-400 font-medium">fluid architectures</span> with aesthetic precision. 
-                 Bridging design intuition with technical mastery.
               </p>
             </Reveal>
           </div>
 
-          <div style={{ transform: 'translateZ(30px)' }} className="mt-4 md:mt-6">
+          <div className="mt-4 md:mt-6">
             <Reveal delay={0} triggerOnMount variant="zoom-in">
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-                <MagneticButton 
-                  href="#work" 
-                  variant="glass-primary" 
-                  className="group px-8 py-3.5"
-                  data-bot-msg="Check out the projects!|Seeing is believing.|My best work."
-                >
-                  <span className="relative flex items-center gap-2.5 text-base">
-                    Selected Work 
-                    <i className="fas fa-arrow-right text-xs group-hover:translate-x-1.5 transition-transform duration-300 ease-spring"></i>
-                  </span>
+                <MagneticButton href="#work" variant="glass-primary" className="group px-8 py-3.5">
+                  <span className="relative flex items-center gap-2.5 text-base">Selected Work <i className="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1.5"></i></span>
                 </MagneticButton>
-
-                <MagneticButton 
-                  href="#contact" 
-                  variant="glass-secondary" 
-                  className="px-8 py-3.5 text-base"
-                  data-bot-msg="Let's start a conversation.|Have an idea?|Contact me."
-                >
-                   <span className="flex items-center gap-2.5">
-                    Let's Talk
-                    <i className="fas fa-paper-plane text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
-                   </span>
+                <MagneticButton href="#contact" variant="glass-secondary" className="px-8 py-3.5 text-base">
+                   <span className="flex items-center gap-2.5">Let's Talk <i className="fas fa-paper-plane text-xs opacity-50"></i></span>
                 </MagneticButton>
               </div>
             </Reveal>

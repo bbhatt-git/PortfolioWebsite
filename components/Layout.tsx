@@ -1,27 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const targetPos = useRef({ x: 0, y: 0 });
+  const currentPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleScroll = () => setShowScrollTop(window.scrollY > 300);
     window.addEventListener('scroll', handleScroll);
     
     const handleMouseMove = (e: MouseEvent) => {
-        // Normalize coordinates and increase sensitivity
         const x = (e.clientX / window.innerWidth) - 0.5;
         const y = (e.clientY / window.innerHeight) - 0.5;
-        setMousePos({ x, y });
+        targetPos.current = { x, y };
     };
     
-    if (window.matchMedia("(pointer: fine)").matches) {
-        window.addEventListener('mousemove', handleMouseMove);
-    }
+    window.addEventListener('mousemove', handleMouseMove);
+
+    let rafId: number;
+    const update = () => {
+        currentPos.current.x += (targetPos.current.x - currentPos.current.x) * 0.05;
+        currentPos.current.y += (targetPos.current.y - currentPos.current.y) * 0.05;
+        setMousePos({ x: currentPos.current.x, y: currentPos.current.y });
+        rafId = requestAnimationFrame(update);
+    };
+    rafId = requestAnimationFrame(update);
 
     return () => {
         window.removeEventListener('scroll', handleScroll);
         window.removeEventListener('mousemove', handleMouseMove);
+        cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -32,54 +41,46 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="relative min-h-screen overflow-hidden font-sans selection:bg-blue-500/30">
       
-      {/* ATMOSPHERIC BACKGROUND LAYER - Multi-depth Liquid Cosmos */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#F2F2F7] dark:bg-[#050505] transition-colors duration-500 ease-out overflow-hidden">
+      {/* GLOBAL ATMOSPHERIC SYSTEM */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#F8FAFC] dark:bg-[#020203] transition-colors duration-1000 ease-out overflow-hidden">
         
-        {/* Layer 0: Deep Ambient Glow (Static) */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 to-purple-500/5 dark:from-blue-900/5 dark:to-purple-900/5"></div>
+        {/* Static Base Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-purple-500/5"></div>
 
-        {/* Layer 1: Distant Heavy Blobs (High Parallax) */}
+        {/* ORB 1: Deep Blue (Top Right) */}
         <div 
-            className="absolute top-[-20%] left-[-10%] transition-transform duration-[800ms] ease-out will-change-transform opacity-40 dark:opacity-20"
-            style={{ 
-                // Increased speed multipliers (x80 instead of x40)
-                transform: `translate3d(${mousePos.x * -80}px, ${mousePos.y * -80}px, 0)` 
-            }}
+            className="absolute top-[-10%] right-[-10%] transition-transform duration-[400ms] will-change-transform"
+            style={{ transform: `translate3d(${mousePos.x * -60}px, ${mousePos.y * -60}px, 0)` }}
         >
-            <div className="w-[100vw] h-[100vw] bg-gradient-to-br from-blue-400/20 to-indigo-600/20 rounded-full blur-[140px] animate-blob"></div>
+            <div className="w-[70vw] h-[70vw] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] animate-blob"></div>
         </div>
 
-        {/* Layer 2: Mid-ground Fluid Clusters */}
+        {/* ORB 2: Soft Purple (Bottom Left) */}
         <div 
-            className="absolute bottom-[-10%] right-[-15%] transition-transform duration-[1000ms] ease-out will-change-transform opacity-30 dark:opacity-15"
-            style={{ 
-                transform: `translate3d(${mousePos.x * 100}px, ${mousePos.y * 100}px, 0)` 
-            }}
+            className="absolute bottom-[-15%] left-[-15%] transition-transform duration-[600ms] will-change-transform"
+            style={{ transform: `translate3d(${mousePos.x * 80}px, ${mousePos.y * 80}px, 0)` }}
         >
-            <div className="w-[85vw] h-[85vw] bg-gradient-to-tl from-purple-400/20 to-pink-500/20 rounded-full blur-[160px] animate-blob-reverse animation-delay-4000"></div>
+            <div className="w-[80vw] h-[80vw] bg-purple-400/10 dark:bg-purple-600/10 rounded-full blur-[150px] animate-blob-reverse"></div>
         </div>
 
-        {/* Layer 3: Dynamic Liquid Vents (Very High Parallax) */}
+        {/* ORB 3: Cyan Accent (Center Drift) */}
         <div 
-            className="absolute top-[30%] left-[20%] transition-transform duration-[600ms] ease-out will-change-transform opacity-20 dark:opacity-10"
-            style={{ 
-                transform: `translate3d(${mousePos.x * -140}px, ${mousePos.y * 160}px, 0)` 
-            }}
+            className="absolute top-[30%] left-[20%] transition-transform duration-[800ms] will-change-transform"
+            style={{ transform: `translate3d(${mousePos.x * -120}px, ${mousePos.y * 140}px, 0)` }}
         >
-            <div className="w-[50vw] h-[50vw] bg-cyan-400/15 rounded-full blur-[100px] animate-liquid"></div>
+            <div className="w-[40vw] h-[40vw] bg-cyan-400/5 dark:bg-cyan-500/5 rounded-full blur-[100px] animate-liquid"></div>
         </div>
 
+        {/* ORB 4: Indigo Flash (Bottom Right) */}
         <div 
-            className="absolute bottom-[20%] left-[5%] transition-transform duration-[700ms] ease-out will-change-transform opacity-15 dark:opacity-5"
-            style={{ 
-                transform: `translate3d(${mousePos.x * 180}px, ${mousePos.y * -120}px, 0)` 
-            }}
+            className="absolute bottom-[10%] right-[10%] transition-transform duration-[500ms] will-change-transform"
+            style={{ transform: `translate3d(${mousePos.x * 40}px, ${mousePos.y * -30}px, 0)` }}
         >
-            <div className="w-[40vw] h-[40vw] bg-indigo-500/10 rounded-full blur-[120px] animate-liquid animation-delay-2000"></div>
+            <div className="w-[50vw] h-[50vw] bg-indigo-500/10 dark:bg-indigo-600/10 rounded-full blur-[120px] animate-blob-slow"></div>
         </div>
 
-        {/* Cinematic Grain Overlay */}
-        <div className="absolute inset-0 bg-noise opacity-[0.4] mix-blend-overlay"></div>
+        {/* Grain Overlay */}
+        <div className="absolute inset-0 bg-noise opacity-[0.03] dark:opacity-[0.06] mix-blend-overlay"></div>
       </div>
 
       {/* CONTENT LAYER */}
@@ -90,7 +91,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Floating Scroll To Top */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full glass-strong flex items-center justify-center text-black dark:text-white transition-all duration-300 ease-spring hover:scale-110 hover:shadow-2xl hover:bg-white dark:hover:bg-mac-gray group ${
+        className={`fixed bottom-8 right-8 z-40 w-12 h-12 rounded-full glass-strong flex items-center justify-center text-black dark:text-white transition-all duration-500 ease-spring hover:scale-110 hover:shadow-2xl hover:bg-white dark:hover:bg-mac-gray group ${
           showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12 pointer-events-none'
         }`}
         aria-label="Back to Top"
