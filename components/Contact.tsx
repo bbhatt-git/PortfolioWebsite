@@ -22,35 +22,73 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
     setToast({ show: true, message, type });
   };
 
+  const sendToTelegram = async (name: string, email: string, message: string) => {
+    const botToken = "8264328124:AAHweCg6xngZ2o17LItWQOKKyQ8bktQCc4A";
+    const chatId = "8312999392";
+    
+    // Formatting the message for Telegram
+    const text = `
+🚀 *New Portfolio Inquiry*
+
+👤 *Name:* ${name}
+📧 *Email:* ${email}
+📝 *Message:*
+${message}
+    `;
+
+    try {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text,
+          parse_mode: 'Markdown',
+        }),
+      });
+    } catch (error) {
+      console.error("Telegram notification failed:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
     
+    const name = formData.get("Name") as string;
+    const email = formData.get("Email") as string;
+    const message = formData.get("Message") as string;
+    
     setStatus('submitting');
     try {
-      // Sending data to Firebase Firestore
+      // 1. Send to Firebase Firestore (Persistence)
       await addDoc(collection(db, "messages"), {
         to: "hello@bbhatt.com.np",
-        name: formData.get("Name"),
-        email: formData.get("Email"),
-        message: formData.get("Message"),
-        seen: false, // Explicitly set seen to false
+        name,
+        email,
+        message,
+        seen: false, 
         timestamp: serverTimestamp()
       });
+
+      // 2. Send to Telegram Bot (Notification)
+      await sendToTelegram(name, email, message);
 
       setStatus('idle');
       form.reset();
       showToast('Message sent successfully!', 'success');
       
-      // If provided, trigger the success callback after a short delay to let user see the toast
+      // If provided, trigger the success callback after a short delay
       if (onSuccess) {
         setTimeout(() => {
           onSuccess();
         }, 2000);
       }
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error sending message: ", error);
       setStatus('idle');
       showToast('Failed to send message. Please try again.', 'error');
     }
