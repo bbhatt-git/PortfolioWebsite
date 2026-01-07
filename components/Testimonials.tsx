@@ -117,6 +117,14 @@ const Testimonials: React.FC = () => {
              className="w-full max-w-xl bg-white/70 dark:bg-[#161618]/70 backdrop-blur-[40px] rounded-[3rem] shadow-2xl border border-white/60 dark:border-white/10 overflow-hidden relative ring-1 ring-black/5 dark:ring-white/5"
              onClick={e => e.stopPropagation()}
            >
+              {/* CLOSE BUTTON */}
+              <button 
+                onClick={closeModal}
+                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-black/10 dark:hover:bg-white/20 transition-all z-20 backdrop-blur-md border border-white/20"
+              >
+                <i className="fas fa-times text-sm"></i>
+              </button>
+
               <div className="p-10 md:p-14 relative z-10 flex flex-col items-center text-center">
                  <div className="relative mb-8 group">
                     <img 
