@@ -1,21 +1,55 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Contact Messages
-    // Anyone can create (send a message)
-    // Only authenticated admin can read, update, or delete
-    match /messages/{document=**} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null;
+    // -------------------------
+    // SECURITY UTILITIES
+    // -------------------------
+    
+    function isAuthenticated() {
+      return request.auth != null;
     }
     
-    // Projects
-    // Everyone can read (view portfolio)
-    // Only authenticated admin can create/update/delete
-    match /projects/{document=**} {
+    // Validate string content and length (Buffer Overflow prevention)
+    function isString(data, min, max) {
+      return data is string && data.size() >= min && data.size() <= max;
+    }
+
+    // Validate email format basic check
+    function isEmail(data) {
+      return data is string && data.matches('^[^@]+@[^@]+\\.[^@]+$');
+    }
+
+    // -------------------------
+    // MESSAGES COLLECTION (Public Write, Admin Read)
+    // -------------------------
+    match /messages/{document} {
+      // Allow creation only if data matches schema
+      allow create: if 
+        // 1. Must contain all required fields
+        request.resource.data.keys().hasAll(['name', 'email', 'message', 'to', 'seen', 'timestamp'])
+        
+        // 2. Validate types and lengths (Input Validation)
+        && isString(request.resource.data.name, 1, 100)
+        && isEmail(request.resource.data.email)
+        && isString(request.resource.data.message, 1, 5000)
+        && isString(request.resource.data.to, 1, 100)
+        && request.resource.data.seen == false
+        
+        // 3. Prevent future timestamps (Logic Flaws)
+        && request.resource.data.timestamp == request.time;
+        
+      // Only authenticated users (admins) can read, update, delete
+      allow read, update, delete: if isAuthenticated();
+    }
+    
+    // -------------------------
+    // PROJECTS COLLECTION (Public Read, Admin Write)
+    // -------------------------
+    match /projects/{document} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update, delete: if isAuthenticated();
     }
   }
 }

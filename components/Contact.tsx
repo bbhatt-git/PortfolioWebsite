@@ -3,6 +3,8 @@ import Reveal from './Reveal';
 import Toast from './Toast';
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { Turnstile } from '@marsidev/react-turnstile';
+import { sanitizeInput, isValidEmail, checkRateLimit, isValidLength } from '../utils/security';
 
 interface ContactProps {
   onSuccess?: () => void;
@@ -12,6 +14,7 @@ interface ContactProps {
 
 const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }) => {
   const [status, setStatus] = useState<'idle' | 'submitting'>('idle');
+  const [token, setToken] = useState<string | null>(null);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' }>({
     show: false,
     message: '',
@@ -34,6 +37,8 @@ const Contact: React.FC<ContactProps> = ({ onSuccess, onClose, isModal = false }
 📧 *Email:* ${email}
 📝 *Message:*
 ${message}
+
+🔐 *Turnstile Verified*
     `;
 
     try {
@@ -55,16 +60,45 @@ ${message}
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // 1. Anti-Bot: Turnstile Check
+    if (!token) {
+      showToast('Please complete the security check.', 'error');
+      return;
+    }
+
+    // 2. DoS Protection: Rate Limiting
+    if (!checkRateLimit()) {
+      showToast('Too many requests. Please wait a minute.', 'error');
+      return;
+    }
+
     const form = e.currentTarget;
     const formData = new FormData(form);
     
-    const name = formData.get("Name") as string;
-    const email = formData.get("Email") as string;
-    const message = formData.get("Message") as string;
+    // 3. Input Sanitization (XSS Prevention)
+    const rawName = formData.get("Name") as string;
+    const rawEmail = formData.get("Email") as string;
+    const rawMessage = formData.get("Message") as string;
+
+    const name = sanitizeInput(rawName);
+    const email = sanitizeInput(rawEmail);
+    const message = sanitizeInput(rawMessage);
+
+    // 4. Input Validation (Data Integrity & Resource Exhaustion)
+    if (!isValidEmail(email)) {
+        showToast('Invalid email address.', 'error');
+        return;
+    }
+
+    if (!isValidLength(name, 100) || !isValidLength(message, 5000)) {
+        showToast('Input too long.', 'error');
+        return;
+    }
     
     setStatus('submitting');
     try {
-      // 1. Send to Firebase Firestore (Persistence)
+      // 5. Send to Firebase Firestore (Persistence)
       await addDoc(collection(db, "messages"), {
         to: "hello@bbhatt.com.np",
         name,
@@ -74,14 +108,15 @@ ${message}
         timestamp: serverTimestamp()
       });
 
-      // 2. Send to Telegram Bot (Notification)
+      // 6. Send to Telegram Bot (Notification)
       await sendToTelegram(name, email, message);
 
       setStatus('idle');
       form.reset();
+      setToken(null); 
+      
       showToast('Message sent successfully!', 'success');
       
-      // If provided, trigger the success callback after a short delay
       if (onSuccess) {
         setTimeout(() => {
           onSuccess();
@@ -93,6 +128,17 @@ ${message}
       showToast('Failed to send message. Please try again.', 'error');
     }
   };
+
+  // Safe access to environment variable
+  const getSiteKey = () => {
+    try {
+      // @ts-ignore
+      return (import.meta.env && import.meta.env.VITE_TURNSTILE_SITE_KEY) || "0x4AAAAAACK_P8N4O1F3Hg6V";
+    } catch {
+      return "0x4AAAAAACK_P8N4O1F3Hg6V";
+    }
+  };
+  const siteKey = getSiteKey();
 
   return (
     <section id="contact" className={`${isModal ? 'py-0 w-full flex justify-center' : 'py-24'} relative overflow-hidden`}>
@@ -127,7 +173,7 @@ ${message}
             {/* Reflective Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none opacity-50"></div>
 
-            {/* Title Bar - Visible ONLY on Desktop/Tablet when Modal */}
+            {/* Title Bar */}
             <div className={`bg-white/50 dark:bg-[#2c2c2e]/50 backdrop-blur-md h-12 flex items-center px-5 justify-between border-b border-black/5 dark:border-white/10 relative z-20 ${isModal ? 'hidden md:flex' : 'flex'}`}>
                <div className="flex gap-2 group/controls">
                  <div 
@@ -149,7 +195,7 @@ ${message}
                </div>
             </div>
 
-            {/* Mobile Header (Simple & Aesthetic) - Only visible on Mobile when Modal */}
+            {/* Mobile Header */}
             {isModal && (
                 <div className="md:hidden pt-8 pb-4 px-6 text-center border-b border-black/5 dark:border-white/5 relative z-20">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">Write Message</h3>
@@ -184,6 +230,7 @@ ${message}
                     type="text" 
                     required 
                     placeholder="John Doe"
+                    maxLength={100}
                     className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
                   />
                 </div>
@@ -197,6 +244,7 @@ ${message}
                     type="email" 
                     required 
                     placeholder="your.email@example.com"
+                    maxLength={100}
                     className="flex-1 bg-transparent outline-none text-base text-gray-900 dark:text-white placeholder-gray-400 font-medium min-w-0"
                   />
                 </div>
@@ -209,23 +257,30 @@ ${message}
                     rows={isModal ? 8 : 8}
                     required 
                     placeholder="Hi Bhupesh, I'd like to discuss a potential collaboration..."
+                    maxLength={5000}
                     className="w-full bg-transparent outline-none text-base md:text-lg text-gray-800 dark:text-gray-200 placeholder-gray-400 resize-none font-sans leading-relaxed"
                   ></textarea>
                 </div>
 
                 {/* Toolbar / Send */}
                 <div className="bg-white/30 dark:bg-[#2c2c2e]/30 backdrop-blur-md px-6 md:px-8 py-5 flex flex-col sm:flex-row justify-between items-center border-t border-black/5 dark:border-white/5 gap-4">
-                  <div className="flex gap-6 text-gray-400 self-start sm:self-auto text-lg">
-                    <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-font"></i></button>
-                    <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="fas fa-paperclip"></i></button>
-                    <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="far fa-image"></i></button>
-                    <button type="button" className="hover:text-gray-600 dark:hover:text-gray-200 transition-colors"><i className="far fa-smile"></i></button>
+                  <div className="flex gap-4 items-center">
+                    <Turnstile 
+                       siteKey={siteKey}
+                       onSuccess={(token) => setToken(token)}
+                       onExpire={() => setToken(null)}
+                       onError={() => setToken(null)}
+                       options={{
+                         theme: 'auto',
+                         size: 'compact'
+                       }}
+                    />
                   </div>
                   <button 
                     type="submit" 
-                    disabled={status === 'submitting'}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-10 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2.5 font-bold text-sm tracking-wide"
-                    title="Send Message"
+                    disabled={status === 'submitting' || !token}
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-10 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale disabled:hover:scale-100 flex items-center justify-center gap-2.5 font-bold text-sm tracking-wide"
+                    title={!token ? "Complete security check" : "Send Message"}
                   >
                     {status === 'submitting' ? (
                        <>
@@ -243,32 +298,32 @@ ${message}
           </div>
         </Reveal>
         
-        {/* Social Links Row - Hidden in Modal */}
+        {/* Social Links Row */}
         {!isModal && (
             <Reveal delay={300} variant="3d">
             <div className="flex justify-center gap-6 md:gap-10 mt-16 flex-wrap">
-                <a href="https://github.com/bbhatt-git" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+                <a href="https://github.com/bbhatt-git" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-black dark:hover:text-white transition-colors">
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                     <i className="fab fa-github"></i>
                 </div>
                 <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">GitHub</span>
                 </a>
                 
-                <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
+                <a href="https://www.linkedin.com/in/bhattbhupesh" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#0077b5] transition-colors">
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                     <i className="fab fa-linkedin"></i>
                 </div>
                 <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">LinkedIn</span>
                 </a>
 
-                <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#1877F2] transition-colors">
+                <a href="https://www.facebook.com/share/1BnJr4X2Ec/" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#1877F2] transition-colors">
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                     <i className="fab fa-facebook"></i>
                 </div>
                 <span className="text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-1 group-hover:translate-y-0">Facebook</span>
                 </a>
 
-                <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#E4405F] transition-colors">
+                <a href="https://www.instagram.com/_bbhatt/?igsh=MWdjZnc3Y2t6bXp1bA%3D%3D#" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2 text-gray-400 hover:text-[#E4405F] transition-colors">
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform text-xl">
                     <i className="fab fa-instagram"></i>
                 </div>

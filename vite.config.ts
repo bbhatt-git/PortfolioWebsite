@@ -6,7 +6,10 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY)
+      // Define specific keys first
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY),
+      // Polyfill global process.env as an empty object for compatibility
+      'process.env': {}
     },
     build: {
       outDir: 'dist',

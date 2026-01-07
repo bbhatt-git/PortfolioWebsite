@@ -62,7 +62,7 @@ const Testimonials: React.FC = () => {
 
         <div 
           ref={scrollRef}
-          className="relative w-full overflow-x-auto md:overflow-hidden pb-4 md:pb-0 scroll-smooth touch-pan-x z-20 snap-x snap-mandatory md:snap-none no-scrollbar"
+          className="relative w-full overflow-x-auto md:overflow-hidden pb-4 md:pb-0 scroll-smooth z-20 snap-x snap-mandatory md:snap-none no-scrollbar"
         >
            <div className="flex w-max md:animate-marquee hover:[animation-play-state:paused] px-4 md:px-0">
              {duplicatedTestimonials.map((testi, index) => (

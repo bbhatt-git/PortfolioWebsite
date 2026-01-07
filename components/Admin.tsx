@@ -3,6 +3,7 @@ import { auth, db } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, serverTimestamp, query, orderBy, writeBatch } from 'firebase/firestore';
 import { Project } from '../types';
+import { sanitizeInput } from '../utils/security';
 
 type AdminView = 'dashboard' | 'new-project' | 'projects-list' | 'messages' | 'message-viewer';
 
@@ -70,6 +71,7 @@ const Admin: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
+      // Inputs are handled by Firebase SDK which is secure against simple Auth bypass
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) { 
       setError(err.message || 'Access Denied'); 
@@ -115,13 +117,19 @@ const Admin: React.FC = () => {
 
   const handleSaveProject = async () => {
     if (!projectForm.title) return alert("Title required.");
+    
+    // Sanitize before saving (Defense against Stored XSS)
     const data = {
-      ...projectForm,
-      image: projectForm.imageUrl || 'https://via.placeholder.com/1200x800',
-      stack: techStackList.join(' • '),
-      highlights: highlightsList,
+      title: sanitizeInput(projectForm.title),
+      desc: sanitizeInput(projectForm.desc),
+      liveUrl: sanitizeInput(projectForm.liveUrl),
+      codeUrl: sanitizeInput(projectForm.codeUrl),
+      image: sanitizeInput(projectForm.imageUrl || 'https://via.placeholder.com/1200x800'),
+      stack: techStackList.map(t => sanitizeInput(t)).join(' • '),
+      highlights: highlightsList.map(h => sanitizeInput(h)),
       order: editingProject ? editingProject.order : projects.length
     };
+
     try {
       if (editingProject) await updateDoc(doc(db, "projects", editingProject.id), data);
       else await addDoc(collection(db, "projects"), { ...data, createdAt: serverTimestamp() });
@@ -170,14 +178,14 @@ const Admin: React.FC = () => {
 
   const addTech = () => {
     if (techInput.trim()) {
-      setTechStackList([...techStackList, techInput.trim()]);
+      setTechStackList([...techStackList, sanitizeInput(techInput.trim())]);
       setTechInput('');
     }
   };
 
   const addHighlight = () => {
     if (highlightInput.trim()) {
-      setHighlightsList([...highlightsList, highlightInput.trim()]);
+      setHighlightsList([...highlightsList, sanitizeInput(highlightInput.trim())]);
       setHighlightInput('');
     }
   };
@@ -217,7 +225,6 @@ const Admin: React.FC = () => {
 
   return (
     <div className="h-screen flex bg-[#f0f2f5] font-sans overflow-hidden text-gray-800">
-      
       {/* SIDEBAR */}
       <aside className="w-64 bg-[#001529] flex flex-col shrink-0 z-50">
           <div className="p-8 pb-10 flex items-center gap-3">
@@ -342,7 +349,8 @@ const Admin: React.FC = () => {
                                          </div>
                                          <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
-                                              <p className={`font-bold text-sm truncate ${isNew ? 'text-[#1890ff]' : 'text-gray-700'}`}>{m.name}</p>
+                                              {/* Sanitize output display */}
+                                              <p className={`font-bold text-sm truncate ${isNew ? 'text-[#1890ff]' : 'text-gray-700'}`}>{sanitizeInput(m.name)}</p>
                                               {isNew && <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>}
                                             </div>
                                             <p className="text-[10px] text-gray-400 truncate mt-0.5">{m.timestamp?.toDate().toLocaleDateString()}</p>
@@ -502,14 +510,14 @@ const Admin: React.FC = () => {
                           <div key={m.id} onClick={() => openMessage(m)} className={`px-8 py-5 flex items-center gap-6 cursor-pointer hover:bg-blue-50/50 transition-colors group ${!m.seen ? 'bg-blue-50/30' : ''}`}>
                              <div className={`w-3 h-3 rounded-full shrink-0 ${!m.seen ? 'bg-[#1890ff]' : 'bg-transparent border border-gray-300'}`}></div>
                              <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center font-bold text-gray-500 shadow-sm text-lg">
-                               {m.name.charAt(0).toUpperCase()}
+                               {sanitizeInput(m.name).charAt(0).toUpperCase()}
                              </div>
                              <div className="flex-1 min-w-0">
                                <div className="flex justify-between items-center mb-1">
-                                  <h3 className={`font-bold text-base ${!m.seen ? 'text-gray-900' : 'text-gray-600'}`}>{m.name}</h3>
+                                  <h3 className={`font-bold text-base ${!m.seen ? 'text-gray-900' : 'text-gray-600'}`}>{sanitizeInput(m.name)}</h3>
                                   <span className="text-xs text-gray-400 group-hover:text-[#1890ff] transition-colors">{m.timestamp?.toDate().toLocaleString()}</span>
                                </div>
-                               <p className={`text-sm truncate ${!m.seen ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>{m.message}</p>
+                               <p className={`text-sm truncate ${!m.seen ? 'text-gray-800 font-medium' : 'text-gray-500'}`}>{sanitizeInput(m.message)}</p>
                              </div>
                              <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ show: true, type: 'message', id: m.id, name: `Message from ${m.name}` }); }} className="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-all opacity-0 group-hover:opacity-100">
                                <i className="fas fa-trash-alt"></i>
@@ -533,14 +541,14 @@ const Admin: React.FC = () => {
                       <div className="px-10 py-8 border-b border-gray-100 bg-gray-50/30 flex justify-between items-start">
                          <div className="flex items-center gap-6">
                             <div className="w-16 h-16 rounded-full bg-[#1890ff] text-white flex items-center justify-center text-2xl font-bold shadow-lg shadow-blue-500/30">
-                               {selectedMessage.name.charAt(0).toUpperCase()}
+                               {sanitizeInput(selectedMessage.name).charAt(0).toUpperCase()}
                             </div>
                             <div>
-                               <h1 className="text-2xl font-bold text-gray-900">{selectedMessage.name}</h1>
+                               <h1 className="text-2xl font-bold text-gray-900">{sanitizeInput(selectedMessage.name)}</h1>
                                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                                   <i className="fas fa-envelope"></i>
-                                  <a href={`mailto:${selectedMessage.email}`} className="hover:text-[#1890ff] hover:underline">{selectedMessage.email}</a>
-                               </div>
+                                  <a href={`mailto:${sanitizeInput(selectedMessage.email)}`} className="hover:text-[#1890ff] hover:underline">{sanitizeInput(selectedMessage.email)}</a>
+                                </div>
                             </div>
                          </div>
                          <div className="text-right text-xs text-gray-400">
@@ -551,13 +559,13 @@ const Admin: React.FC = () => {
                       
                       <div className="p-10 min-h-[300px]">
                          <p className="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap font-serif">
-                           {selectedMessage.message}
+                           {sanitizeInput(selectedMessage.message)}
                          </p>
                       </div>
 
                       <div className="px-10 py-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-4">
                          <button onClick={() => setDeleteModal({ show: true, type: 'message', id: selectedMessage.id, name: `Message from ${selectedMessage.name}` })} className="px-6 py-2 border border-red-200 text-red-600 rounded text-sm font-bold hover:bg-red-50 transition-colors">Delete</button>
-                         <a href={`mailto:${selectedMessage.email}`} className="px-6 py-2 bg-[#1890ff] text-white rounded text-sm font-bold hover:bg-[#40a9ff] transition-colors shadow-lg shadow-blue-500/20">Reply via Email</a>
+                         <a href={`mailto:${sanitizeInput(selectedMessage.email)}`} className="px-6 py-2 bg-[#1890ff] text-white rounded text-sm font-bold hover:bg-[#40a9ff] transition-colors shadow-lg shadow-blue-500/20">Reply via Email</a>
                       </div>
                    </div>
                 </div>
@@ -574,7 +582,7 @@ const Admin: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Confirm Deletion</h3>
                 <p className="text-gray-500 text-center text-sm mb-6">
-                  Are you sure you want to delete <span className="font-bold text-gray-800">"{deleteModal.name}"</span>? This action cannot be undone.
+                  Are you sure you want to delete <span className="font-bold text-gray-800">"{sanitizeInput(deleteModal.name)}"</span>? This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setDeleteModal(null)} className="flex-1 py-2.5 border border-gray-300 rounded text-gray-700 font-bold hover:bg-gray-50 transition-colors">Cancel</button>
